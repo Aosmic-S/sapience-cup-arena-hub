@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +24,7 @@ const Admin = () => {
     isActive: true
   });
 
-  const adminPassword = "admin123"; // In real app, this would be more secure
+  const adminPassword = "SHELBY1701"; // Updated admin password
 
   useEffect(() => {
     if (isAuthenticated) {

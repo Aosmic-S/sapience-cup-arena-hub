@@ -15,8 +15,12 @@ const Index = () => {
         {/* Header */}
         <header className="text-center mb-12">
           <div className="flex items-center justify-center mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-4">
-              <span className="text-white font-bold text-xl">TSS</span>
+            <div className="w-20 h-20 mr-4">
+              <img 
+                src="/lovable-uploads/42b5ce77-8484-4734-ae6e-ed1ab7f4a641.png" 
+                alt="The Sapience School Logo" 
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <h1 className="text-5xl font-bold text-white mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">

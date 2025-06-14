@@ -6,52 +6,57 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, Users, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { UserPlus, GamepadIcon, Users } from 'lucide-react';
+
+interface FormData {
+  fullName: string;
+  classSection: string;
+  game: string;
+  entryType: string;
+  teamName: string;
+  phoneNumber: string;
+  paymentConfirmation: string;
+  members: string[];
+}
 
 const Register = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     fullName: '',
     classSection: '',
     game: '',
     entryType: 'solo',
     teamName: '',
-    members: ['', '', '', '', ''], // 5 members max
     phoneNumber: '',
-    paymentConfirmation: ''
+    paymentConfirmation: '',
+    members: ['', '', '', '']
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Partial<FormData>>({});
 
   const validateForm = () => {
-    const newErrors = {};
-    
+    const newErrors: Partial<FormData> = {};
+
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
-    if (!formData.classSection.trim()) newErrors.classSection = 'Class & Section is required';
+    if (!formData.classSection) newErrors.classSection = 'Class & Section is required';
     if (!formData.game) newErrors.game = 'Please select a game';
     if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required';
     if (!formData.paymentConfirmation.trim()) newErrors.paymentConfirmation = 'Payment confirmation is required';
-    
+
     if (formData.entryType === 'team') {
       if (!formData.teamName.trim()) newErrors.teamName = 'Team name is required';
       
-      // Count non-empty member names
-      const memberCount = formData.members.filter(member => member.trim()).length + 1; // +1 for registrant
-      if (memberCount > 5) {
-        newErrors.members = 'Maximum 5 team members allowed (including you)';
-      }
-      if (memberCount < 2) {
-        newErrors.members = 'At least 2 team members required';
+      const filledMembers = formData.members.filter(member => member.trim() !== '');
+      if (filledMembers.length > 4) {
+        newErrors.members = 'Maximum 4 additional members allowed (5 total including captain)';
       }
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -63,17 +68,16 @@ const Register = () => {
       return;
     }
 
-    // Simulate form submission
-    const registrationData = {
-      ...formData,
-      timestamp: new Date().toISOString(),
-      id: Date.now().toString()
-    };
-
     // Save to localStorage (simulating database)
-    const existingRegistrations = JSON.parse(localStorage.getItem('registrations') || '[]');
-    existingRegistrations.push(registrationData);
-    localStorage.setItem('registrations', JSON.stringify(existingRegistrations));
+    const registrations = JSON.parse(localStorage.getItem('registrations') || '[]');
+    const newRegistration = {
+      id: Date.now().toString(),
+      ...formData,
+      timestamp: new Date().toISOString()
+    };
+    
+    registrations.push(newRegistration);
+    localStorage.setItem('registrations', JSON.stringify(registrations));
 
     toast({
       title: "Registration Successful!",
@@ -87,154 +91,144 @@ const Register = () => {
       game: '',
       entryType: 'solo',
       teamName: '',
-      members: ['', '', '', '', ''],
       phoneNumber: '',
-      paymentConfirmation: ''
+      paymentConfirmation: '',
+      members: ['', '', '', '']
     });
+    setErrors({});
   };
 
-  const updateMember = (index, value) => {
+  const updateFormData = (field: keyof FormData, value: string | string[]) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const updateMember = (index: number, value: string) => {
     const newMembers = [...formData.members];
     newMembers[index] = value;
-    setFormData({ ...formData, members: newMembers });
+    updateFormData('members', newMembers);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-6">
-          <Link to="/" className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Link>
-        </div>
-
-        <Card className="max-w-2xl mx-auto bg-slate-800/50 border-slate-700">
+      <div className="container mx-auto px-4 max-w-2xl">
+        <Card className="bg-slate-800/50 border-slate-700">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-white text-center">
+            <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
+              <UserPlus className="w-8 h-8 mr-3" />
               Tournament Registration
             </CardTitle>
-            <p className="text-gray-300 text-center">Fill in your details to join the competition</p>
           </CardHeader>
           
-          <CardContent className="space-y-6">
+          <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Personal Info */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-white flex items-center">
-                  <User className="w-5 h-5 mr-2" />
-                  Personal Information
-                </h3>
-                
-                <div>
-                  <Label htmlFor="fullName" className="text-gray-300">Full Name *</Label>
-                  <Input
-                    id="fullName"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    placeholder="Enter your full name"
-                  />
-                  {errors.fullName && <p className="text-red-400 text-sm mt-1">{errors.fullName}</p>}
-                </div>
+              {/* Full Name */}
+              <div>
+                <Label htmlFor="fullName" className="text-gray-300">Full Name *</Label>
+                <Input
+                  id="fullName"
+                  value={formData.fullName}
+                  onChange={(e) => updateFormData('fullName', e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+                {errors.fullName && <p className="text-red-400 text-sm mt-1">{errors.fullName}</p>}
+              </div>
 
-                <div>
-                  <Label htmlFor="classSection" className="text-gray-300">Class & Section *</Label>
-                  <Input
-                    id="classSection"
-                    value={formData.classSection}
-                    onChange={(e) => setFormData({ ...formData, classSection: e.target.value })}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    placeholder="e.g., 10-A, 11-B"
-                  />
-                  {errors.classSection && <p className="text-red-400 text-sm mt-1">{errors.classSection}</p>}
-                </div>
+              {/* Class & Section */}
+              <div>
+                <Label htmlFor="classSection" className="text-gray-300">Class & Section *</Label>
+                <Select value={formData.classSection} onValueChange={(value) => updateFormData('classSection', value)}>
+                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectValue placeholder="Select your class" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectItem value="9-A">Class 9-A</SelectItem>
+                    <SelectItem value="9-B">Class 9-B</SelectItem>
+                    <SelectItem value="10-A">Class 10-A</SelectItem>
+                    <SelectItem value="10-B">Class 10-B</SelectItem>
+                    <SelectItem value="11-A">Class 11-A</SelectItem>
+                    <SelectItem value="11-B">Class 11-B</SelectItem>
+                    <SelectItem value="12-A">Class 12-A</SelectItem>
+                    <SelectItem value="12-B">Class 12-B</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.classSection && <p className="text-red-400 text-sm mt-1">{errors.classSection}</p>}
+              </div>
 
-                <div>
-                  <Label className="text-gray-300">Game Selection *</Label>
-                  <Select value={formData.game} onValueChange={(value) => setFormData({ ...formData, game: value })}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                      <SelectValue placeholder="Select a game" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-slate-700 border-slate-600">
-                      <SelectItem value="free-fire">Free Fire</SelectItem>
-                      <SelectItem value="codm">Call of Duty Mobile</SelectItem>
-                      <SelectItem value="fc-mobile">FC Mobile</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.game && <p className="text-red-400 text-sm mt-1">{errors.game}</p>}
-                </div>
-
-                <div>
-                  <Label htmlFor="phoneNumber" className="text-gray-300">Phone Number *</Label>
-                  <Input
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    placeholder="Enter your phone number"
-                  />
-                  {errors.phoneNumber && <p className="text-red-400 text-sm mt-1">{errors.phoneNumber}</p>}
-                </div>
+              {/* Game Selection */}
+              <div>
+                <Label className="text-gray-300">Select Game *</Label>
+                <Select value={formData.game} onValueChange={(value) => updateFormData('game', value)}>
+                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectValue placeholder="Choose your game" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectItem value="free-fire">Free Fire</SelectItem>
+                    <SelectItem value="codm">Call of Duty Mobile</SelectItem>
+                    <SelectItem value="fc-mobile">FC Mobile</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.game && <p className="text-red-400 text-sm mt-1">{errors.game}</p>}
               </div>
 
               {/* Entry Type */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-white flex items-center">
-                  <Users className="w-5 h-5 mr-2" />
-                  Entry Type
-                </h3>
-                
-                <RadioGroup
-                  value={formData.entryType}
-                  onValueChange={(value) => setFormData({ ...formData, entryType: value })}
-                  className="flex space-x-6"
+              <div>
+                <Label className="text-gray-300">Entry Type *</Label>
+                <RadioGroup 
+                  value={formData.entryType} 
+                  onValueChange={(value) => updateFormData('entryType', value)}
+                  className="flex space-x-6 mt-2"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="solo" id="solo" className="border-slate-600" />
-                    <Label htmlFor="solo" className="text-gray-300">Solo</Label>
+                    <RadioGroupItem value="solo" id="solo" className="border-slate-400" />
+                    <Label htmlFor="solo" className="text-gray-300 flex items-center">
+                      <GamepadIcon className="w-4 h-4 mr-1" />
+                      Solo
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="team" id="team" className="border-slate-600" />
-                    <Label htmlFor="team" className="text-gray-300">Team</Label>
+                    <RadioGroupItem value="team" id="team" className="border-slate-400" />
+                    <Label htmlFor="team" className="text-gray-300 flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      Team
+                    </Label>
                   </div>
                 </RadioGroup>
               </div>
 
-              {/* Team Details */}
+              {/* Team Details (conditional) */}
               {formData.entryType === 'team' && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-white">Team Details</h3>
+                <div className="space-y-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600">
+                  <h3 className="text-lg font-semibold text-white">Team Details</h3>
                   
                   <div>
                     <Label htmlFor="teamName" className="text-gray-300">Team Name *</Label>
                     <Input
                       id="teamName"
                       value={formData.teamName}
-                      onChange={(e) => setFormData({ ...formData, teamName: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
-                      placeholder="Enter your team name"
+                      onChange={(e) => updateFormData('teamName', e.target.value)}
+                      className="bg-slate-600 border-slate-500 text-white"
                     />
                     {errors.teamName && <p className="text-red-400 text-sm mt-1">{errors.teamName}</p>}
                   </div>
 
                   <div>
-                    <Label className="text-gray-300">Team Members (Max 5 including you)</Label>
+                    <Label className="text-gray-300">Team Members (Max 5 total including you)</Label>
                     <div className="space-y-2 mt-2">
-                      <Input
-                        value={formData.fullName}
-                        readOnly
-                        className="bg-slate-600 border-slate-500 text-gray-300"
-                        placeholder="Member 1 (You) - Auto-filled"
-                      />
+                      <div className="text-sm text-blue-400">
+                        Member 1 (Captain): {formData.fullName || 'Your name will appear here'}
+                      </div>
                       {formData.members.map((member, index) => (
-                        <Input
-                          key={index}
-                          value={member}
-                          onChange={(e) => updateMember(index, e.target.value)}
-                          className="bg-slate-700 border-slate-600 text-white"
-                          placeholder={`Member ${index + 2} (Optional)`}
-                        />
+                        <div key={index}>
+                          <Input
+                            placeholder={`Member ${index + 2} (Optional)`}
+                            value={member}
+                            onChange={(e) => updateMember(index, e.target.value)}
+                            className="bg-slate-600 border-slate-500 text-white"
+                          />
+                        </div>
                       ))}
                     </div>
                     {errors.members && <p className="text-red-400 text-sm mt-1">{errors.members}</p>}
@@ -242,30 +236,35 @@ const Register = () => {
                 </div>
               )}
 
-              {/* Payment Confirmation */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-white">Payment Confirmation</h3>
-                <div>
-                  <Label htmlFor="paymentConfirmation" className="text-gray-300">
-                    Payment Details/Transaction ID *
-                  </Label>
-                  <Textarea
-                    id="paymentConfirmation"
-                    value={formData.paymentConfirmation}
-                    onChange={(e) => setFormData({ ...formData, paymentConfirmation: e.target.value })}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    placeholder="Enter transaction ID, UPI reference, or payment details"
-                    rows={3}
-                  />
-                  {errors.paymentConfirmation && <p className="text-red-400 text-sm mt-1">{errors.paymentConfirmation}</p>}
-                </div>
+              {/* Phone Number */}
+              <div>
+                <Label htmlFor="phoneNumber" className="text-gray-300">Phone Number *</Label>
+                <Input
+                  id="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={(e) => updateFormData('phoneNumber', e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                  placeholder="Enter your phone number"
+                />
+                {errors.phoneNumber && <p className="text-red-400 text-sm mt-1">{errors.phoneNumber}</p>}
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 rounded-lg transition-all duration-300"
-              >
-                Submit Registration
+              {/* Payment Confirmation */}
+              <div>
+                <Label htmlFor="paymentConfirmation" className="text-gray-300">Payment Confirmation *</Label>
+                <Input
+                  id="paymentConfirmation"
+                  value={formData.paymentConfirmation}
+                  onChange={(e) => updateFormData('paymentConfirmation', e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                  placeholder="Transaction ID or confirmation details"
+                />
+                {errors.paymentConfirmation && <p className="text-red-400 text-sm mt-1">{errors.paymentConfirmation}</p>}
+              </div>
+
+              {/* Submit Button */}
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3">
+                Register for Tournament
               </Button>
             </form>
           </CardContent>
