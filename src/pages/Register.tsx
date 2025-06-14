@@ -48,7 +48,7 @@ const Register = () => {
       
       const filledMembers = formData.members.filter(member => member.trim() !== '');
       if (filledMembers.length > 4) {
-        newErrors.members = 'Maximum 4 additional members allowed (5 total including captain)';
+        newErrors.members = ['Maximum 4 additional members allowed (5 total including captain)'];
       }
     }
 
@@ -231,7 +231,7 @@ const Register = () => {
                         </div>
                       ))}
                     </div>
-                    {errors.members && <p className="text-red-400 text-sm mt-1">{errors.members}</p>}
+                    {errors.members && Array.isArray(errors.members) && <p className="text-red-400 text-sm mt-1">{errors.members[0]}</p>}
                   </div>
                 </div>
               )}
