@@ -1,0 +1,182 @@
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
+import { Mail, Bell, Trash2 } from 'lucide-react';
+
+interface EmailTemplate {
+  subject: string;
+  message: string;
+}
+
+interface Announcement {
+  id: number;
+  title: string;
+  content: string;
+  priority: string;
+  timestamp: string;
+}
+
+interface CommunicationsTabProps {
+  emailTemplate: EmailTemplate;
+  onEmailTemplateChange: (template: EmailTemplate) => void;
+  announcements: Announcement[];
+  onAnnouncementsChange: (announcements: Announcement[]) => void;
+  registrationCount: number;
+}
+
+const CommunicationsTab = ({ 
+  emailTemplate, 
+  onEmailTemplateChange, 
+  announcements, 
+  onAnnouncementsChange,
+  registrationCount 
+}: CommunicationsTabProps) => {
+  const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '', priority: 'normal' });
+
+  const sendBulkEmail = () => {
+    // Simulate sending emails
+    toast({
+      title: "Emails Sent",
+      description: `Bulk email sent to ${registrationCount} participants`,
+    });
+  };
+
+  const addAnnouncement = () => {
+    if (newAnnouncement.title && newAnnouncement.content) {
+      const announcement = {
+        id: Date.now(),
+        ...newAnnouncement,
+        timestamp: new Date().toISOString()
+      };
+      const updated = [...announcements, announcement];
+      onAnnouncementsChange(updated);
+      localStorage.setItem('announcements', JSON.stringify(updated));
+      setNewAnnouncement({ title: '', content: '', priority: 'normal' });
+      toast({
+        title: "Announcement Added",
+        description: "New announcement has been created",
+      });
+    }
+  };
+
+  const deleteAnnouncement = (id: number) => {
+    const updated = announcements.filter(ann => ann.id !== id);
+    onAnnouncementsChange(updated);
+    localStorage.setItem('announcements', JSON.stringify(updated));
+    toast({
+      title: "Announcement Deleted",
+      description: "Announcement has been removed",
+    });
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <Card className="bg-slate-700/50 border-slate-600">
+        <CardHeader>
+          <CardTitle className="text-xl text-white flex items-center">
+            <Mail className="w-5 h-5 mr-2" />
+            Bulk Email
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="text-gray-300">Subject</Label>
+            <Input
+              value={emailTemplate.subject}
+              onChange={(e) => onEmailTemplateChange({...emailTemplate, subject: e.target.value})}
+              className="bg-slate-600 border-slate-500 text-white"
+            />
+          </div>
+          <div>
+            <Label className="text-gray-300">Message</Label>
+            <textarea
+              value={emailTemplate.message}
+              onChange={(e) => onEmailTemplateChange({...emailTemplate, message: e.target.value})}
+              className="w-full h-32 bg-slate-600 border-slate-500 text-white rounded-md p-3"
+            />
+          </div>
+          <Button onClick={sendBulkEmail} className="w-full bg-green-600 hover:bg-green-700">
+            <Mail className="w-4 h-4 mr-2" />
+            Send to All Participants ({registrationCount})
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-slate-700/50 border-slate-600">
+        <CardHeader>
+          <CardTitle className="text-xl text-white flex items-center">
+            <Bell className="w-5 h-5 mr-2" />
+            Announcements
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="text-gray-300">Title</Label>
+            <Input
+              value={newAnnouncement.title}
+              onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
+              className="bg-slate-600 border-slate-500 text-white"
+            />
+          </div>
+          <div>
+            <Label className="text-gray-300">Content</Label>
+            <textarea
+              value={newAnnouncement.content}
+              onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})}
+              className="w-full h-24 bg-slate-600 border-slate-500 text-white rounded-md p-3"
+            />
+          </div>
+          <div>
+            <Label className="text-gray-300">Priority</Label>
+            <Select 
+              value={newAnnouncement.priority} 
+              onValueChange={(value) => setNewAnnouncement({...newAnnouncement, priority: value})}
+            >
+              <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-700 border-slate-600">
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="normal">Normal</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="urgent">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button onClick={addAnnouncement} className="w-full bg-blue-600 hover:bg-blue-700">
+            <Bell className="w-4 h-4 mr-2" />
+            Add Announcement
+          </Button>
+          
+          <div className="mt-4 space-y-2">
+            {announcements.slice(0, 3).map((announcement) => (
+              <div key={announcement.id} className="bg-slate-600/50 p-2 rounded flex justify-between items-center">
+                <div>
+                  <p className="text-white text-sm font-medium">{announcement.title}</p>
+                  <Badge variant={announcement.priority === 'urgent' ? 'destructive' : 'secondary'} className="text-xs">
+                    {announcement.priority}
+                  </Badge>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => deleteAnnouncement(announcement.id)}
+                >
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default CommunicationsTab;
