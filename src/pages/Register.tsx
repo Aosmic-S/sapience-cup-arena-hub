@@ -15,6 +15,7 @@ interface FormData {
   game: string;
   entryType: string;
   teamName: string;
+  email: string;
   phoneNumber: string;
   paymentConfirmation: string;
   inGameId: string;
@@ -29,6 +30,7 @@ const Register = () => {
     game: '',
     entryType: 'solo',
     teamName: '',
+    email: '',
     phoneNumber: '',
     paymentConfirmation: '',
     inGameId: '',
@@ -44,6 +46,8 @@ const Register = () => {
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
     if (!formData.classSection) newErrors.classSection = 'Class & Section is required';
     if (!formData.game) newErrors.game = 'Please select a game';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Please enter a valid email address';
     if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required';
     if (!formData.paymentConfirmation.trim()) newErrors.paymentConfirmation = 'Payment confirmation is required';
     if (!formData.inGameId.trim()) newErrors.inGameId = 'In-Game ID is required';
@@ -97,6 +101,7 @@ const Register = () => {
       game: '',
       entryType: 'solo',
       teamName: '',
+      email: '',
       phoneNumber: '',
       paymentConfirmation: '',
       inGameId: '',
@@ -269,6 +274,20 @@ const Register = () => {
                   </div>
                 </div>
               )}
+
+              {/* Email */}
+              <div>
+                <Label htmlFor="email" className="text-gray-300">Email Address *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => updateFormData('email', e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                  placeholder="Enter your email address"
+                />
+                {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
+              </div>
 
               {/* Phone Number */}
               <div>

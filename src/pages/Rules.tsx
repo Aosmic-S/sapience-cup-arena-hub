@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Shield, Target, Gamepad2, AlertTriangle, Smartphone } from 'lucide-react';
+import { ArrowLeft, Shield, Target, Gamepad2, AlertTriangle, Smartphone, Clock, Trophy, Users2 } from 'lucide-react';
 
 const Rules = () => {
   return (
@@ -27,12 +27,13 @@ const Rules = () => {
           
           <CardContent>
             <Tabs defaultValue="general" className="w-full">
-              <TabsList className="grid w-full grid-cols-5 bg-slate-700">
+              <TabsList className="grid w-full grid-cols-6 bg-slate-700">
                 <TabsTrigger value="general" className="text-sm">General</TabsTrigger>
                 <TabsTrigger value="freefire" className="text-sm">Free Fire</TabsTrigger>
                 <TabsTrigger value="codm" className="text-sm">CODM</TabsTrigger>
                 <TabsTrigger value="fcmobile" className="text-sm">FC Mobile</TabsTrigger>
                 <TabsTrigger value="conduct" className="text-sm">Conduct</TabsTrigger>
+                <TabsTrigger value="tournament" className="text-sm">Format</TabsTrigger>
               </TabsList>
 
               <TabsContent value="general" className="mt-6">
@@ -75,6 +76,22 @@ const Rules = () => {
                       <li className="flex items-start">
                         <span className="text-blue-400 mr-3">•</span>
                         <span>Prizes will be awarded to winners of each game category</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-3">•</span>
+                        <span>All participants must maintain proper school uniform during the tournament</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-3">•</span>
+                        <span>Photography and videography will be conducted for promotional purposes</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-3">•</span>
+                        <span>No outside food or beverages allowed in the tournament area</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-3">•</span>
+                        <span>Participants must check-in 30 minutes before their scheduled match</span>
                       </li>
                     </ul>
                   </div>
@@ -122,6 +139,22 @@ const Rules = () => {
                         <span className="text-orange-400 mr-3">•</span>
                         <span>Screenshot of final results must be submitted</span>
                       </li>
+                      <li className="flex items-start">
+                        <span className="text-orange-400 mr-3">•</span>
+                        <span>Healing items and boost items are allowed</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-orange-400 mr-3">•</span>
+                        <span>Zone shrinking will be set to default timing</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-orange-400 mr-3">•</span>
+                        <span>Team leaders must communicate room IDs to all members</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-orange-400 mr-3">•</span>
+                        <span>Spectating mode will be disabled during matches</span>
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -167,6 +200,22 @@ const Rules = () => {
                       <li className="flex items-start">
                         <span className="text-green-400 mr-3">•</span>
                         <span>Match duration: 10 minutes or first to 50 kills</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-green-400 mr-3">•</span>
+                        <span>Scorestreaks allowed: UAV, Counter-UAV, Predator Missile only</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-green-400 mr-3">•</span>
+                        <span>No operator skills in ranked matches</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-green-400 mr-3">•</span>
+                        <span>Tactical equipment limited to smoke grenades and flashbangs</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-green-400 mr-3">•</span>
+                        <span>Team substitutions allowed only between matches</span>
                       </li>
                     </ul>
                   </div>
@@ -214,6 +263,22 @@ const Rules = () => {
                         <span className="text-blue-400 mr-3">•</span>
                         <span>Players must use their own accounts and teams</span>
                       </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-3">•</span>
+                        <span>Weather conditions set to clear for all matches</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-3">•</span>
+                        <span>Manual defending and attacking controls required</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-3">•</span>
+                        <span>Squad rotation allowed between matches</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-3">•</span>
+                        <span>Connection issues must be reported immediately</span>
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -245,10 +310,22 @@ const Rules = () => {
                         <span className="text-yellow-400 mr-3">•</span>
                         <span>Disputes should be raised politely with organizers</span>
                       </li>
+                      <li className="flex items-start">
+                        <span className="text-yellow-400 mr-3">•</span>
+                        <span>Respect fellow competitors and maintain fair play</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-yellow-400 mr-3">•</span>
+                        <span>No verbal or physical aggression will be tolerated</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-yellow-400 mr-3">•</span>
+                        <span>Report any rule violations immediately to organizers</span>
+                      </li>
                     </ul>
                   </div>
 
-                  <div className="bg-red-900/30 rounded-lg p-6 border border-red-700">
+                  <div className="bg-red-900/30 rounded-lg p-6 border border-red-700 mb-6">
                     <h4 className="text-lg font-semibold text-red-400 mb-3">Disqualification Policy</h4>
                     <ul className="space-y-3 text-gray-300">
                       <li className="flex items-start">
@@ -274,6 +351,14 @@ const Rules = () => {
                       <li className="flex items-start">
                         <span className="text-red-400 mr-3">•</span>
                         <span>Technical issues due to inadequate device/internet (not organizer's fault)</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-red-400 mr-3">•</span>
+                        <span>Intentional match-fixing or collusion</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-red-400 mr-3">•</span>
+                        <span>Multiple registrations in the same game category</span>
                       </li>
                     </ul>
                   </div>
@@ -303,6 +388,112 @@ const Rules = () => {
                       <li className="flex items-start">
                         <span className="text-purple-400 mr-3">•</span>
                         <span>Headphones/earphones recommended for better experience</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-purple-400 mr-3">•</span>
+                        <span>Device screen recording may be required for disputes</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-purple-400 mr-3">•</span>
+                        <span>Minimum 4GB RAM recommended for smooth gameplay</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="tournament" className="mt-6">
+                <div className="space-y-6">
+                  <div className="flex items-center mb-4">
+                    <Trophy className="w-6 h-6 text-yellow-400 mr-3" />
+                    <h3 className="text-2xl font-bold text-white">Tournament Format & Schedule</h3>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-slate-700/50 rounded-lg p-6">
+                      <div className="flex items-center mb-3">
+                        <Clock className="w-5 h-5 text-blue-400 mr-3" />
+                        <h4 className="text-lg font-semibold text-white">Tournament Schedule</h4>
+                      </div>
+                      <ul className="space-y-3 text-gray-300">
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-3">•</span>
+                          <span>Registration Phase: [To be announced]</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-3">•</span>
+                          <span>Qualification Rounds: [To be announced]</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-3">•</span>
+                          <span>Semi-Finals: [To be announced]</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-3">•</span>
+                          <span>Finals: [To be announced]</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-3">•</span>
+                          <span>Prize Distribution: [To be announced]</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-slate-700/50 rounded-lg p-6">
+                      <div className="flex items-center mb-3">
+                        <Users2 className="w-5 h-5 text-green-400 mr-3" />
+                        <h4 className="text-lg font-semibold text-white">Format Details</h4>
+                      </div>
+                      <ul className="space-y-3 text-gray-300">
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-3">•</span>
+                          <span>Single/Double elimination brackets</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-3">•</span>
+                          <span>Group stage followed by knockouts</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-3">•</span>
+                          <span>Best of 1 for group stage</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-3">•</span>
+                          <span>Best of 3 for semi-finals and finals</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-3">•</span>
+                          <span>Seeding based on registration order</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-900/30 rounded-lg p-6 border border-yellow-700">
+                    <div className="flex items-center mb-3">
+                      <Trophy className="w-5 h-5 text-yellow-400 mr-3" />
+                      <h4 className="text-lg font-semibold text-yellow-400">Prize Distribution</h4>
+                    </div>
+                    <ul className="space-y-3 text-gray-300">
+                      <li className="flex items-start">
+                        <span className="text-yellow-400 mr-3">•</span>
+                        <span>1st Place: Trophy + Certificate + Cash Prize</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-yellow-400 mr-3">•</span>
+                        <span>2nd Place: Trophy + Certificate + Cash Prize</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-yellow-400 mr-3">•</span>
+                        <span>3rd Place: Trophy + Certificate</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-yellow-400 mr-3">•</span>
+                        <span>All participants receive participation certificates</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-yellow-400 mr-3">•</span>
+                        <span>Special awards for Best Team Spirit and Fair Play</span>
                       </li>
                     </ul>
                   </div>
