@@ -17,6 +17,8 @@ interface FormData {
   teamName: string;
   phoneNumber: string;
   paymentConfirmation: string;
+  inGameId: string;
+  uid: string;
   members: string[];
 }
 
@@ -29,6 +31,8 @@ const Register = () => {
     teamName: '',
     phoneNumber: '',
     paymentConfirmation: '',
+    inGameId: '',
+    uid: '',
     members: ['', '', '', '']
   });
 
@@ -42,6 +46,8 @@ const Register = () => {
     if (!formData.game) newErrors.game = 'Please select a game';
     if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required';
     if (!formData.paymentConfirmation.trim()) newErrors.paymentConfirmation = 'Payment confirmation is required';
+    if (!formData.inGameId.trim()) newErrors.inGameId = 'In-Game ID is required';
+    if (!formData.uid.trim()) newErrors.uid = 'UID is required';
 
     if (formData.entryType === 'team') {
       if (!formData.teamName.trim()) newErrors.teamName = 'Team name is required';
@@ -93,6 +99,8 @@ const Register = () => {
       teamName: '',
       phoneNumber: '',
       paymentConfirmation: '',
+      inGameId: '',
+      uid: '',
       members: ['', '', '', '']
     });
     setErrors({});
@@ -171,6 +179,32 @@ const Register = () => {
                   </SelectContent>
                 </Select>
                 {errors.game && <p className="text-red-400 text-sm mt-1">{errors.game}</p>}
+              </div>
+
+              {/* In-Game ID */}
+              <div>
+                <Label htmlFor="inGameId" className="text-gray-300">In-Game ID *</Label>
+                <Input
+                  id="inGameId"
+                  value={formData.inGameId}
+                  onChange={(e) => updateFormData('inGameId', e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                  placeholder="Enter your in-game ID"
+                />
+                {errors.inGameId && <p className="text-red-400 text-sm mt-1">{errors.inGameId}</p>}
+              </div>
+
+              {/* UID */}
+              <div>
+                <Label htmlFor="uid" className="text-gray-300">UID *</Label>
+                <Input
+                  id="uid"
+                  value={formData.uid}
+                  onChange={(e) => updateFormData('uid', e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                  placeholder="Enter your UID"
+                />
+                {errors.uid && <p className="text-red-400 text-sm mt-1">{errors.uid}</p>}
               </div>
 
               {/* Entry Type */}
