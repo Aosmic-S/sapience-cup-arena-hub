@@ -109,11 +109,11 @@ const Index = () => {
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div>
               <p className="font-semibold text-white mb-2">The Sapience School, Vikasnagar</p>
-              <p>Contact: school@sapience.edu</p>
+              <p>Contact: thesapienceschool@gmail.com</p>
             </div>
             <div>
               <p className="font-semibold text-white mb-2">Tournament Organizer</p>
-              <p>Arham Ali - Class 9-B</p>
+              <p>Hynx Studios</p>
             </div>
           </div>
         </footer>
