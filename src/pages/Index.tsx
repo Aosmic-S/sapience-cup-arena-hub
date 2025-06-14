@@ -12,14 +12,14 @@ const Index = () => {
       <AnnouncementBanner />
       
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {/* Header with centered logo */}
         <header className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
-            <div className="w-20 h-20 mr-4">
+          <div className="flex flex-col items-center justify-center mb-6">
+            <div className="w-24 h-24 mb-4">
               <img 
                 src="/lovable-uploads/42b5ce77-8484-4734-ae6e-ed1ab7f4a641.png" 
                 alt="The Sapience School Logo" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain rounded-full"
               />
             </div>
             <div>

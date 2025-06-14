@@ -23,8 +23,12 @@ export const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">SEC</span>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden">
+              <img 
+                src="/lovable-uploads/42b5ce77-8484-4734-ae6e-ed1ab7f4a641.png" 
+                alt="The Sapience School Logo" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <span className="text-white font-bold text-lg hidden sm:block">Sapience Esports Cup</span>
           </Link>
