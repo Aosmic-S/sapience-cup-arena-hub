@@ -38,10 +38,18 @@ const MobileHome = () => (
       </div>
     </div>
 
-    <div className="mb-10 flex justify-center">
+    <div className="mb-4 flex justify-center">
       <Link to="/register">
         <Button className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-2 rounded-full text-lg drop-shadow">
           Register
+        </Button>
+      </Link>
+    </div>
+
+    <div className="mb-10 flex justify-center">
+      <Link to="/rules">
+        <Button variant="outline" className="font-semibold border-blue-400 text-blue-300 px-8 py-2 rounded-full text-base">
+          View Rules
         </Button>
       </Link>
     </div>
@@ -85,10 +93,15 @@ const TabletHome = () => (
           <span className="text-white">Free Fire, CODM, FC Mobile</span>
         </div>
       </div>
-      <div className="flex justify-center mb-10">
+      <div className="flex flex-col md:flex-row justify-center gap-4 mb-10">
         <Link to="/register">
           <Button className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-7 py-3 rounded-full">
             Register Now
+          </Button>
+        </Link>
+        <Link to="/rules">
+          <Button variant="outline" className="border-blue-400 text-blue-400 font-semibold text-lg px-7 py-3 rounded-full">
+            View Rules
           </Button>
         </Link>
       </div>
@@ -137,10 +150,15 @@ const DesktopHome = () => (
           <p className="text-gray-200">Registration Open</p>
         </div>
       </div>
-      <div className="flex justify-center mb-12">
+      <div className="flex justify-center gap-5 mb-12">
         <Link to="/register">
           <Button className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-xl px-12 py-5 rounded-full hover:scale-110 transition-all duration-300 shadow-lg">
             Register Now
+          </Button>
+        </Link>
+        <Link to="/rules">
+          <Button variant="outline" className="border-blue-400 text-blue-600 font-semibold text-xl px-10 py-5 rounded-full">
+            View Rules
           </Button>
         </Link>
       </div>
@@ -160,3 +178,4 @@ const Index = () => {
 };
 
 export default Index;
+
