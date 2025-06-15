@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Home, FileText, Users, Settings } from 'lucide-react';
+import { Menu, X, Home, FileText, Users, Settings, Calendar } from 'lucide-react';
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +10,7 @@ export const Navigation = () => {
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
     { name: 'Register', path: '/register', icon: Users },
+    { name: 'Calendar', path: '/calendar', icon: Calendar },
     { name: 'Rules', path: '/rules', icon: FileText },
     { name: 'Admin', path: '/admin', icon: Settings },
   ];
