@@ -22,6 +22,10 @@ interface BannerTabProps {
 const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) => {
   const updateBannerSettings = () => {
     localStorage.setItem('bannerSettings', JSON.stringify(bannerSettings));
+    
+    // Dispatch custom event to notify other components of banner update
+    window.dispatchEvent(new CustomEvent('bannerUpdated'));
+    
     toast({
       title: "Banner Updated",
       description: "Banner settings have been saved successfully",

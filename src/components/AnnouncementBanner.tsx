@@ -11,12 +11,40 @@ export const AnnouncementBanner = () => {
     isActive: true
   });
 
-  // Load banner settings from localStorage (simulating admin settings)
+  // Load banner settings from localStorage
   useEffect(() => {
-    const savedBanner = localStorage.getItem('bannerSettings');
-    if (savedBanner) {
-      setBannerData(JSON.parse(savedBanner));
-    }
+    const loadBannerSettings = () => {
+      const savedBanner = localStorage.getItem('bannerSettings');
+      if (savedBanner) {
+        setBannerData(JSON.parse(savedBanner));
+      }
+    };
+
+    // Load initial settings
+    loadBannerSettings();
+
+    // Listen for localStorage changes (when admin updates banner)
+    const handleStorageChange = (e) => {
+      if (e.key === 'bannerSettings') {
+        loadBannerSettings();
+      }
+    };
+
+    // Add event listener for storage changes
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom events (for same-tab updates)
+    const handleBannerUpdate = () => {
+      loadBannerSettings();
+    };
+
+    window.addEventListener('bannerUpdated', handleBannerUpdate);
+
+    // Cleanup event listeners
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('bannerUpdated', handleBannerUpdate);
+    };
   }, []);
 
   if (!isVisible || !bannerData.isActive) return null;
