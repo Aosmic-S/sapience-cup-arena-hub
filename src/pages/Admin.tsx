@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -38,7 +37,7 @@ const Admin = () => {
     queryKey: ['bannerSettings'],
     queryFn: async () => {
       const { data, error } = await supabase.from('banner_settings').select('*').single();
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') throw error; // PGRST116: single row not found
       return data;
     },
     enabled: isAuthenticated
@@ -58,7 +57,7 @@ const Admin = () => {
     queryKey: ['systemSettings'],
     queryFn: async () => {
       const { data, error } = await supabase.from('system_settings').select('*').single();
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
          toast({ title: "Failed to load system settings", description: "This may be due to missing permissions. An admin account is required.", variant: "destructive" });
         return null;
       }
@@ -146,7 +145,7 @@ const Admin = () => {
 
                 <TabsContent value="banner" className="mt-6">
                   <BannerTab 
-                    bannerSettings={bannerSettings} 
+                    bannerSettings={bannerSettings || null} 
                     onBannerSettingsChange={() => queryClient.invalidateQueries({ queryKey: ['bannerSettings'] })}
                   />
                 </TabsContent>

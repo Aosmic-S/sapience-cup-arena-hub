@@ -9,10 +9,10 @@ import { Settings, Database, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface SystemSettings {
-  registrationOpen: boolean;
-  maxParticipants: number;
-  autoApproval: boolean;
-  emailNotifications: boolean;
+  registration_open: boolean;
+  max_participants: number;
+  auto_approval: boolean;
+  email_notifications: boolean;
 }
 
 interface BackupSettings {
@@ -22,12 +22,13 @@ interface BackupSettings {
 }
 
 interface SystemTabProps {
-  systemSettings: SystemSettings;
-  onSystemSettingsChange: (settings: SystemSettings) => void;
+  systemSettings: SystemSettings | null;
+  onSystemSettingsChange: () => void;
   backupSettings: BackupSettings;
   onBackupSettingsChange: (settings: BackupSettings) => void;
   registrationCount: number;
   matchDayCount: number;
+  allData: any;
 }
 
 const SystemTab = ({ 
@@ -37,6 +38,7 @@ const SystemTab = ({
   onBackupSettingsChange,
   registrationCount,
   matchDayCount,
+  allData
 }: SystemTabProps) => {
   const [localSettings, setLocalSettings] = useState(systemSettings);
 
@@ -54,10 +56,10 @@ const SystemTab = ({
     const { error } = await supabase
       .from('system_settings')
       .update({
-        registration_open: localSettings.registrationOpen,
-        max_participants: localSettings.maxParticipants,
-        auto_approval: localSettings.autoApproval,
-        email_notifications: localSettings.emailNotifications,
+        registration_open: localSettings.registration_open,
+        max_participants: localSettings.max_participants,
+        auto_approval: localSettings.auto_approval,
+        email_notifications: localSettings.email_notifications,
         updated_at: new Date().toISOString()
       })
       .eq('id', 1);
@@ -71,18 +73,8 @@ const SystemTab = ({
   };
 
   const createBackup = async () => {
-    const { data: registrations } = await supabase.from('registrations').select('*');
-    const { data: banner_settings } = await supabase.from('banner_settings').select('*');
-    const { data: system_settings } = await supabase.from('system_settings').select('*');
-    const { data: match_days } = await supabase.from('match_days').select('*');
-    const { data: announcements } = await supabase.from('announcements').select('*');
-    
     const backupData = {
-      registrations,
-      banner_settings,
-      system_settings,
-      match_days,
-      announcements,
+      ...allData,
       timestamp: new Date().toISOString()
     };
     
@@ -117,24 +109,24 @@ const SystemTab = ({
           <div className="flex items-center justify-between">
             <Label className="text-gray-300">Registration Open</Label>
             <Switch
-              checked={localSettings.registrationOpen}
-              onCheckedChange={(checked) => handleSettingChange('registrationOpen', checked)}
+              checked={localSettings.registration_open}
+              onCheckedChange={(checked) => handleSettingChange('registration_open', checked)}
             />
           </div>
           
           <div className="flex items-center justify-between">
             <Label className="text-gray-300">Auto Approval</Label>
             <Switch
-              checked={localSettings.autoApproval}
-              onCheckedChange={(checked) => handleSettingChange('autoApproval', checked)}
+              checked={localSettings.auto_approval}
+              onCheckedChange={(checked) => handleSettingChange('auto_approval', checked)}
             />
           </div>
           
           <div className="flex items-center justify-between">
             <Label className="text-gray-300">Email Notifications</Label>
             <Switch
-              checked={localSettings.emailNotifications}
-              onCheckedChange={(checked) => handleSettingChange('emailNotifications', checked)}
+              checked={localSettings.email_notifications}
+              onCheckedChange={(checked) => handleSettingChange('email_notifications', checked)}
             />
           </div>
           
@@ -142,8 +134,8 @@ const SystemTab = ({
             <Label className="text-gray-300">Max Participants</Label>
             <Input
               type="number"
-              value={localSettings.maxParticipants}
-              onChange={(e) => handleSettingChange('maxParticipants', parseInt(e.target.value))}
+              value={localSettings.max_participants}
+              onChange={(e) => handleSettingChange('max_participants', parseInt(e.target.value))}
               className="bg-slate-600 border-slate-500 text-white"
             />
           </div>

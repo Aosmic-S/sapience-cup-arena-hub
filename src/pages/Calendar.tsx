@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar as CalendarIcon, Clock, GamepadIcon } from 'lucide-react';
@@ -6,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface MatchDay {
-  id: number;
+  id: string;
   date: Date | string;
   game: string;
   time: string;

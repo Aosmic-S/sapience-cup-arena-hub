@@ -11,13 +11,13 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface BannerSettings {
   text: string;
-  isBlinking: boolean;
+  is_blinking: boolean;
   color: string;
-  isActive: boolean;
+  is_active: boolean;
 }
 
 interface BannerTabProps {
-  bannerSettings: BannerSettings;
+  bannerSettings: BannerSettings | null;
   onBannerSettingsChange: () => void;
 }
 
@@ -39,9 +39,9 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
       .from('banner_settings')
       .update({
         text: localSettings.text,
-        is_blinking: localSettings.isBlinking,
+        is_blinking: localSettings.is_blinking,
         color: localSettings.color,
-        is_active: localSettings.isActive,
+        is_active: localSettings.is_active,
         updated_at: new Date().toISOString()
       })
       .eq('id', 1);
@@ -78,8 +78,8 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
           <div className="flex items-center space-x-2">
             <Switch
               id="bannerActive"
-              checked={localSettings.isActive}
-              onCheckedChange={(checked) => handleSettingChange('isActive', checked)}
+              checked={localSettings.is_active}
+              onCheckedChange={(checked) => handleSettingChange('is_active', checked)}
             />
             <Label htmlFor="bannerActive" className="text-gray-300">Show Banner</Label>
           </div>
@@ -87,8 +87,8 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
           <div className="flex items-center space-x-2">
             <Switch
               id="bannerBlink"
-              checked={localSettings.isBlinking}
-              onCheckedChange={(checked) => handleSettingChange('isBlinking', checked)}
+              checked={localSettings.is_blinking}
+              onCheckedChange={(checked) => handleSettingChange('is_blinking', checked)}
             />
             <Label htmlFor="bannerBlink" className="text-gray-300">Enable Blinking</Label>
           </div>
@@ -117,14 +117,14 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
         </CardContent>
       </Card>
 
-      {localSettings.isActive && (
+      {localSettings.is_active && (
         <Card className="bg-slate-700/50 border-slate-600">
           <CardHeader>
             <CardTitle className="text-xl text-white">Banner Preview</CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`${localSettings.color} text-white py-3 px-4 rounded-lg`}>
-              <p className={`font-bold text-lg text-center ${localSettings.isBlinking ? 'animate-pulse' : ''}`}>
+              <p className={`font-bold text-lg text-center ${localSettings.is_blinking ? 'animate-pulse' : ''}`}>
                 {localSettings.text}
               </p>
             </div>

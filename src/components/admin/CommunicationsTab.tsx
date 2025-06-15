@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,18 +16,17 @@ interface EmailTemplate {
 }
 
 interface Announcement {
-  id: number;
+  id: string;
   title: string;
   content: string;
   priority: string;
-  timestamp: string;
 }
 
 interface CommunicationsTabProps {
   emailTemplate: EmailTemplate;
   onEmailTemplateChange: (template: EmailTemplate) => void;
   announcements: Announcement[];
-  onAnnouncementsChange: (announcements: Announcement[]) => void;
+  onAnnouncementsChange: () => void;
   registrationCount: number;
 }
 
@@ -60,7 +60,7 @@ const CommunicationsTab = ({
     }
   };
 
-  const deleteAnnouncement = async (id: number) => {
+  const deleteAnnouncement = async (id: string) => {
     const { error } = await supabase.from('announcements').delete().eq('id', id);
 
     if (error) {

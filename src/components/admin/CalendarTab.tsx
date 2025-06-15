@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,12 +13,11 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface MatchDay {
-  id: number;
-  date: Date;
+  id: string;
+  date: string;
   game: string;
   time: string;
   description: string;
-  timestamp: string;
 }
 
 interface CalendarTabProps {
@@ -51,7 +49,7 @@ const CalendarTab = ({ matchDays, onMatchDaysChange }: CalendarTabProps) => {
     }
   };
 
-  const deleteMatchDay = async (id: number) => {
+  const deleteMatchDay = async (id: string) => {
     const { error } = await supabase.from('match_days').delete().eq('id', id);
     if (error) {
        toast({ title: "Error Deleting Match", description: error.message, variant: "destructive" });

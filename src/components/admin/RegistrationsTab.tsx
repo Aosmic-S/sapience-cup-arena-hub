@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,15 +10,15 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface Registration {
   id: string;
-  fullName: string;
-  classSection: string;
+  full_name: string;
+  class_section: string;
   game: string;
-  entryType: string;
-  teamName?: string;
-  phoneNumber: string;
-  inGameId?: string;
+  entry_type: string;
+  team_name?: string;
+  phone_number: string;
+  in_game_id?: string;
   uid?: string;
-  timestamp: string;
+  created_at: string;
   members?: string[];
 }
 
@@ -42,7 +43,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
     }
     
     if (filters.type !== 'all') {
-      filtered = filtered.filter(reg => reg.entryType === filters.type);
+      filtered = filtered.filter(reg => reg.entry_type === filters.type);
     }
     
     setFilteredRegistrations(filtered);
@@ -71,15 +72,15 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
     const csvContent = [
       headers.join(','),
       ...filteredRegistrations.map(reg => [
-        reg.fullName,
-        reg.classSection,
+        reg.full_name,
+        reg.class_section,
         reg.game,
-        reg.entryType,
-        reg.teamName || 'N/A',
-        reg.phoneNumber,
-        reg.inGameId || 'N/A',
+        reg.entry_type,
+        reg.team_name || 'N/A',
+        reg.phone_number,
+        reg.in_game_id || 'N/A',
         reg.uid || 'N/A',
-        new Date(reg.timestamp).toLocaleDateString()
+        new Date(reg.created_at).toLocaleDateString()
       ].join(','))
     ].join('\n');
 
@@ -140,26 +141,26 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
                 <div className="flex justify-between items-start">
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-semibold text-white">{registration.fullName}</h3>
+                      <h3 className="text-lg font-semibold text-white">{registration.full_name}</h3>
                       <Badge variant="secondary" className="bg-blue-600 text-white">
-                        {registration.classSection}
+                        {registration.class_section}
                       </Badge>
                       <Badge variant="outline" className="border-purple-400 text-purple-400">
                         {registration.game.replace('-', ' ').toUpperCase()}
                       </Badge>
                     </div>
                     <div className="text-gray-300 space-y-1">
-                      <p><strong>Type:</strong> {registration.entryType}</p>
-                      {registration.teamName && <p><strong>Team:</strong> {registration.teamName}</p>}
-                      <p><strong>Phone:</strong> {registration.phoneNumber}</p>
-                      {registration.inGameId && <p><strong>In-Game ID:</strong> {registration.inGameId}</p>}
+                      <p><strong>Type:</strong> {registration.entry_type}</p>
+                      {registration.team_name && <p><strong>Team:</strong> {registration.team_name}</p>}
+                      <p><strong>Phone:</strong> {registration.phone_number}</p>
+                      {registration.in_game_id && <p><strong>In-Game ID:</strong> {registration.in_game_id}</p>}
                       {registration.uid && <p><strong>UID:</strong> {registration.uid}</p>}
-                      <p><strong>Registered:</strong> {new Date(registration.timestamp).toLocaleString()}</p>
-                      {registration.entryType === 'team' && registration.members && (
+                      <p><strong>Registered:</strong> {new Date(registration.created_at).toLocaleString()}</p>
+                      {registration.entry_type === 'team' && registration.members && (
                         <div>
                           <strong>Members:</strong>
                           <ul className="ml-4 mt-1">
-                            <li>1. {registration.fullName} (Captain)</li>
+                            <li>1. {registration.full_name} (Captain)</li>
                             {registration.members.filter(m => m.trim()).map((member, idx) => (
                               <li key={idx}>{idx + 2}. {member}</li>
                             ))}
