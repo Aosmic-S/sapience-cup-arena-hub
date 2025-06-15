@@ -9,7 +9,153 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          priority: string | null
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          priority?: string | null
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          priority?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      banner_settings: {
+        Row: {
+          color: string | null
+          id: number
+          is_active: boolean | null
+          is_blinking: boolean | null
+          text: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          id?: number
+          is_active?: boolean | null
+          is_blinking?: boolean | null
+          text?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          id?: number
+          is_active?: boolean | null
+          is_blinking?: boolean | null
+          text?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      match_days: {
+        Row: {
+          created_at: string | null
+          date: string
+          description: string | null
+          game: string
+          id: string
+          time: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          description?: string | null
+          game: string
+          id?: string
+          time: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          game?: string
+          id?: string
+          time?: string
+        }
+        Relationships: []
+      }
+      registrations: {
+        Row: {
+          class_section: string
+          created_at: string | null
+          entry_type: string
+          full_name: string
+          game: string
+          id: string
+          in_game_id: string | null
+          members: string[] | null
+          phone_number: string
+          team_name: string | null
+          uid: string | null
+        }
+        Insert: {
+          class_section: string
+          created_at?: string | null
+          entry_type: string
+          full_name: string
+          game: string
+          id?: string
+          in_game_id?: string | null
+          members?: string[] | null
+          phone_number: string
+          team_name?: string | null
+          uid?: string | null
+        }
+        Update: {
+          class_section?: string
+          created_at?: string | null
+          entry_type?: string
+          full_name?: string
+          game?: string
+          id?: string
+          in_game_id?: string | null
+          members?: string[] | null
+          phone_number?: string
+          team_name?: string | null
+          uid?: string | null
+        }
+        Relationships: []
+      }
+      system_settings: {
+        Row: {
+          auto_approval: boolean | null
+          email_notifications: boolean | null
+          id: number
+          max_participants: number | null
+          registration_open: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_approval?: boolean | null
+          email_notifications?: boolean | null
+          id?: number
+          max_participants?: number | null
+          registration_open?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_approval?: boolean | null
+          email_notifications?: boolean | null
+          id?: number
+          max_participants?: number | null
+          registration_open?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

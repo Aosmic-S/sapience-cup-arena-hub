@@ -1,53 +1,45 @@
 
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export const AnnouncementBanner = () => {
   const [isVisible, setIsVisible] = useState(true);
-  const [bannerData, setBannerData] = useState({
-    text: "🔥 Registration Open - Sapience Esports Cup 2024! 🔥",
-    isBlinking: true,
-    color: "bg-gradient-to-r from-red-600 to-orange-600",
-    isActive: true
-  });
+  const [bannerData, setBannerData] = useState<any>(null);
 
-  // Load banner settings from localStorage
   useEffect(() => {
-    const loadBannerSettings = () => {
-      const savedBanner = localStorage.getItem('bannerSettings');
-      if (savedBanner) {
-        setBannerData(JSON.parse(savedBanner));
+    const fetchBannerSettings = async () => {
+      const { data, error } = await supabase
+        .from('banner_settings')
+        .select('*')
+        .single();
+      
+      if (error) {
+        console.error("Error fetching banner settings:", error.message);
+      } else if (data) {
+        setBannerData(data);
       }
     };
 
-    // Load initial settings
-    loadBannerSettings();
+    fetchBannerSettings();
 
-    // Listen for localStorage changes (when admin updates banner)
-    const handleStorageChange = (e) => {
-      if (e.key === 'bannerSettings') {
-        loadBannerSettings();
-      }
-    };
+    const channel = supabase
+      .channel('banner-settings-realtime')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'banner_settings', filter: 'id=eq.1' },
+        (payload) => {
+          setBannerData(payload.new);
+        }
+      )
+      .subscribe();
 
-    // Add event listener for storage changes
-    window.addEventListener('storage', handleStorageChange);
-
-    // Also listen for custom events (for same-tab updates)
-    const handleBannerUpdate = () => {
-      loadBannerSettings();
-    };
-
-    window.addEventListener('bannerUpdated', handleBannerUpdate);
-
-    // Cleanup event listeners
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('bannerUpdated', handleBannerUpdate);
+      supabase.removeChannel(channel);
     };
   }, []);
 
-  if (!isVisible || !bannerData.isActive) return null;
+  if (!isVisible || !bannerData || !bannerData.is_active) return null;
 
   return (
     <div className={`${bannerData.color} text-white relative`}>
@@ -55,7 +47,7 @@ export const AnnouncementBanner = () => {
       <div className="block md:hidden py-2 px-3">
         <div className="flex items-start justify-between">
           <div className="flex-1 pr-2">
-            <p className={`font-semibold text-sm leading-tight ${bannerData.isBlinking ? 'animate-pulse' : ''}`}>
+            <p className={`font-semibold text-sm leading-tight ${bannerData.is_blinking ? 'animate-pulse' : ''}`}>
               {bannerData.text}
             </p>
           </div>
@@ -72,7 +64,7 @@ export const AnnouncementBanner = () => {
       <div className="hidden md:block lg:hidden py-3 px-4">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex-1 text-center">
-            <p className={`font-bold text-base ${bannerData.isBlinking ? 'animate-pulse' : ''}`}>
+            <p className={`font-bold text-base ${bannerData.is_blinking ? 'animate-pulse' : ''}`}>
               {bannerData.text}
             </p>
           </div>
@@ -89,7 +81,7 @@ export const AnnouncementBanner = () => {
       <div className="hidden lg:block py-4 px-6">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex-1 text-center">
-            <p className={`font-bold text-xl ${bannerData.isBlinking ? 'animate-pulse' : ''}`}>
+            <p className={`font-bold text-xl ${bannerData.is_blinking ? 'animate-pulse' : ''}`}>
               {bannerData.text}
             </p>
           </div>

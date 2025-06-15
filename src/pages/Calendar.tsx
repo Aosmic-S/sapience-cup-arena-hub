@@ -1,39 +1,52 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar as CalendarIcon, Clock, GamepadIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface MatchDay {
   id: number;
-  date: Date;
+  date: Date | string;
   game: string;
   time: string;
   description: string;
-  timestamp: string;
+  created_at: string;
 }
 
 const Calendar = () => {
   const [matchDays, setMatchDays] = useState<MatchDay[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadMatchDays = () => {
-      const saved = localStorage.getItem('matchDays');
-      if (saved) {
-        const data = JSON.parse(saved);
+    const fetchMatchDays = async () => {
+      const { data, error } = await supabase
+        .from('match_days')
+        .select('*')
+        .order('date', { ascending: true });
+      
+      if (error) {
+        console.error("Error fetching match days:", error);
+      } else if (data) {
         setMatchDays(data);
       }
+      setLoading(false);
     };
 
-    loadMatchDays();
+    fetchMatchDays();
     
-    // Listen for storage changes to update in real-time
-    const handleStorageChange = () => {
-      loadMatchDays();
-    };
+    const channel = supabase
+      .channel('match-days-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'match_days' },
+        () => fetchMatchDays()
+      )
+      .subscribe();
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const getGameIcon = (game: string) => {
@@ -80,7 +93,11 @@ const Calendar = () => {
           </CardHeader>
           
           <CardContent>
-            {sortedMatches.length === 0 ? (
+            {loading ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-48 w-full" />)}
+              </div>
+            ) : sortedMatches.length === 0 ? (
               <div className="text-center py-12">
                 <CalendarIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-400 text-xl">No matches scheduled yet</p>

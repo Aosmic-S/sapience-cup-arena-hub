@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Trash2, Download } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Registration {
   id: string;
@@ -23,7 +23,7 @@ interface Registration {
 
 interface RegistrationsTabProps {
   registrations: Registration[];
-  onRegistrationsChange: (registrations: Registration[]) => void;
+  onRegistrationsChange: () => void;
 }
 
 const RegistrationsTab = ({ registrations, onRegistrationsChange }: RegistrationsTabProps) => {
@@ -48,14 +48,22 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
     setFilteredRegistrations(filtered);
   };
 
-  const deleteRegistration = (id: string) => {
-    const updated = registrations.filter(reg => reg.id !== id);
-    onRegistrationsChange(updated);
-    localStorage.setItem('registrations', JSON.stringify(updated));
-    toast({
-      title: "Registration Deleted",
-      description: "Registration has been removed successfully",
-    });
+  const deleteRegistration = async (id: string) => {
+    const { error } = await supabase.from('registrations').delete().eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error Deleting Registration",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Registration Deleted",
+        description: "Registration has been removed successfully",
+      });
+      onRegistrationsChange();
+    }
   };
 
   const exportToCSV = () => {

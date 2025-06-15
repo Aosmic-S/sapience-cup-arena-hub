@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Bell, Trash2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface EmailTemplate {
   subject: string;
@@ -40,39 +40,35 @@ const CommunicationsTab = ({
   const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '', priority: 'normal' });
 
   const sendBulkEmail = () => {
-    // Simulate sending emails
     toast({
       title: "Emails Sent",
       description: `Bulk email sent to ${registrationCount} participants`,
     });
   };
 
-  const addAnnouncement = () => {
+  const addAnnouncement = async () => {
     if (newAnnouncement.title && newAnnouncement.content) {
-      const announcement = {
-        id: Date.now(),
-        ...newAnnouncement,
-        timestamp: new Date().toISOString()
-      };
-      const updated = [...announcements, announcement];
-      onAnnouncementsChange(updated);
-      localStorage.setItem('announcements', JSON.stringify(updated));
-      setNewAnnouncement({ title: '', content: '', priority: 'normal' });
-      toast({
-        title: "Announcement Added",
-        description: "New announcement has been created",
-      });
+      const { error } = await supabase.from('announcements').insert([{...newAnnouncement}]);
+      
+      if (error) {
+        toast({ title: "Error Adding Announcement", description: error.message, variant: "destructive" });
+      } else {
+        onAnnouncementsChange();
+        setNewAnnouncement({ title: '', content: '', priority: 'normal' });
+        toast({ title: "Announcement Added", description: "New announcement has been created" });
+      }
     }
   };
 
-  const deleteAnnouncement = (id: number) => {
-    const updated = announcements.filter(ann => ann.id !== id);
-    onAnnouncementsChange(updated);
-    localStorage.setItem('announcements', JSON.stringify(updated));
-    toast({
-      title: "Announcement Deleted",
-      description: "Announcement has been removed",
-    });
+  const deleteAnnouncement = async (id: number) => {
+    const { error } = await supabase.from('announcements').delete().eq('id', id);
+
+    if (error) {
+      toast({ title: "Error Deleting Announcement", description: error.message, variant: "destructive" });
+    } else {
+      onAnnouncementsChange();
+      toast({ title: "Announcement Deleted", description: "Announcement has been removed" });
+    }
   };
 
   return (

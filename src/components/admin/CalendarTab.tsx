@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Calendar as CalendarIcon, Clock, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MatchDay {
   id: number;
@@ -23,41 +24,41 @@ interface MatchDay {
 
 interface CalendarTabProps {
   matchDays: MatchDay[];
-  onMatchDaysChange: (matchDays: MatchDay[]) => void;
+  onMatchDaysChange: () => void;
 }
 
 const CalendarTab = ({ matchDays, onMatchDaysChange }: CalendarTabProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [matchDetails, setMatchDetails] = useState({ game: '', time: '', description: '' });
 
-  const addMatchDay = () => {
+  const addMatchDay = async () => {
     if (selectedDate && matchDetails.game && matchDetails.time) {
-      const newMatch = {
-        id: Date.now(),
-        date: selectedDate,
-        ...matchDetails,
-        timestamp: new Date().toISOString()
-      };
-      const updated = [...matchDays, newMatch];
-      onMatchDaysChange(updated);
-      localStorage.setItem('matchDays', JSON.stringify(updated));
-      setSelectedDate(null);
-      setMatchDetails({ game: '', time: '', description: '' });
-      toast({
-        title: "Match Scheduled",
-        description: "Match day has been added successfully",
-      });
+      const { error } = await supabase.from('match_days').insert([{
+        date: selectedDate.toISOString(),
+        game: matchDetails.game,
+        time: matchDetails.time,
+        description: matchDetails.description
+      }]);
+      
+      if (error) {
+        toast({ title: "Error Scheduling Match", description: error.message, variant: "destructive" });
+      } else {
+        onMatchDaysChange();
+        setSelectedDate(undefined);
+        setMatchDetails({ game: '', time: '', description: '' });
+        toast({ title: "Match Scheduled", description: "Match day has been added successfully" });
+      }
     }
   };
 
-  const deleteMatchDay = (id: number) => {
-    const updated = matchDays.filter(match => match.id !== id);
-    onMatchDaysChange(updated);
-    localStorage.setItem('matchDays', JSON.stringify(updated));
-    toast({
-      title: "Match Deleted",
-      description: "Match day has been removed",
-    });
+  const deleteMatchDay = async (id: number) => {
+    const { error } = await supabase.from('match_days').delete().eq('id', id);
+    if (error) {
+       toast({ title: "Error Deleting Match", description: error.message, variant: "destructive" });
+    } else {
+      onMatchDaysChange();
+      toast({ title: "Match Deleted", description: "Match day has been removed" });
+    }
   };
 
   return (
@@ -147,7 +148,7 @@ const CalendarTab = ({ matchDays, onMatchDaysChange }: CalendarTabProps) => {
               matchDays.map((match) => (
                 <div key={match.id} className="bg-slate-600/50 p-3 rounded-lg flex justify-between items-center">
                   <div>
-                    <p className="text-white font-medium">{match.game.replace('-', ' ').toUpperCase()}</p>
+                    <p className="text-white font-medium">{(match.game || '').replace('-', ' ').toUpperCase()}</p>
                     <p className="text-gray-300 text-sm">{format(new Date(match.date), "PPP")} at {match.time}</p>
                     {match.description && <p className="text-gray-400 text-sm">{match.description}</p>}
                   </div>

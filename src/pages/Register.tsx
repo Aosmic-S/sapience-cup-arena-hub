@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/hooks/use-toast';
 import { UserPlus, GamepadIcon, Users } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface FormData {
   fullName: string;
@@ -66,7 +66,7 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -78,16 +78,31 @@ const Register = () => {
       return;
     }
 
-    // Save to localStorage (simulating database)
-    const registrations = JSON.parse(localStorage.getItem('registrations') || '[]');
-    const newRegistration = {
-      id: Date.now().toString(),
-      ...formData,
-      timestamp: new Date().toISOString()
-    };
+    // Save to Supabase
+    const { error } = await supabase
+      .from('registrations')
+      .insert([
+        { 
+          full_name: formData.fullName,
+          class_section: formData.classSection,
+          game: formData.game,
+          entry_type: formData.entryType,
+          team_name: formData.entryType === 'team' ? formData.teamName : null,
+          phone_number: formData.phoneNumber,
+          in_game_id: formData.inGameId,
+          uid: formData.uid,
+          members: formData.entryType === 'team' ? formData.members.filter(m => m.trim() !== '') : null,
+        }
+      ]);
     
-    registrations.push(newRegistration);
-    localStorage.setItem('registrations', JSON.stringify(registrations));
+    if (error) {
+      toast({
+        title: "Registration Failed",
+        description: error.message,
+        variant: "destructive"
+      });
+      return;
+    }
 
     toast({
       title: "Registration Successful!",

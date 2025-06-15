@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface BannerSettings {
   text: string;
@@ -16,21 +18,45 @@ interface BannerSettings {
 
 interface BannerTabProps {
   bannerSettings: BannerSettings;
-  onBannerSettingsChange: (settings: BannerSettings) => void;
+  onBannerSettingsChange: () => void;
 }
 
 const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) => {
-  const updateBannerSettings = () => {
-    localStorage.setItem('bannerSettings', JSON.stringify(bannerSettings));
-    
-    // Dispatch custom event to notify other components of banner update
-    window.dispatchEvent(new CustomEvent('bannerUpdated'));
-    
-    toast({
-      title: "Banner Updated",
-      description: "Banner settings have been saved successfully",
-    });
+  const [localSettings, setLocalSettings] = useState(bannerSettings);
+
+  useEffect(() => {
+    setLocalSettings(bannerSettings);
+  }, [bannerSettings]);
+
+  const handleSettingChange = (field: keyof BannerSettings, value: any) => {
+    setLocalSettings(prev => ({ ...prev, [field]: value }));
   };
+  
+  const updateBannerSettings = async () => {
+    if (!localSettings) return;
+    
+    const { error } = await supabase
+      .from('banner_settings')
+      .update({
+        text: localSettings.text,
+        is_blinking: localSettings.isBlinking,
+        color: localSettings.color,
+        is_active: localSettings.isActive,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', 1);
+
+    if (error) {
+      toast({ title: "Error Updating Banner", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Banner Updated", description: "Banner settings have been saved successfully" });
+      onBannerSettingsChange();
+    }
+  };
+
+  if (!localSettings) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -43,8 +69,8 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
             <Label htmlFor="bannerText" className="text-gray-300">Banner Text</Label>
             <Input
               id="bannerText"
-              value={bannerSettings.text}
-              onChange={(e) => onBannerSettingsChange({...bannerSettings, text: e.target.value})}
+              value={localSettings.text}
+              onChange={(e) => handleSettingChange('text', e.target.value)}
               className="bg-slate-600 border-slate-500 text-white"
             />
           </div>
@@ -52,8 +78,8 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
           <div className="flex items-center space-x-2">
             <Switch
               id="bannerActive"
-              checked={bannerSettings.isActive}
-              onCheckedChange={(checked) => onBannerSettingsChange({...bannerSettings, isActive: checked})}
+              checked={localSettings.isActive}
+              onCheckedChange={(checked) => handleSettingChange('isActive', checked)}
             />
             <Label htmlFor="bannerActive" className="text-gray-300">Show Banner</Label>
           </div>
@@ -61,8 +87,8 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
           <div className="flex items-center space-x-2">
             <Switch
               id="bannerBlink"
-              checked={bannerSettings.isBlinking}
-              onCheckedChange={(checked) => onBannerSettingsChange({...bannerSettings, isBlinking: checked})}
+              checked={localSettings.isBlinking}
+              onCheckedChange={(checked) => handleSettingChange('isBlinking', checked)}
             />
             <Label htmlFor="bannerBlink" className="text-gray-300">Enable Blinking</Label>
           </div>
@@ -70,8 +96,8 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
           <div>
             <Label className="text-gray-300">Banner Color</Label>
             <Select 
-              value={bannerSettings.color} 
-              onValueChange={(value) => onBannerSettingsChange({...bannerSettings, color: value})}
+              value={localSettings.color} 
+              onValueChange={(value) => handleSettingChange('color', value)}
             >
               <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
                 <SelectValue />
@@ -91,15 +117,15 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
         </CardContent>
       </Card>
 
-      {bannerSettings.isActive && (
+      {localSettings.isActive && (
         <Card className="bg-slate-700/50 border-slate-600">
           <CardHeader>
             <CardTitle className="text-xl text-white">Banner Preview</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`${bannerSettings.color} text-white py-3 px-4 rounded-lg`}>
-              <p className={`font-bold text-lg text-center ${bannerSettings.isBlinking ? 'animate-pulse' : ''}`}>
-                {bannerSettings.text}
+            <div className={`${localSettings.color} text-white py-3 px-4 rounded-lg`}>
+              <p className={`font-bold text-lg text-center ${localSettings.isBlinking ? 'animate-pulse' : ''}`}>
+                {localSettings.text}
               </p>
             </div>
           </CardContent>
