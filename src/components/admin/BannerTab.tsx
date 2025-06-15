@@ -10,10 +10,12 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface BannerSettings {
-  text: string;
-  is_blinking: boolean;
-  color: string;
-  is_active: boolean;
+  id: number;
+  text: string | null;
+  is_blinking: boolean | null;
+  color: string | null;
+  is_active: boolean | null;
+  updated_at: string | null;
 }
 
 interface BannerTabProps {
@@ -22,41 +24,61 @@ interface BannerTabProps {
 }
 
 const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) => {
-  const [localSettings, setLocalSettings] = useState(bannerSettings);
+  const [formData, setFormData] = useState({
+    text: '',
+    is_blinking: false,
+    color: 'bg-gradient-to-r from-red-600 to-orange-600',
+    is_active: false
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setLocalSettings(bannerSettings);
+    if (bannerSettings) {
+      setFormData({
+        text: bannerSettings.text || '',
+        is_blinking: bannerSettings.is_blinking || false,
+        color: bannerSettings.color || 'bg-gradient-to-r from-red-600 to-orange-600',
+        is_active: bannerSettings.is_active || false
+      });
+    }
   }, [bannerSettings]);
 
-  const handleSettingChange = (field: keyof BannerSettings, value: any) => {
-    setLocalSettings(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
   
   const updateBannerSettings = async () => {
-    if (!localSettings) return;
+    setIsLoading(true);
+    console.log('Updating banner with data:', formData);
     
-    const { error } = await supabase
-      .from('banner_settings')
-      .update({
-        text: localSettings.text,
-        is_blinking: localSettings.is_blinking,
-        color: localSettings.color,
-        is_active: localSettings.is_active,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', 1);
+    try {
+      const { data, error } = await supabase
+        .from('banner_settings')
+        .upsert({
+          id: 1,
+          text: formData.text,
+          is_blinking: formData.is_blinking,
+          color: formData.color,
+          is_active: formData.is_active,
+          updated_at: new Date().toISOString()
+        })
+        .select();
 
-    if (error) {
-      toast({ title: "Error Updating Banner", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Banner Updated", description: "Banner settings have been saved successfully" });
-      onBannerSettingsChange();
+      if (error) {
+        console.error('Banner update error:', error);
+        toast({ title: "Error Updating Banner", description: error.message, variant: "destructive" });
+      } else {
+        console.log('Banner updated successfully:', data);
+        toast({ title: "Banner Updated", description: "Banner settings have been saved successfully" });
+        onBannerSettingsChange();
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  if (!localSettings) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="space-y-6">
@@ -64,68 +86,74 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
         <CardHeader>
           <CardTitle className="text-xl text-white">Banner Configuration</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
             <Label htmlFor="bannerText" className="text-gray-300">Banner Text</Label>
             <Input
               id="bannerText"
-              value={localSettings.text}
-              onChange={(e) => handleSettingChange('text', e.target.value)}
-              className="bg-slate-600 border-slate-500 text-white"
+              value={formData.text}
+              onChange={(e) => handleInputChange('text', e.target.value)}
+              placeholder="Enter banner text..."
+              className="bg-slate-600 border-slate-500 text-white placeholder:text-gray-400"
             />
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <Switch
               id="bannerActive"
-              checked={localSettings.is_active}
-              onCheckedChange={(checked) => handleSettingChange('is_active', checked)}
+              checked={formData.is_active}
+              onCheckedChange={(checked) => handleInputChange('is_active', checked)}
             />
             <Label htmlFor="bannerActive" className="text-gray-300">Show Banner</Label>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <Switch
               id="bannerBlink"
-              checked={localSettings.is_blinking}
-              onCheckedChange={(checked) => handleSettingChange('is_blinking', checked)}
+              checked={formData.is_blinking}
+              onCheckedChange={(checked) => handleInputChange('is_blinking', checked)}
             />
-            <Label htmlFor="bannerBlink" className="text-gray-300">Enable Blinking</Label>
+            <Label htmlFor="bannerBlink" className="text-gray-300">Enable Blinking Animation</Label>
           </div>
 
-          <div>
-            <Label className="text-gray-300">Banner Color</Label>
+          <div className="space-y-2">
+            <Label className="text-gray-300">Banner Color Theme</Label>
             <Select 
-              value={localSettings.color} 
-              onValueChange={(value) => handleSettingChange('color', value)}
+              value={formData.color} 
+              onValueChange={(value) => handleInputChange('color', value)}
             >
               <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-slate-700 border-slate-600">
-                <SelectItem value="bg-gradient-to-r from-red-600 to-orange-600">Red to Orange</SelectItem>
-                <SelectItem value="bg-gradient-to-r from-blue-600 to-purple-600">Blue to Purple</SelectItem>
-                <SelectItem value="bg-gradient-to-r from-green-600 to-teal-600">Green to Teal</SelectItem>
-                <SelectItem value="bg-gradient-to-r from-yellow-600 to-red-600">Yellow to Red</SelectItem>
+                <SelectItem value="bg-gradient-to-r from-red-600 to-orange-600">🔥 Red to Orange</SelectItem>
+                <SelectItem value="bg-gradient-to-r from-blue-600 to-purple-600">🌊 Blue to Purple</SelectItem>
+                <SelectItem value="bg-gradient-to-r from-green-600 to-teal-600">🌿 Green to Teal</SelectItem>
+                <SelectItem value="bg-gradient-to-r from-yellow-600 to-red-600">⚡ Yellow to Red</SelectItem>
+                <SelectItem value="bg-gradient-to-r from-pink-600 to-purple-600">💜 Pink to Purple</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <Button onClick={updateBannerSettings} className="w-full bg-blue-600 hover:bg-blue-700">
-            Update Banner Settings
+          <Button 
+            onClick={updateBannerSettings} 
+            disabled={isLoading}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isLoading ? 'Updating...' : 'Update Banner Settings'}
           </Button>
         </CardContent>
       </Card>
 
-      {localSettings.is_active && (
+      {formData.is_active && (
         <Card className="bg-slate-700/50 border-slate-600">
           <CardHeader>
-            <CardTitle className="text-xl text-white">Banner Preview</CardTitle>
+            <CardTitle className="text-xl text-white">Live Banner Preview</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`${localSettings.color} text-white py-3 px-4 rounded-lg`}>
-              <p className={`font-bold text-lg text-center ${localSettings.is_blinking ? 'animate-pulse' : ''}`}>
-                {localSettings.text}
+            <div className={`${formData.color} text-white py-4 px-6 rounded-lg`}>
+              <p className={`font-bold text-lg text-center ${formData.is_blinking ? 'animate-pulse' : ''}`}>
+                {formData.text || 'Your banner text will appear here...'}
               </p>
             </div>
           </CardContent>

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -38,7 +39,7 @@ const Admin = () => {
     queryKey: ['bannerSettings'],
     queryFn: async () => {
       const { data, error } = await supabase.from('banner_settings').select('*').single();
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116: single row not found
+      if (error && error.code !== 'PGRST116') throw error;
       return data;
     },
     enabled: isAuthenticated
@@ -89,6 +90,10 @@ const Admin = () => {
   
   const [backupSettings, setBackupSettings] = useState({ autoBackup: true, backupInterval: 'daily', lastBackup: new Date().toISOString() });
   const [emailTemplate, setEmailTemplate] = useState({ subject: 'Sapience Esports Cup Update', message: 'Dear participant,\n\nWe have an important update regarding the tournament.\n\nBest regards,\nSapience Esports Team' });
+
+  const refreshBannerSettings = () => {
+    queryClient.invalidateQueries({ queryKey: ['bannerSettings'] });
+  };
 
   if (!isAuthenticated) {
     return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
@@ -168,7 +173,7 @@ const Admin = () => {
                 <TabsContent value="banner" className="mt-6">
                   <BannerTab 
                     bannerSettings={bannerSettings || null} 
-                    onBannerSettingsChange={() => queryClient.invalidateQueries({ queryKey: ['bannerSettings'] })}
+                    onBannerSettingsChange={refreshBannerSettings}
                   />
                 </TabsContent>
 

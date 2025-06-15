@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
-import { Gamepad2, Trophy, Users, Calendar } from 'lucide-react';
+import { Gamepad2, Trophy, Users, Calendar, Star, Clock, Target, Award } from 'lucide-react';
 
 interface Game {
   id: string;
@@ -18,7 +18,7 @@ interface Game {
 }
 
 const GameCard = ({ game }: { game: Game }) => (
-  <div className={`${game.color} rounded-lg p-4 text-white`}>
+  <div className={`${game.color} rounded-lg p-4 text-white shadow-lg`}>
     <div className="flex items-center mb-2">
       <Gamepad2 className="w-5 h-5 mr-2" />
       <h3 className="font-bold">{game.display_name}</h3>
@@ -63,13 +63,24 @@ const MobileHome = () => {
           alt="Logo"
         />
         <h1 className="text-3xl font-bold text-white mb-1 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          Esports Cup
+          Esports Cup 2024
         </h1>
         <p className="text-purple-200 text-[15px] text-center">Sapience School, Vikasnagar</p>
       </div>
-      <p className="text-gray-200 text-base mb-6 text-center">
-        Inter-class gaming championship! Tap to register & lead your class to glory.
-      </p>
+      
+      <div className="mb-4 text-center">
+        <p className="text-gray-200 text-base mb-2">
+          🏆 The Ultimate Inter-Class Gaming Championship! 🏆
+        </p>
+        <p className="text-gray-300 text-sm mb-3">
+          Battle across multiple games, represent your class, and claim victory in the most exciting esports tournament of the year!
+        </p>
+        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg p-3 mb-4">
+          <p className="text-yellow-300 text-sm font-semibold">
+            ⚡ Registration is LIVE! Join now and secure your spot ⚡
+          </p>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
         <Card className="bg-slate-800/60 border-slate-700">
@@ -82,8 +93,8 @@ const MobileHome = () => {
         <Card className="bg-slate-800/60 border-slate-700">
           <CardContent className="p-4 text-center">
             <Trophy className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
-            <div className="text-yellow-300 font-semibold text-sm">Class 9+</div>
-            <div className="text-white text-lg font-bold">Eligible</div>
+            <div className="text-yellow-300 font-semibold text-sm">Eligible</div>
+            <div className="text-white text-lg font-bold">Class 9+</div>
           </CardContent>
         </Card>
       </div>
@@ -97,10 +108,23 @@ const MobileHome = () => {
         </div>
       </div>
 
+      <div className="mb-4 bg-slate-800/40 rounded-lg p-4">
+        <h3 className="text-white font-semibold mb-2 flex items-center">
+          <Star className="w-4 h-4 mr-2 text-yellow-400" />
+          Tournament Highlights
+        </h3>
+        <ul className="text-gray-300 text-sm space-y-1">
+          <li>• Multiple game tournaments running simultaneously</li>
+          <li>• Prizes for individual and class performances</li>
+          <li>• Professional tournament management</li>
+          <li>• Live scoring and leaderboards</li>
+        </ul>
+      </div>
+
       <div className="mb-4 flex justify-center">
         <Link to="/register">
           <Button className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-2 rounded-full text-lg drop-shadow">
-            Register
+            Register Now
           </Button>
         </Link>
       </div>
@@ -163,12 +187,17 @@ const TabletHome = () => {
             alt="Logo"
           />
           <h1 className="text-4xl font-bold text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-3">
-            Sapience Esports Cup
+            Sapience Esports Cup 2024
           </h1>
           <p className="text-lg text-purple-200 mb-2">The Sapience School, Vikasnagar</p>
-          <p className="text-md text-gray-300 max-w-2xl text-center">
-            Join the ultimate class tournament featuring the best mobile games!
+          <p className="text-md text-gray-300 max-w-2xl text-center mb-4">
+            Join the ultimate inter-class gaming championship featuring the most popular mobile games!
           </p>
+          <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg p-4 max-w-xl">
+            <p className="text-yellow-300 text-center font-semibold">
+              🎮 Multiple tournaments, amazing prizes, and ultimate bragging rights await! 🎮
+            </p>
+          </div>
         </header>
 
         <div className="grid grid-cols-2 gap-6 mb-8">
@@ -195,6 +224,30 @@ const TabletHome = () => {
               <GameCard key={game.id} game={game} />
             ))}
           </div>
+        </div>
+
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="bg-slate-800/40 border-slate-700">
+            <CardContent className="p-4">
+              <Clock className="w-6 h-6 text-green-400 mb-2" />
+              <h3 className="text-white font-semibold mb-1">Tournament Duration</h3>
+              <p className="text-gray-300 text-sm">Multi-day championship with scheduled matches and playoffs</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/40 border-slate-700">
+            <CardContent className="p-4">
+              <Target className="w-6 h-6 text-red-400 mb-2" />
+              <h3 className="text-white font-semibold mb-1">Class Competition</h3>
+              <p className="text-gray-300 text-sm">Represent your class and compete for overall class rankings</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/40 border-slate-700">
+            <CardContent className="p-4">
+              <Award className="w-6 h-6 text-purple-400 mb-2" />
+              <h3 className="text-white font-semibold mb-1">Prizes & Recognition</h3>
+              <p className="text-gray-300 text-sm">Certificates, prizes, and eternal glory for winners</p>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="flex flex-col md:flex-row justify-center gap-4 mb-10">
@@ -265,9 +318,14 @@ const DesktopHome = () => {
               Sapience Esports Cup 2024
             </h1>
             <p className="text-2xl text-purple-200 mb-2">The Sapience School, Vikasnagar</p>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
-              Welcome to the ULTIMATE gaming championship. Fight for your class and win huge!
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-4">
+              Welcome to the ULTIMATE gaming championship. Fight for your class, dominate the leaderboards, and win incredible prizes!
             </p>
+            <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg p-6 max-w-4xl">
+              <p className="text-yellow-300 text-lg font-semibold text-center">
+                🎮 The biggest inter-class esports tournament featuring multiple games, professional organization, and amazing rewards! 🎮
+              </p>
+            </div>
           </div>
         </header>
 
@@ -277,21 +335,21 @@ const DesktopHome = () => {
               <Users className="w-12 h-12 mx-auto mb-4 text-blue-400" />
               <h3 className="text-2xl text-white font-bold mb-2">Live Participants</h3>
               <p className="text-3xl font-bold text-blue-400">{registrationCount}</p>
-              <p className="text-gray-300 mt-2">Students registered</p>
+              <p className="text-gray-300 mt-2">Students registered and ready to compete</p>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/40 border-slate-700 w-80">
             <CardContent className="p-8 text-center">
               <Trophy className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
               <h3 className="text-2xl text-white font-bold mb-2">Inter-Class Battle</h3>
-              <p className="text-gray-200">Dominate across all classes to win prizes & fame!</p>
+              <p className="text-gray-200">Dominate across all classes to win prizes & eternal fame!</p>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/40 border-slate-700 w-80">
             <CardContent className="p-8 text-center">
               <Gamepad2 className="w-12 h-12 mx-auto mb-4 text-green-400" />
               <h3 className="text-2xl text-white font-bold mb-2">Multiple Games</h3>
-              <p className="text-gray-200">{games.length} exciting games available</p>
+              <p className="text-gray-200">{games.length} exciting games with professional tournaments</p>
             </CardContent>
           </Card>
         </div>
@@ -307,6 +365,37 @@ const DesktopHome = () => {
               </Card>
             ))}
           </div>
+        </div>
+
+        <div className="mb-12 grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <Card className="bg-slate-800/40 border-slate-700">
+            <CardContent className="p-6 text-center">
+              <Clock className="w-8 h-8 mx-auto mb-3 text-green-400" />
+              <h3 className="text-white font-bold mb-2">Tournament Duration</h3>
+              <p className="text-gray-300 text-sm">Multi-day championship with scheduled matches and exciting playoffs</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/40 border-slate-700">
+            <CardContent className="p-6 text-center">
+              <Target className="w-8 h-8 mx-auto mb-3 text-red-400" />
+              <h3 className="text-white font-bold mb-2">Class Competition</h3>
+              <p className="text-gray-300 text-sm">Represent your class and compete for overall class rankings and supremacy</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/40 border-slate-700">
+            <CardContent className="p-6 text-center">
+              <Award className="w-8 h-8 mx-auto mb-3 text-purple-400" />
+              <h3 className="text-white font-bold mb-2">Prizes & Recognition</h3>
+              <p className="text-gray-300 text-sm">Certificates, amazing prizes, and eternal glory for all winners</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/40 border-slate-700">
+            <CardContent className="p-6 text-center">
+              <Star className="w-8 h-8 mx-auto mb-3 text-yellow-400" />
+              <h3 className="text-white font-bold mb-2">Professional Setup</h3>
+              <p className="text-gray-300 text-sm">Live scoring, real-time leaderboards, and professional tournament management</p>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="flex justify-center gap-5 mb-12">
