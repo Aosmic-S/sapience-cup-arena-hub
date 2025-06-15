@@ -1,73 +1,53 @@
-# Welcome to your Lovable project
+# 🎮 Sapience Esports Cup – 
 
-## Project info
+A full-featured web-based registration and management platform for hosting inter-school esports tournaments at The Sapience School, Vikasnagar. Developed for students of **Class 9 and above**, this system handles both **solo** and **team registrations**, with an **admin panel**, **customizable UI**, and dynamic game-specific ruleset.
 
-**URL**: https://lovable.dev/projects/8f90196f-f5d7-4a1a-9947-14a2adfca62d
+---
 
-## How can I edit this code?
+## 📌 Features
 
-There are several ways of editing your application.
+- 🔔 **Live Blinking Banner** – Admin-editable announcement banner (e.g., “Registration Open”) with toggleable visibility, color, and animation.
+- 📝 **Smart Registration Form**
+  - Supports Solo and Team entries (up to 5 members/team)
+  - Game selection: Free Fire, CODM, FC Mobile
+  - Dynamic fields based on entry type
+  - Payment confirmation input (manual)
+- 📂 **Rules Section (Tabbed)**
+  - General Rules, Game-Specific, Code of Conduct, and more
+  - Modular and easily extendable
+- 🔐 **Secure Admin Panel**
+  - Login-protected dashboard
+  - View, edit, delete, and export registrations
+  - Filter by game, class, or type
+  - Customize banner and alerts
+- 📱 **Responsive Esports UI**
+  - Dark mode theme
+  - Optimized for mobile-first access
+  - School branding & event identity
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8f90196f-f5d7-4a1a-9947-14a2adfca62d) and start prompting.
+## ⚙️ Technologies Used
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla/React)  
+- **Backend**: Node.js / PHP (choose based on deployment)  
+- **Database**: Firebase / MongoDB / MySQL (modular options)  
+- **Auth**: Admin login with hashed password (bcrypt or Firebase Auth)  
+- **Deployment**: Vercel / Netlify (Frontend) + Railway / Render / Firebase (Backend)  
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📁 Project Structure
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/8f90196f-f5d7-4a1a-9947-14a2adfca62d) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+```bash
+.
+├── public/             # Static files and assets
+├── src/
+│   ├── components/     # UI modules (Banner, Form, Tabs)
+│   ├── pages/          # Home, Register, Rules, Admin
+│   └── utils/          # Form validation, DB interaction
+├── server/             # Express / PHP backend
+├── db/                 # Schemas or SQL setup
+├── .env.example        # Environment variable template
+├── README.md
+└── package.json
