@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Users, Settings, Megaphone, 
-  Calendar as CalendarIcon, Mail, Database
+  Calendar as CalendarIcon, Mail, Database, Gamepad2
 } from 'lucide-react';
 import AdminLogin from '@/components/admin/AdminLogin';
 import RegistrationsTab from '@/components/admin/RegistrationsTab';
@@ -14,6 +14,7 @@ import CalendarTab from '@/components/admin/CalendarTab';
 import BannerTab from '@/components/admin/BannerTab';
 import CommunicationsTab from '@/components/admin/CommunicationsTab';
 import SystemTab from '@/components/admin/SystemTab';
+import GamesTab from '@/components/admin/GamesTab';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Admin = () => {
@@ -53,6 +54,16 @@ const Admin = () => {
     enabled: isAuthenticated
   });
 
+  const { data: games = [], isLoading: isLoadingGames } = useQuery({
+    queryKey: ['games'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('games').select('*').order('created_at', { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isAuthenticated
+  });
+
   const { data: systemSettings, isLoading: isLoadingSystem } = useQuery({
     queryKey: ['systemSettings'],
     queryFn: async () => {
@@ -83,9 +94,9 @@ const Admin = () => {
     return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
   }
 
-  const isLoading = isLoadingRegistrations || isLoadingBanner || isLoadingMatchDays || isLoadingSystem || isLoadingAnnouncements;
+  const isLoading = isLoadingRegistrations || isLoadingBanner || isLoadingMatchDays || isLoadingSystem || isLoadingAnnouncements || isLoadingGames;
   
-  const allData = { registrations, bannerSettings, matchDays, systemSettings, announcements };
+  const allData = { registrations, bannerSettings, matchDays, systemSettings, announcements, games };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
@@ -106,7 +117,7 @@ const Admin = () => {
               </div>
             ) : (
               <Tabs defaultValue="registrations" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 bg-slate-700">
+                <TabsList className="grid w-full grid-cols-6 bg-slate-700">
                   <TabsTrigger value="registrations" className="flex items-center">
                     <Users className="w-4 h-4 mr-2" />
                     Registrations ({registrations.length})
@@ -114,6 +125,10 @@ const Admin = () => {
                   <TabsTrigger value="calendar" className="flex items-center">
                     <CalendarIcon className="w-4 h-4 mr-2" />
                     Calendar
+                  </TabsTrigger>
+                  <TabsTrigger value="games" className="flex items-center">
+                    <Gamepad2 className="w-4 h-4 mr-2" />
+                    Games
                   </TabsTrigger>
                   <TabsTrigger value="banner" className="flex items-center">
                     <Megaphone className="w-4 h-4 mr-2" />
@@ -140,6 +155,13 @@ const Admin = () => {
                   <CalendarTab 
                     matchDays={matchDays || []} 
                     onMatchDaysChange={() => queryClient.invalidateQueries({ queryKey: ['matchDays'] })}
+                  />
+                </TabsContent>
+
+                <TabsContent value="games" className="mt-6">
+                  <GamesTab 
+                    games={games || []} 
+                    onGamesChange={() => queryClient.invalidateQueries({ queryKey: ['games'] })}
                   />
                 </TabsContent>
 
