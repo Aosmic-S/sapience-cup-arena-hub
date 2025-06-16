@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -481,11 +480,7 @@ const Rules = () => {
                       </li>
                       <li className="flex items-start">
                         <span className="text-yellow-400 mr-3">•</span>
-                        <span>2nd Place: Trophy + Certificate + Cash Prize</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-yellow-400 mr-3">•</span>
-                        <span>3rd Place: Trophy + Certificate</span>
+                        <span>2nd Place: Certificate + Cash Prize</span>
                       </li>
                       <li className="flex items-start">
                         <span className="text-yellow-400 mr-3">•</span>

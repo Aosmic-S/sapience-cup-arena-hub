@@ -62,7 +62,7 @@ const MobileHome = () => {
           alt="Logo"
         />
         <h1 className="text-3xl font-bold text-white mb-1 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          Esports Cup 2025
+          Sapience eSports Cup 2025
         </h1>
         <p className="text-purple-200 text-[15px] text-center">Sapience School, Vikasnagar</p>
       </div>
@@ -76,7 +76,7 @@ const MobileHome = () => {
         </p>
         <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 rounded-lg p-3 mb-4">
           <p className="text-orange-300 text-sm font-semibold">
-            📋 Registration Under Approval - Stay Tuned! 📋
+            📋 Tournament Under School Approval - Details Coming Soon! 📋
           </p>
         </div>
       </div>
@@ -110,11 +110,11 @@ const MobileHome = () => {
       <div className="mb-4 bg-slate-800/40 rounded-lg p-4">
         <h3 className="text-white font-semibold mb-2 flex items-center">
           <Star className="w-4 h-4 mr-2 text-yellow-400" />
-          Tournament Highlights
+          Prize Structure
         </h3>
         <ul className="text-gray-300 text-sm space-y-1">
-          <li>• Multiple game tournaments running simultaneously</li>
-          <li>• Prizes for individual and class performances</li>
+          <li>• 1st Place: Trophy + Cash Prize + Certificate</li>
+          <li>• 2nd Place: Cash Prize + Certificate</li>
           <li>• Professional tournament management</li>
           <li>• Live scoring and leaderboards</li>
         </ul>
@@ -122,7 +122,7 @@ const MobileHome = () => {
 
       <div className="mb-4 flex justify-center">
         <Button disabled className="bg-gray-600 text-gray-300 font-bold px-8 py-2 rounded-full text-lg cursor-not-allowed">
-          Registration Under Approval
+          Tournament Under Approval
         </Button>
       </div>
 
@@ -184,7 +184,7 @@ const TabletHome = () => {
             alt="Logo"
           />
           <h1 className="text-4xl font-bold text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-3">
-            Sapience Esports Cup 2025
+            Sapience eSports Cup 2025
           </h1>
           <p className="text-lg text-purple-200 mb-2">The Sapience School, Vikasnagar</p>
           <p className="text-md text-gray-300 max-w-2xl text-center mb-4">
@@ -192,7 +192,7 @@ const TabletHome = () => {
           </p>
           <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 rounded-lg p-4 max-w-xl">
             <p className="text-orange-300 text-center font-semibold">
-              📋 Registration process is under approval. Details will be announced soon! 📋
+              📋 Tournament is under school management approval. Complete details will be announced soon! 📋
             </p>
           </div>
         </header>
@@ -228,7 +228,7 @@ const TabletHome = () => {
             <CardContent className="p-4">
               <Clock className="w-6 h-6 text-green-400 mb-2" />
               <h3 className="text-white font-semibold mb-1">Tournament Duration</h3>
-              <p className="text-gray-300 text-sm">Multi-day championship with scheduled matches and playoffs</p>
+              <p className="text-gray-300 text-sm">Multi-day championship with scheduled matches and exciting playoffs</p>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/40 border-slate-700">
@@ -241,15 +241,15 @@ const TabletHome = () => {
           <Card className="bg-slate-800/40 border-slate-700">
             <CardContent className="p-4">
               <Award className="w-6 h-6 text-purple-400 mb-2" />
-              <h3 className="text-white font-semibold mb-1">Prizes & Recognition</h3>
-              <p className="text-gray-300 text-sm">Certificates, prizes, and eternal glory for winners</p>
+              <h3 className="text-white font-semibold mb-1">Prize Structure</h3>
+              <p className="text-gray-300 text-sm">Trophy + cash prize for 1st, cash prize + certificate for 2nd</p>
             </CardContent>
           </Card>
         </div>
 
         <div className="flex flex-col md:flex-row justify-center gap-4 mb-10">
           <Button disabled className="bg-gray-600 text-gray-300 font-bold text-lg px-7 py-3 rounded-full cursor-not-allowed">
-            Registration Under Approval
+            Tournament Under Approval
           </Button>
           <Link to="/rules">
             <Button variant="outline" className="border-blue-400 text-blue-400 font-semibold text-lg px-7 py-3 rounded-full">
@@ -310,7 +310,7 @@ const DesktopHome = () => {
               alt="Logo"
             />
             <h1 className="text-6xl font-extrabold text-white mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Sapience Esports Cup 2025
+              Sapience eSports Cup 2025
             </h1>
             <p className="text-2xl text-purple-200 mb-2">The Sapience School, Vikasnagar</p>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-4">
@@ -318,7 +318,7 @@ const DesktopHome = () => {
             </p>
             <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 rounded-lg p-6 max-w-4xl">
               <p className="text-orange-300 text-lg font-semibold text-center">
-                📋 Registration process is under approval by school management. Tournament details and registration will be announced soon! 📋
+                📋 Tournament is under school management approval. Complete tournament details and registration will be announced soon! 📋
               </p>
             </div>
           </div>
@@ -380,8 +380,8 @@ const DesktopHome = () => {
           <Card className="bg-slate-800/40 border-slate-700">
             <CardContent className="p-6 text-center">
               <Award className="w-8 h-8 mx-auto mb-3 text-purple-400" />
-              <h3 className="text-white font-bold mb-2">Prizes & Recognition</h3>
-              <p className="text-gray-300 text-sm">Certificates, amazing prizes, and eternal glory for all winners</p>
+              <h3 className="text-white font-bold mb-2">Prize Structure</h3>
+              <p className="text-gray-300 text-sm">1st place: Trophy + cash prize + certificate, 2nd place: Cash prize + certificate</p>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/40 border-slate-700">
@@ -395,7 +395,7 @@ const DesktopHome = () => {
 
         <div className="flex justify-center gap-5 mb-12">
           <Button disabled className="bg-gray-600 text-gray-300 font-bold text-xl px-12 py-5 rounded-full cursor-not-allowed">
-            Registration Under Approval
+            Tournament Under Approval
           </Button>
           <Link to="/rules">
             <Button variant="outline" className="border-blue-400 text-blue-600 font-semibold text-xl px-10 py-5 rounded-full">

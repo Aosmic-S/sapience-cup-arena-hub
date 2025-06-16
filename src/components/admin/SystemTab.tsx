@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,14 +41,15 @@ const SystemTab = ({
   matchDayCount,
   allData
 }: SystemTabProps) => {
-  const [localSettings, setLocalSettings] = useState(systemSettings);
+  const [localSettings, setLocalSettings] = useState<SystemSettings | null>(systemSettings);
 
   useEffect(() => {
     setLocalSettings(systemSettings);
   }, [systemSettings]);
 
   const handleSettingChange = (field: keyof SystemSettings, value: any) => {
-    setLocalSettings(prev => (prev ? { ...prev, [field]: value } : null));
+    if (!localSettings) return;
+    setLocalSettings(prev => prev ? { ...prev, [field]: value } : null);
   };
   
   const updateSystemSettings = async () => {
@@ -93,7 +95,11 @@ const SystemTab = ({
   };
 
   if (!localSettings) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-gray-400">Loading system settings...</div>
+      </div>
+    );
   }
 
   return (
@@ -135,8 +141,8 @@ const SystemTab = ({
             <Input
               type="number"
               value={localSettings.max_participants}
-              onChange={(e) => handleSettingChange('max_participants', parseInt(e.target.value))}
-              className="bg-slate-600 border-slate-500 text-white"
+              onChange={(e) => handleSettingChange('max_participants', parseInt(e.target.value) || 100)}
+              className="bg-slate-600 border-slate-500 text-white mt-1"
             />
           </div>
           

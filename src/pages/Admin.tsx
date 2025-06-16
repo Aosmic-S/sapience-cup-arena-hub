@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -7,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Users, Settings, Megaphone, 
-  Calendar as CalendarIcon, Mail, Database, Gamepad2
+  Calendar as CalendarIcon, Mail, Database, Gamepad2, FileText
 } from 'lucide-react';
 import AdminLogin from '@/components/admin/AdminLogin';
 import RegistrationsTab from '@/components/admin/RegistrationsTab';
@@ -16,6 +15,7 @@ import BannerTab from '@/components/admin/BannerTab';
 import CommunicationsTab from '@/components/admin/CommunicationsTab';
 import SystemTab from '@/components/admin/SystemTab';
 import GamesTab from '@/components/admin/GamesTab';
+import RulesTab from '@/components/admin/RulesTab';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Admin = () => {
@@ -122,29 +122,33 @@ const Admin = () => {
               </div>
             ) : (
               <Tabs defaultValue="registrations" className="w-full">
-                <TabsList className="grid w-full grid-cols-6 bg-slate-700">
-                  <TabsTrigger value="registrations" className="flex items-center">
-                    <Users className="w-4 h-4 mr-2" />
+                <TabsList className="grid w-full grid-cols-7 bg-slate-700">
+                  <TabsTrigger value="registrations" className="flex items-center text-xs">
+                    <Users className="w-4 h-4 mr-1" />
                     Registrations ({registrations.length})
                   </TabsTrigger>
-                  <TabsTrigger value="calendar" className="flex items-center">
-                    <CalendarIcon className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="calendar" className="flex items-center text-xs">
+                    <CalendarIcon className="w-4 h-4 mr-1" />
                     Calendar
                   </TabsTrigger>
-                  <TabsTrigger value="games" className="flex items-center">
-                    <Gamepad2 className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="games" className="flex items-center text-xs">
+                    <Gamepad2 className="w-4 h-4 mr-1" />
                     Games
                   </TabsTrigger>
-                  <TabsTrigger value="banner" className="flex items-center">
-                    <Megaphone className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="rules" className="flex items-center text-xs">
+                    <FileText className="w-4 h-4 mr-1" />
+                    Rules
+                  </TabsTrigger>
+                  <TabsTrigger value="banner" className="flex items-center text-xs">
+                    <Megaphone className="w-4 h-4 mr-1" />
                     Banner
                   </TabsTrigger>
-                  <TabsTrigger value="communications" className="flex items-center">
-                    <Mail className="w-4 h-4 mr-2" />
-                    Communications
+                  <TabsTrigger value="communications" className="flex items-center text-xs">
+                    <Mail className="w-4 h-4 mr-1" />
+                    Comms
                   </TabsTrigger>
-                  <TabsTrigger value="system" className="flex items-center">
-                    <Database className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="system" className="flex items-center text-xs">
+                    <Database className="w-4 h-4 mr-1" />
                     System
                   </TabsTrigger>
                 </TabsList>
@@ -168,6 +172,10 @@ const Admin = () => {
                     games={games || []} 
                     onGamesChange={() => queryClient.invalidateQueries({ queryKey: ['games'] })}
                   />
+                </TabsContent>
+
+                <TabsContent value="rules" className="mt-6">
+                  <RulesTab />
                 </TabsContent>
 
                 <TabsContent value="banner" className="mt-6">
