@@ -1,4 +1,3 @@
-
 import { useDeviceType } from "@/hooks/useDeviceType";
 import { AnnouncementBanner } from '@/components/AnnouncementBanner';
 import { Link } from 'react-router-dom';
@@ -63,7 +62,7 @@ const MobileHome = () => {
           alt="Logo"
         />
         <h1 className="text-3xl font-bold text-white mb-1 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          Esports Cup 2024
+          Esports Cup 2025
         </h1>
         <p className="text-purple-200 text-[15px] text-center">Sapience School, Vikasnagar</p>
       </div>
@@ -75,14 +74,14 @@ const MobileHome = () => {
         <p className="text-gray-300 text-sm mb-3">
           Battle across multiple games, represent your class, and claim victory in the most exciting esports tournament of the year!
         </p>
-        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg p-3 mb-4">
-          <p className="text-yellow-300 text-sm font-semibold">
-            ⚡ Registration is LIVE! Join now and secure your spot ⚡
+        <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 rounded-lg p-3 mb-4">
+          <p className="text-orange-300 text-sm font-semibold">
+            📋 Registration Under Approval - Stay Tuned! 📋
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="mb-4 text-center">
         <Card className="bg-slate-800/60 border-slate-700">
           <CardContent className="p-4 text-center">
             <Users className="w-6 h-6 mx-auto mb-2 text-blue-400" />
@@ -122,11 +121,9 @@ const MobileHome = () => {
       </div>
 
       <div className="mb-4 flex justify-center">
-        <Link to="/register">
-          <Button className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-2 rounded-full text-lg drop-shadow">
-            Register Now
-          </Button>
-        </Link>
+        <Button disabled className="bg-gray-600 text-gray-300 font-bold px-8 py-2 rounded-full text-lg cursor-not-allowed">
+          Registration Under Approval
+        </Button>
       </div>
 
       <div className="mb-10 flex justify-center space-x-3">
@@ -187,15 +184,15 @@ const TabletHome = () => {
             alt="Logo"
           />
           <h1 className="text-4xl font-bold text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-3">
-            Sapience Esports Cup 2024
+            Sapience Esports Cup 2025
           </h1>
           <p className="text-lg text-purple-200 mb-2">The Sapience School, Vikasnagar</p>
           <p className="text-md text-gray-300 max-w-2xl text-center mb-4">
             Join the ultimate inter-class gaming championship featuring the most popular mobile games!
           </p>
-          <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg p-4 max-w-xl">
-            <p className="text-yellow-300 text-center font-semibold">
-              🎮 Multiple tournaments, amazing prizes, and ultimate bragging rights await! 🎮
+          <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 rounded-lg p-4 max-w-xl">
+            <p className="text-orange-300 text-center font-semibold">
+              📋 Registration process is under approval. Details will be announced soon! 📋
             </p>
           </div>
         </header>
@@ -251,11 +248,9 @@ const TabletHome = () => {
         </div>
 
         <div className="flex flex-col md:flex-row justify-center gap-4 mb-10">
-          <Link to="/register">
-            <Button className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-7 py-3 rounded-full">
-              Register Now
-            </Button>
-          </Link>
+          <Button disabled className="bg-gray-600 text-gray-300 font-bold text-lg px-7 py-3 rounded-full cursor-not-allowed">
+            Registration Under Approval
+          </Button>
           <Link to="/rules">
             <Button variant="outline" className="border-blue-400 text-blue-400 font-semibold text-lg px-7 py-3 rounded-full">
               View Rules
@@ -315,15 +310,15 @@ const DesktopHome = () => {
               alt="Logo"
             />
             <h1 className="text-6xl font-extrabold text-white mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Sapience Esports Cup 2024
+              Sapience Esports Cup 2025
             </h1>
             <p className="text-2xl text-purple-200 mb-2">The Sapience School, Vikasnagar</p>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-4">
               Welcome to the ULTIMATE gaming championship. Fight for your class, dominate the leaderboards, and win incredible prizes!
             </p>
-            <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg p-6 max-w-4xl">
-              <p className="text-yellow-300 text-lg font-semibold text-center">
-                🎮 The biggest inter-class esports tournament featuring multiple games, professional organization, and amazing rewards! 🎮
+            <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 rounded-lg p-6 max-w-4xl">
+              <p className="text-orange-300 text-lg font-semibold text-center">
+                📋 Registration process is under approval by school management. Tournament details and registration will be announced soon! 📋
               </p>
             </div>
           </div>
@@ -399,11 +394,9 @@ const DesktopHome = () => {
         </div>
 
         <div className="flex justify-center gap-5 mb-12">
-          <Link to="/register">
-            <Button className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-xl px-12 py-5 rounded-full hover:scale-110 transition-all duration-300 shadow-lg">
-              Register Now
-            </Button>
-          </Link>
+          <Button disabled className="bg-gray-600 text-gray-300 font-bold text-xl px-12 py-5 rounded-full cursor-not-allowed">
+            Registration Under Approval
+          </Button>
           <Link to="/rules">
             <Button variant="outline" className="border-blue-400 text-blue-600 font-semibold text-xl px-10 py-5 rounded-full">
               View Rules
