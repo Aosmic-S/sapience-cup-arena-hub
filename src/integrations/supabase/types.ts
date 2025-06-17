@@ -165,6 +165,42 @@ export type Database = {
         }
         Relationships: []
       }
+      rules_content: {
+        Row: {
+          codm: string | null
+          conduct: string | null
+          created_at: string | null
+          fcmobile: string | null
+          freefire: string | null
+          general: string | null
+          id: number
+          tournament: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          codm?: string | null
+          conduct?: string | null
+          created_at?: string | null
+          fcmobile?: string | null
+          freefire?: string | null
+          general?: string | null
+          id?: number
+          tournament?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          codm?: string | null
+          conduct?: string | null
+          created_at?: string | null
+          fcmobile?: string | null
+          freefire?: string | null
+          general?: string | null
+          id?: number
+          tournament?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       system_settings: {
         Row: {
           auto_approval: boolean | null

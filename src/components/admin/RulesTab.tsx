@@ -35,27 +35,33 @@ const RulesTab = () => {
 
   const loadRulesContent = async () => {
     try {
-      // Use a raw query since the table might not exist in types yet
       const { data, error } = await supabase
-        .from('rules_content' as any)
+        .from('rules_content')
         .select('*')
         .single();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error loading rules:', error);
         toast({ 
-          title: "Rules Table Not Found", 
-          description: "Please create the rules_content table in the database first.", 
+          title: "Error Loading Rules", 
+          description: "Could not load rules content.", 
           variant: "destructive" 
         });
       } else if (data) {
-        setRulesContent(data);
+        setRulesContent({
+          general: data.general || '',
+          freefire: data.freefire || '',
+          codm: data.codm || '',
+          fcmobile: data.fcmobile || '',
+          conduct: data.conduct || '',
+          tournament: data.tournament || ''
+        });
       }
     } catch (error) {
       console.error('Error loading rules:', error);
       toast({ 
         title: "Error Loading Rules", 
-        description: "Could not load rules content. The table may not exist yet.", 
+        description: "Could not load rules content.", 
         variant: "destructive" 
       });
     } finally {
@@ -66,7 +72,7 @@ const RulesTab = () => {
   const saveRulesContent = async () => {
     try {
       const { error } = await supabase
-        .from('rules_content' as any)
+        .from('rules_content')
         .upsert({
           id: 1,
           ...rulesContent,
@@ -79,7 +85,7 @@ const RulesTab = () => {
         toast({ title: "Rules Updated", description: "Tournament rules have been saved successfully" });
       }
     } catch (error) {
-      toast({ title: "Error", description: "Failed to save rules. Make sure the rules_content table exists.", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to save rules.", variant: "destructive" });
     }
   };
 
