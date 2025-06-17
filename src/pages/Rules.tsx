@@ -14,7 +14,7 @@ const Rules = () => {
     queryKey: ['rulesContent'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('rules_content' as any)
+        .from('rules_content')
         .select('*')
         .single();
       

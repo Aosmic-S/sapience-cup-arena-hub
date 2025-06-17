@@ -36,7 +36,7 @@ const RulesTab = () => {
   const loadRulesContent = async () => {
     try {
       const { data, error } = await supabase
-        .from('rules_content' as any)
+        .from('rules_content')
         .select('*')
         .single();
 
@@ -72,7 +72,7 @@ const RulesTab = () => {
   const saveRulesContent = async () => {
     try {
       const { error } = await supabase
-        .from('rules_content' as any)
+        .from('rules_content')
         .upsert({
           id: 1,
           ...rulesContent,
