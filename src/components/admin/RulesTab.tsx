@@ -35,18 +35,29 @@ const RulesTab = () => {
 
   const loadRulesContent = async () => {
     try {
+      // Use a raw query since the table might not exist in types yet
       const { data, error } = await supabase
-        .from('rules_content')
+        .from('rules_content' as any)
         .select('*')
         .single();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error loading rules:', error);
+        toast({ 
+          title: "Rules Table Not Found", 
+          description: "Please create the rules_content table in the database first.", 
+          variant: "destructive" 
+        });
       } else if (data) {
         setRulesContent(data);
       }
     } catch (error) {
       console.error('Error loading rules:', error);
+      toast({ 
+        title: "Error Loading Rules", 
+        description: "Could not load rules content. The table may not exist yet.", 
+        variant: "destructive" 
+      });
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +66,7 @@ const RulesTab = () => {
   const saveRulesContent = async () => {
     try {
       const { error } = await supabase
-        .from('rules_content')
+        .from('rules_content' as any)
         .upsert({
           id: 1,
           ...rulesContent,
@@ -68,7 +79,7 @@ const RulesTab = () => {
         toast({ title: "Rules Updated", description: "Tournament rules have been saved successfully" });
       }
     } catch (error) {
-      toast({ title: "Error", description: "Failed to save rules", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to save rules. Make sure the rules_content table exists.", variant: "destructive" });
     }
   };
 
@@ -94,13 +105,13 @@ const RulesTab = () => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 bg-slate-600">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="freefire">Free Fire</TabsTrigger>
-            <TabsTrigger value="codm">CODM</TabsTrigger>
-            <TabsTrigger value="fcmobile">FC Mobile</TabsTrigger>
-            <TabsTrigger value="conduct">Conduct</TabsTrigger>
-            <TabsTrigger value="tournament">Format</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-slate-600 gap-1">
+            <TabsTrigger value="general" className="text-xs px-2">General</TabsTrigger>
+            <TabsTrigger value="freefire" className="text-xs px-2">Free Fire</TabsTrigger>
+            <TabsTrigger value="codm" className="text-xs px-2">CODM</TabsTrigger>
+            <TabsTrigger value="fcmobile" className="text-xs px-2">FC Mobile</TabsTrigger>
+            <TabsTrigger value="conduct" className="text-xs px-2">Conduct</TabsTrigger>
+            <TabsTrigger value="tournament" className="text-xs px-2">Format</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="mt-4">

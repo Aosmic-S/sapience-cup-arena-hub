@@ -122,34 +122,42 @@ const Admin = () => {
               </div>
             ) : (
               <Tabs defaultValue="registrations" className="w-full">
-                <TabsList className="grid w-full grid-cols-7 bg-slate-700">
-                  <TabsTrigger value="registrations" className="flex items-center text-xs">
-                    <Users className="w-4 h-4 mr-1" />
-                    Registrations ({registrations.length})
+                <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 bg-slate-700 gap-1">
+                  <TabsTrigger value="registrations" className="flex items-center text-xs px-1 md:px-2">
+                    <Users className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span className="hidden sm:inline">Registrations</span>
+                    <span className="sm:hidden">Reg</span>
+                    <span className="ml-1">({registrations.length})</span>
                   </TabsTrigger>
-                  <TabsTrigger value="calendar" className="flex items-center text-xs">
-                    <CalendarIcon className="w-4 h-4 mr-1" />
-                    Calendar
+                  <TabsTrigger value="calendar" className="flex items-center text-xs px-1 md:px-2">
+                    <CalendarIcon className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span className="hidden sm:inline">Calendar</span>
+                    <span className="sm:hidden">Cal</span>
                   </TabsTrigger>
-                  <TabsTrigger value="games" className="flex items-center text-xs">
-                    <Gamepad2 className="w-4 h-4 mr-1" />
-                    Games
+                  <TabsTrigger value="games" className="flex items-center text-xs px-1 md:px-2">
+                    <Gamepad2 className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span className="hidden sm:inline">Games</span>
+                    <span className="sm:hidden">Games</span>
                   </TabsTrigger>
-                  <TabsTrigger value="rules" className="flex items-center text-xs">
-                    <FileText className="w-4 h-4 mr-1" />
-                    Rules
+                  <TabsTrigger value="rules" className="flex items-center text-xs px-1 md:px-2">
+                    <FileText className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span className="hidden sm:inline">Rules</span>
+                    <span className="sm:hidden">Rules</span>
                   </TabsTrigger>
-                  <TabsTrigger value="banner" className="flex items-center text-xs">
-                    <Megaphone className="w-4 h-4 mr-1" />
-                    Banner
+                  <TabsTrigger value="banner" className="flex items-center text-xs px-1 md:px-2 md:col-span-1 col-span-2">
+                    <Megaphone className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span className="hidden sm:inline">Banner</span>
+                    <span className="sm:hidden">Banner</span>
                   </TabsTrigger>
-                  <TabsTrigger value="communications" className="flex items-center text-xs">
-                    <Mail className="w-4 h-4 mr-1" />
-                    Comms
+                  <TabsTrigger value="communications" className="flex items-center text-xs px-1 md:px-2 md:col-span-1 col-span-2">
+                    <Mail className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span className="hidden sm:inline">Comms</span>
+                    <span className="sm:hidden">Comms</span>
                   </TabsTrigger>
-                  <TabsTrigger value="system" className="flex items-center text-xs">
-                    <Database className="w-4 h-4 mr-1" />
-                    System
+                  <TabsTrigger value="system" className="flex items-center text-xs px-1 md:px-2 md:col-span-1 col-span-2">
+                    <Database className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span className="hidden sm:inline">System</span>
+                    <span className="sm:hidden">Sys</span>
                   </TabsTrigger>
                 </TabsList>
 
