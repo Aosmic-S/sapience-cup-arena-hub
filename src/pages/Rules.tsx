@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -56,46 +57,46 @@ const Rules = () => {
             ) : (
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-slate-700 gap-1">
-                  <TabsTrigger value="general" className="text-xs px-2">General</TabsTrigger>
-                  <TabsTrigger value="freefire" className="text-xs px-2">Free Fire</TabsTrigger>
-                  <TabsTrigger value="codm" className="text-xs px-2">CODM</TabsTrigger>
-                  <TabsTrigger value="fcmobile" className="text-xs px-2">FC Mobile</TabsTrigger>
-                  <TabsTrigger value="conduct" className="text-xs px-2">Conduct</TabsTrigger>
-                  <TabsTrigger value="tournament" className="text-xs px-2">Format</TabsTrigger>
+                  <TabsTrigger value="general" className="text-xs px-1 md:px-2">General</TabsTrigger>
+                  <TabsTrigger value="freefire" className="text-xs px-1 md:px-2">Fire</TabsTrigger>
+                  <TabsTrigger value="codm" className="text-xs px-1 md:px-2">CODM</TabsTrigger>
+                  <TabsTrigger value="fcmobile" className="text-xs px-1 md:px-2">FC</TabsTrigger>
+                  <TabsTrigger value="conduct" className="text-xs px-1 md:px-2">Conduct</TabsTrigger>
+                  <TabsTrigger value="tournament" className="text-xs px-1 md:px-2">Format</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="general" className="mt-4">
-                  <div className="text-gray-300">
+                  <div className="text-gray-300 whitespace-pre-wrap">
                     {currentRules.general}
                   </div>
                 </TabsContent>
 
                 <TabsContent value="freefire" className="mt-4">
-                  <div className="text-gray-300">
+                  <div className="text-gray-300 whitespace-pre-wrap">
                     {currentRules.freefire}
                   </div>
                 </TabsContent>
 
                 <TabsContent value="codm" className="mt-4">
-                  <div className="text-gray-300">
+                  <div className="text-gray-300 whitespace-pre-wrap">
                     {currentRules.codm}
                   </div>
                 </TabsContent>
 
                 <TabsContent value="fcmobile" className="mt-4">
-                  <div className="text-gray-300">
+                  <div className="text-gray-300 whitespace-pre-wrap">
                     {currentRules.fcmobile}
                   </div>
                 </TabsContent>
 
                 <TabsContent value="conduct" className="mt-4">
-                  <div className="text-gray-300">
+                  <div className="text-gray-300 whitespace-pre-wrap">
                     {currentRules.conduct}
                   </div>
                 </TabsContent>
 
                 <TabsContent value="tournament" className="mt-4">
-                  <div className="text-gray-300">
+                  <div className="text-gray-300 whitespace-pre-wrap">
                     {currentRules.tournament}
                   </div>
                 </TabsContent>

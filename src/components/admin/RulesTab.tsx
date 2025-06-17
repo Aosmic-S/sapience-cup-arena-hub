@@ -36,7 +36,7 @@ const RulesTab = () => {
   const loadRulesContent = async () => {
     try {
       const { data, error } = await supabase
-        .from('rules_content')
+        .from('rules_content' as any)
         .select('*')
         .single();
 
@@ -72,7 +72,7 @@ const RulesTab = () => {
   const saveRulesContent = async () => {
     try {
       const { error } = await supabase
-        .from('rules_content')
+        .from('rules_content' as any)
         .upsert({
           id: 1,
           ...rulesContent,
@@ -113,9 +113,9 @@ const RulesTab = () => {
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-slate-600 gap-1">
             <TabsTrigger value="general" className="text-xs px-2">General</TabsTrigger>
-            <TabsTrigger value="freefire" className="text-xs px-2">Free Fire</TabsTrigger>
+            <TabsTrigger value="freefire" className="text-xs px-2">Fire</TabsTrigger>
             <TabsTrigger value="codm" className="text-xs px-2">CODM</TabsTrigger>
-            <TabsTrigger value="fcmobile" className="text-xs px-2">FC Mobile</TabsTrigger>
+            <TabsTrigger value="fcmobile" className="text-xs px-2">FC</TabsTrigger>
             <TabsTrigger value="conduct" className="text-xs px-2">Conduct</TabsTrigger>
             <TabsTrigger value="tournament" className="text-xs px-2">Format</TabsTrigger>
           </TabsList>
