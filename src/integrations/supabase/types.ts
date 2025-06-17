@@ -96,6 +96,53 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard: {
+        Row: {
+          created_at: string | null
+          game: string
+          id: string
+          last_updated: string | null
+          losses: number | null
+          matches_played: number | null
+          points: number | null
+          rank_position: number | null
+          team_number: string | null
+          wins: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          game: string
+          id?: string
+          last_updated?: string | null
+          losses?: number | null
+          matches_played?: number | null
+          points?: number | null
+          rank_position?: number | null
+          team_number?: string | null
+          wins?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          game?: string
+          id?: string
+          last_updated?: string | null
+          losses?: number | null
+          matches_played?: number | null
+          points?: number | null
+          rank_position?: number | null
+          team_number?: string | null
+          wins?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leaderboard_team_number_fkey"
+            columns: ["team_number"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["team_number"]
+          },
+        ]
+      }
       match_days: {
         Row: {
           created_at: string | null
@@ -123,6 +170,50 @@ export type Database = {
         }
         Relationships: []
       }
+      match_results: {
+        Row: {
+          created_at: string | null
+          game: string
+          id: string
+          match_date: string
+          notes: string | null
+          points_earned: number | null
+          result: string | null
+          team_number: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          game: string
+          id?: string
+          match_date: string
+          notes?: string | null
+          points_earned?: number | null
+          result?: string | null
+          team_number?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          game?: string
+          id?: string
+          match_date?: string
+          notes?: string | null
+          points_earned?: number | null
+          result?: string | null
+          team_number?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_results_team_number_fkey"
+            columns: ["team_number"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["team_number"]
+          },
+        ]
+      }
       registrations: {
         Row: {
           class_section: string
@@ -133,8 +224,10 @@ export type Database = {
           id: string
           in_game_id: string | null
           members: string[] | null
+          password_hash: string | null
           phone_number: string
           team_name: string | null
+          team_number: string | null
           uid: string | null
         }
         Insert: {
@@ -146,8 +239,10 @@ export type Database = {
           id?: string
           in_game_id?: string | null
           members?: string[] | null
+          password_hash?: string | null
           phone_number: string
           team_name?: string | null
+          team_number?: string | null
           uid?: string | null
         }
         Update: {
@@ -159,8 +254,10 @@ export type Database = {
           id?: string
           in_game_id?: string | null
           members?: string[] | null
+          password_hash?: string | null
           phone_number?: string
           team_name?: string | null
+          team_number?: string | null
           uid?: string | null
         }
         Relationships: []
@@ -233,7 +330,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_team_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      update_leaderboard_rankings: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

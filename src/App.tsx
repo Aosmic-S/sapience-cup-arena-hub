@@ -26,6 +26,9 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/rules" element={<Rules />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/team-login" element={<TeamLogin />} />
+          <Route path="/team-dashboard" element={<TeamDashboard />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

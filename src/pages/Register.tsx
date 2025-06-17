@@ -1,142 +1,126 @@
+
 import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/hooks/use-toast';
-import { UserPlus, GamepadIcon, Users } from 'lucide-react';
+import { UserPlus, Users, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-
-interface FormData {
-  fullName: string;
-  classSection: string;
-  game: string;
-  entryType: string;
-  teamName: string;
-  email: string;
-  phoneNumber: string;
-  paymentConfirmation: string;
-  inGameId: string;
-  uid: string;
-  members: string[];
-}
+import { useQuery } from '@tanstack/react-query';
 
 const Register = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState({
     fullName: '',
     classSection: '',
     game: '',
     entryType: 'solo',
     teamName: '',
-    email: '',
     phoneNumber: '',
-    paymentConfirmation: '',
     inGameId: '',
     uid: '',
-    members: ['', '', '', '']
+    password: '',
+    members: ['', '', '', ''] // Up to 4 additional members
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: games = [] } = useQuery({
+    queryKey: ['games'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('games')
+        .select('name, display_name')
+        .eq('is_active', true);
+      
+      if (error) throw error;
+      return data || [];
+    }
   });
 
-  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
-  const validateForm = () => {
-    const newErrors: Partial<FormData> = {};
-
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
-    if (!formData.classSection) newErrors.classSection = 'Class & Section is required';
-    if (!formData.game) newErrors.game = 'Please select a game';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Please enter a valid email address';
-    if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required';
-    if (!formData.paymentConfirmation.trim()) newErrors.paymentConfirmation = 'Payment confirmation is required';
-    if (!formData.inGameId.trim()) newErrors.inGameId = 'In-Game ID is required';
-    if (!formData.uid.trim()) newErrors.uid = 'UID is required';
-
-    if (formData.entryType === 'team') {
-      if (!formData.teamName.trim()) newErrors.teamName = 'Team name is required';
-      
-      const filledMembers = formData.members.filter(member => member.trim() !== '');
-      if (filledMembers.length > 4) {
-        newErrors.members = ['Maximum 4 additional members allowed (5 total including captain)'];
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleMemberChange = (index: number, value: string) => {
+    const newMembers = [...formData.members];
+    newMembers[index] = value;
+    setFormData(prev => ({ ...prev, members: newMembers }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
+    setIsSubmitting(true);
+
+    try {
+      // Get team number from database function
+      const { data: teamNumberData, error: teamNumberError } = await supabase
+        .rpc('generate_team_number');
+
+      if (teamNumberError) {
+        throw teamNumberError;
+      }
+
+      const teamNumber = teamNumberData;
+
+      // Prepare registration data
+      const registrationData = {
+        full_name: formData.fullName,
+        class_section: formData.classSection,
+        game: formData.game,
+        entry_type: formData.entryType,
+        team_name: formData.entryType === 'team' ? formData.teamName : null,
+        phone_number: formData.phoneNumber,
+        in_game_id: formData.inGameId || null,
+        uid: formData.uid || null,
+        team_number: teamNumber,
+        password_hash: formData.password, // In production, this should be properly hashed
+        members: formData.entryType === 'team' ? formData.members.filter(m => m.trim()) : null
+      };
+
+      const { error } = await supabase
+        .from('registrations')
+        .insert(registrationData);
+
+      if (error) {
+        toast({
+          title: "Registration Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Registration Successful!",
+          description: `Your team number is ${teamNumber}. Please save this for login.`,
+        });
+        
+        // Show team credentials in a more prominent way
+        alert(`🎉 Registration Successful!\n\nYour Login Credentials:\nTeam Number: ${teamNumber}\nPassword: ${formData.password}\n\nPlease save these credentials to access your team dashboard.`);
+        
+        // Reset form
+        setFormData({
+          fullName: '',
+          classSection: '',
+          game: '',
+          entryType: 'solo',
+          teamName: '',
+          phoneNumber: '',
+          inGameId: '',
+          uid: '',
+          password: '',
+          members: ['', '', '', '']
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Validation Error",
-        description: "Please fix the errors in the form",
-        variant: "destructive"
+        title: "Registration Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
       });
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Save to Supabase
-    const { error } = await supabase
-      .from('registrations')
-      .insert([
-        { 
-          full_name: formData.fullName,
-          class_section: formData.classSection,
-          game: formData.game,
-          entry_type: formData.entryType,
-          team_name: formData.entryType === 'team' ? formData.teamName : null,
-          phone_number: formData.phoneNumber,
-          in_game_id: formData.inGameId,
-          uid: formData.uid,
-          members: formData.entryType === 'team' ? formData.members.filter(m => m.trim() !== '') : null,
-        }
-      ]);
-    
-    if (error) {
-      toast({
-        title: "Registration Failed",
-        description: error.message,
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "Registration Successful!",
-      description: "Your registration has been submitted successfully.",
-    });
-
-    // Reset form
-    setFormData({
-      fullName: '',
-      classSection: '',
-      game: '',
-      entryType: 'solo',
-      teamName: '',
-      email: '',
-      phoneNumber: '',
-      paymentConfirmation: '',
-      inGameId: '',
-      uid: '',
-      members: ['', '', '', '']
-    });
-    setErrors({});
-  };
-
-  const updateFormData = (field: keyof FormData, value: string | string[]) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
-  };
-
-  const updateMember = (index: number, value: string) => {
-    const newMembers = [...formData.members];
-    newMembers[index] = value;
-    updateFormData('members', newMembers);
   };
 
   return (
@@ -152,187 +136,162 @@ const Register = () => {
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Full Name */}
-              <div>
-                <Label htmlFor="fullName" className="text-gray-300">Full Name *</Label>
-                <Input
-                  id="fullName"
-                  value={formData.fullName}
-                  onChange={(e) => updateFormData('fullName', e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-                {errors.fullName && <p className="text-red-400 text-sm mt-1">{errors.fullName}</p>}
-              </div>
+              {/* Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-gray-300">Full Name *</Label>
+                  <Input
+                    id="fullName"
+                    value={formData.fullName}
+                    onChange={(e) => handleInputChange('fullName', e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white"
+                    required
+                  />
+                </div>
 
-              {/* Class & Section */}
-              <div>
-                <Label htmlFor="classSection" className="text-gray-300">Class & Section *</Label>
-                <Select value={formData.classSection} onValueChange={(value) => updateFormData('classSection', value)}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                    <SelectValue placeholder="Select your class" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
-                    <SelectItem value="9-A">Class 9-A</SelectItem>
-                    <SelectItem value="9-B">Class 9-B</SelectItem>
-                    <SelectItem value="10-A">Class 10-A</SelectItem>
-                    <SelectItem value="10-B">Class 10-B</SelectItem>
-                    <SelectItem value="11-A">Class 11-A</SelectItem>
-                    <SelectItem value="11-B">Class 11-B</SelectItem>
-                    <SelectItem value="12-A">Class 12-A</SelectItem>
-                    <SelectItem value="12-B">Class 12-B</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.classSection && <p className="text-red-400 text-sm mt-1">{errors.classSection}</p>}
+                <div className="space-y-2">
+                  <Label htmlFor="classSection" className="text-gray-300">Class/Section *</Label>
+                  <Input
+                    id="classSection"
+                    value={formData.classSection}
+                    onChange={(e) => handleInputChange('classSection', e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white"
+                    placeholder="e.g., 12-A"
+                    required
+                  />
+                </div>
               </div>
 
               {/* Game Selection */}
-              <div>
-                <Label className="text-gray-300">Select Game *</Label>
-                <Select value={formData.game} onValueChange={(value) => updateFormData('game', value)}>
+              <div className="space-y-2">
+                <Label className="text-gray-300">Game *</Label>
+                <Select value={formData.game} onValueChange={(value) => handleInputChange('game', value)}>
                   <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                    <SelectValue placeholder="Choose your game" />
+                    <SelectValue placeholder="Select a game" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-700 border-slate-600">
-                    <SelectItem value="free-fire">Free Fire</SelectItem>
-                    <SelectItem value="codm">Call of Duty Mobile</SelectItem>
-                    <SelectItem value="fc-mobile">FC Mobile</SelectItem>
+                    {games.map((game) => (
+                      <SelectItem key={game.name} value={game.name}>
+                        {game.display_name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-                {errors.game && <p className="text-red-400 text-sm mt-1">{errors.game}</p>}
-              </div>
-
-              {/* In-Game ID */}
-              <div>
-                <Label htmlFor="inGameId" className="text-gray-300">In-Game ID *</Label>
-                <Input
-                  id="inGameId"
-                  value={formData.inGameId}
-                  onChange={(e) => updateFormData('inGameId', e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
-                  placeholder="Enter your in-game ID"
-                />
-                {errors.inGameId && <p className="text-red-400 text-sm mt-1">{errors.inGameId}</p>}
-              </div>
-
-              {/* UID */}
-              <div>
-                <Label htmlFor="uid" className="text-gray-300">UID *</Label>
-                <Input
-                  id="uid"
-                  value={formData.uid}
-                  onChange={(e) => updateFormData('uid', e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
-                  placeholder="Enter your UID"
-                />
-                {errors.uid && <p className="text-red-400 text-sm mt-1">{errors.uid}</p>}
               </div>
 
               {/* Entry Type */}
-              <div>
+              <div className="space-y-3">
                 <Label className="text-gray-300">Entry Type *</Label>
-                <RadioGroup 
-                  value={formData.entryType} 
-                  onValueChange={(value) => updateFormData('entryType', value)}
-                  className="flex space-x-6 mt-2"
+                <RadioGroup
+                  value={formData.entryType}
+                  onValueChange={(value) => handleInputChange('entryType', value)}
+                  className="flex space-x-8"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="solo" id="solo" className="border-slate-400" />
-                    <Label htmlFor="solo" className="text-gray-300 flex items-center">
-                      <GamepadIcon className="w-4 h-4 mr-1" />
+                    <RadioGroupItem value="solo" id="solo" className="border-purple-400" />
+                    <Label htmlFor="solo" className="text-white flex items-center cursor-pointer">
+                      <User className="w-4 h-4 mr-2" />
                       Solo
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="team" id="team" className="border-slate-400" />
-                    <Label htmlFor="team" className="text-gray-300 flex items-center">
-                      <Users className="w-4 h-4 mr-1" />
+                    <RadioGroupItem value="team" id="team" className="border-purple-400" />
+                    <Label htmlFor="team" className="text-white flex items-center cursor-pointer">
+                      <Users className="w-4 h-4 mr-2" />
                       Team
                     </Label>
                   </div>
                 </RadioGroup>
               </div>
 
-              {/* Team Details (conditional) */}
+              {/* Team Name (only if team entry) */}
               {formData.entryType === 'team' && (
-                <div className="space-y-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600">
-                  <h3 className="text-lg font-semibold text-white">Team Details</h3>
-                  
-                  <div>
-                    <Label htmlFor="teamName" className="text-gray-300">Team Name *</Label>
-                    <Input
-                      id="teamName"
-                      value={formData.teamName}
-                      onChange={(e) => updateFormData('teamName', e.target.value)}
-                      className="bg-slate-600 border-slate-500 text-white"
-                    />
-                    {errors.teamName && <p className="text-red-400 text-sm mt-1">{errors.teamName}</p>}
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="teamName" className="text-gray-300">Team Name *</Label>
+                  <Input
+                    id="teamName"
+                    value={formData.teamName}
+                    onChange={(e) => handleInputChange('teamName', e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white"
+                    required={formData.entryType === 'team'}
+                  />
+                </div>
+              )}
 
-                  <div>
-                    <Label className="text-gray-300">Team Members (Max 5 total including you)</Label>
-                    <div className="space-y-2 mt-2">
-                      <div className="text-sm text-blue-400">
-                        Member 1 (Captain): {formData.fullName || 'Your name will appear here'}
-                      </div>
-                      {formData.members.map((member, index) => (
-                        <div key={index}>
-                          <Input
-                            placeholder={`Member ${index + 2} (Optional)`}
-                            value={member}
-                            onChange={(e) => updateMember(index, e.target.value)}
-                            className="bg-slate-600 border-slate-500 text-white"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    {errors.members && Array.isArray(errors.members) && <p className="text-red-400 text-sm mt-1">{errors.members[0]}</p>}
+              {/* Contact Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber" className="text-gray-300">Phone Number *</Label>
+                  <Input
+                    id="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-gray-300">Set Password *</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white"
+                    placeholder="Create a password for team login"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Game Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="inGameId" className="text-gray-300">In-Game ID</Label>
+                  <Input
+                    id="inGameId"
+                    value={formData.inGameId}
+                    onChange={(e) => handleInputChange('inGameId', e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="uid" className="text-gray-300">UID</Label>
+                  <Input
+                    id="uid"
+                    value={formData.uid}
+                    onChange={(e) => handleInputChange('uid', e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Team Members (only if team entry) */}
+              {formData.entryType === 'team' && (
+                <div className="space-y-4">
+                  <Label className="text-gray-300">Team Members (Optional - up to 4 additional members)</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {formData.members.map((member, index) => (
+                      <Input
+                        key={index}
+                        value={member}
+                        onChange={(e) => handleMemberChange(index, e.target.value)}
+                        placeholder={`Member ${index + 2} name`}
+                        className="bg-slate-700 border-slate-600 text-white"
+                      />
+                    ))}
                   </div>
                 </div>
               )}
 
-              {/* Email */}
-              <div>
-                <Label htmlFor="email" className="text-gray-300">Email Address *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => updateFormData('email', e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
-                  placeholder="Enter your email address"
-                />
-                {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
-              </div>
-
-              {/* Phone Number */}
-              <div>
-                <Label htmlFor="phoneNumber" className="text-gray-300">Phone Number *</Label>
-                <Input
-                  id="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={(e) => updateFormData('phoneNumber', e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
-                  placeholder="Enter your phone number"
-                />
-                {errors.phoneNumber && <p className="text-red-400 text-sm mt-1">{errors.phoneNumber}</p>}
-              </div>
-
-              {/* Payment Confirmation */}
-              <div>
-                <Label htmlFor="paymentConfirmation" className="text-gray-300">Payment Confirmation *</Label>
-                <Input
-                  id="paymentConfirmation"
-                  value={formData.paymentConfirmation}
-                  onChange={(e) => updateFormData('paymentConfirmation', e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
-                  placeholder="Transaction ID or confirmation details"
-                />
-                {errors.paymentConfirmation && <p className="text-red-400 text-sm mt-1">{errors.paymentConfirmation}</p>}
-              </div>
-
-              {/* Submit Button */}
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3">
-                Register for Tournament
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-lg py-3"
+              >
+                {isSubmitting ? 'Registering...' : 'Register for Tournament'}
               </Button>
             </form>
           </CardContent>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Users, Settings, Megaphone, 
-  Calendar as CalendarIcon, Mail, Database, Gamepad2, FileText
+  Calendar as CalendarIcon, Mail, Database, Gamepad2, FileText, Trophy
 } from 'lucide-react';
 import AdminLogin from '@/components/admin/AdminLogin';
 import RegistrationsTab from '@/components/admin/RegistrationsTab';
@@ -16,6 +16,7 @@ import CommunicationsTab from '@/components/admin/CommunicationsTab';
 import SystemTab from '@/components/admin/SystemTab';
 import GamesTab from '@/components/admin/GamesTab';
 import RulesTab from '@/components/admin/RulesTab';
+import LeaderboardTab from '@/components/admin/LeaderboardTab';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Admin = () => {
@@ -122,12 +123,17 @@ const Admin = () => {
               </div>
             ) : (
               <Tabs defaultValue="registrations" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 bg-slate-700 gap-1">
+                <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 bg-slate-700 gap-1">
                   <TabsTrigger value="registrations" className="flex items-center text-xs px-1 md:px-2">
                     <Users className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                     <span className="hidden sm:inline">Registrations</span>
                     <span className="sm:hidden">Reg</span>
                     <span className="ml-1">({registrations.length})</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="leaderboard" className="flex items-center text-xs px-1 md:px-2">
+                    <Trophy className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span className="hidden sm:inline">Leaderboard</span>
+                    <span className="sm:hidden">Board</span>
                   </TabsTrigger>
                   <TabsTrigger value="calendar" className="flex items-center text-xs px-1 md:px-2">
                     <CalendarIcon className="w-3 h-3 md:w-4 md:h-4 mr-1" />
@@ -144,17 +150,17 @@ const Admin = () => {
                     <span className="hidden sm:inline">Rules</span>
                     <span className="sm:hidden">Rules</span>
                   </TabsTrigger>
-                  <TabsTrigger value="banner" className="flex items-center text-xs px-1 md:px-2 md:col-span-1 col-span-2">
+                  <TabsTrigger value="banner" className="flex items-center text-xs px-1 md:px-2">
                     <Megaphone className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                     <span className="hidden sm:inline">Banner</span>
                     <span className="sm:hidden">Banner</span>
                   </TabsTrigger>
-                  <TabsTrigger value="communications" className="flex items-center text-xs px-1 md:px-2 md:col-span-1 col-span-2">
+                  <TabsTrigger value="communications" className="flex items-center text-xs px-1 md:px-2">
                     <Mail className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                     <span className="hidden sm:inline">Comms</span>
                     <span className="sm:hidden">Comms</span>
                   </TabsTrigger>
-                  <TabsTrigger value="system" className="flex items-center text-xs px-1 md:px-2 md:col-span-1 col-span-2">
+                  <TabsTrigger value="system" className="flex items-center text-xs px-1 md:px-2">
                     <Database className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                     <span className="hidden sm:inline">System</span>
                     <span className="sm:hidden">Sys</span>
@@ -166,6 +172,10 @@ const Admin = () => {
                     registrations={registrations} 
                     onRegistrationsChange={() => queryClient.invalidateQueries({ queryKey: ['registrations'] })} 
                   />
+                </TabsContent>
+
+                <TabsContent value="leaderboard" className="mt-6">
+                  <LeaderboardTab />
                 </TabsContent>
 
                 <TabsContent value="calendar" className="mt-6">
@@ -189,7 +199,7 @@ const Admin = () => {
                 <TabsContent value="banner" className="mt-6">
                   <BannerTab 
                     bannerSettings={bannerSettings || null} 
-                    onBannerSettingsChange={refreshBannerSettings}
+                    onBannerSettingsChange={() => queryClient.invalidateQueries({ queryKey: ['bannerSettings'] })}
                   />
                 </TabsContent>
 
