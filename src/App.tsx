@@ -11,6 +11,9 @@ import Calendar from "./pages/Calendar";
 import Rules from "./pages/Rules";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import Leaderboard from "./pages/Leaderboard";
+import TeamLogin from "./pages/TeamLogin";
+import TeamDashboard from "./pages/TeamDashboard";
 
 const queryClient = new QueryClient();
 
