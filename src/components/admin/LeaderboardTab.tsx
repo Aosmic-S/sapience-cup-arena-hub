@@ -31,7 +31,10 @@ const LeaderboardTab = () => {
         .select('team_number, team_name, full_name, game')
         .order('team_number');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching teams:', error);
+        return [];
+      }
       return data || [];
     }
   });
@@ -48,7 +51,10 @@ const LeaderboardTab = () => {
         .order('game')
         .order('rank_position');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching leaderboard:', error);
+        return [];
+      }
       return data || [];
     }
   });
@@ -62,13 +68,26 @@ const LeaderboardTab = () => {
         .order('created_at', { ascending: false })
         .limit(20);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching match results:', error);
+        return [];
+      }
       return data || [];
     }
   });
 
   const handleSubmitMatch = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!matchData.teamNumber || !matchData.game || !matchData.matchDate || !matchData.pointsEarned) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -84,9 +103,10 @@ const LeaderboardTab = () => {
         });
 
       if (error) {
+        console.error('Error recording match:', error);
         toast({
           title: "Error Recording Match",
-          description: error.message,
+          description: error.message || "Failed to record match",
           variant: "destructive",
         });
       } else {
@@ -106,6 +126,7 @@ const LeaderboardTab = () => {
         queryClient.invalidateQueries({ queryKey: ['matchResults'] });
       }
     } catch (error) {
+      console.error('Unexpected error:', error);
       toast({
         title: "Error",
         description: "Failed to record match result.",
@@ -121,9 +142,10 @@ const LeaderboardTab = () => {
       const { error } = await supabase.rpc('update_leaderboard_rankings');
       
       if (error) {
+        console.error('Error updating rankings:', error);
         toast({
           title: "Error Updating Rankings",
-          description: error.message,
+          description: error.message || "Failed to update rankings",
           variant: "destructive",
         });
       } else {
@@ -134,6 +156,7 @@ const LeaderboardTab = () => {
         queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       }
     } catch (error) {
+      console.error('Unexpected error:', error);
       toast({
         title: "Error",
         description: "Failed to update rankings.",
@@ -143,24 +166,38 @@ const LeaderboardTab = () => {
   };
 
   const deleteMatchResult = async (id: string) => {
-    const { error } = await supabase
-      .from('match_results')
-      .delete()
-      .eq('id', id);
+    if (!window.confirm("Are you sure you want to delete this match result?")) {
+      return;
+    }
 
-    if (error) {
+    try {
+      const { error } = await supabase
+        .from('match_results')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting match:', error);
+        toast({
+          title: "Error Deleting Match",
+          description: error.message || "Failed to delete match",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Match Deleted",
+          description: "Match result has been removed.",
+        });
+        queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+        queryClient.invalidateQueries({ queryKey: ['matchResults'] });
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
       toast({
-        title: "Error Deleting Match",
-        description: error.message,
+        title: "Error",
+        description: "Failed to delete match result.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Match Deleted",
-        description: "Match result has been removed.",
-      });
-      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
-      queryClient.invalidateQueries({ queryKey: ['matchResults'] });
     }
   };
 
@@ -177,8 +214,12 @@ const LeaderboardTab = () => {
         <CardContent>
           <form onSubmit={handleSubmitMatch} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-gray-300">Team</Label>
-              <Select value={matchData.teamNumber} onValueChange={(value) => setMatchData({...matchData, teamNumber: value})}>
+              <Label className="text-gray-300">Team *</Label>
+              <Select 
+                value={matchData.teamNumber} 
+                onValueChange={(value) => setMatchData({...matchData, teamNumber: value})}
+                disabled={isSubmitting}
+              >
                 <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
                   <SelectValue placeholder="Select Team" />
                 </SelectTrigger>
@@ -193,8 +234,12 @@ const LeaderboardTab = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Game</Label>
-              <Select value={matchData.game} onValueChange={(value) => setMatchData({...matchData, game: value})}>
+              <Label className="text-gray-300">Game *</Label>
+              <Select 
+                value={matchData.game} 
+                onValueChange={(value) => setMatchData({...matchData, game: value})}
+                disabled={isSubmitting}
+              >
                 <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
                   <SelectValue placeholder="Select Game" />
                 </SelectTrigger>
@@ -207,18 +252,19 @@ const LeaderboardTab = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Match Date</Label>
+              <Label className="text-gray-300">Match Date *</Label>
               <Input
                 type="date"
                 value={matchData.matchDate}
                 onChange={(e) => setMatchData({...matchData, matchDate: e.target.value})}
                 className="bg-slate-600 border-slate-500 text-white"
                 required
+                disabled={isSubmitting}
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Points Earned</Label>
+              <Label className="text-gray-300">Points Earned *</Label>
               <Input
                 type="number"
                 value={matchData.pointsEarned}
@@ -226,12 +272,18 @@ const LeaderboardTab = () => {
                 className="bg-slate-600 border-slate-500 text-white"
                 placeholder="e.g., 10"
                 required
+                min="0"
+                disabled={isSubmitting}
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Result</Label>
-              <Select value={matchData.result} onValueChange={(value: 'win' | 'loss' | 'draw') => setMatchData({...matchData, result: value})}>
+              <Label className="text-gray-300">Result *</Label>
+              <Select 
+                value={matchData.result} 
+                onValueChange={(value: 'win' | 'loss' | 'draw') => setMatchData({...matchData, result: value})}
+                disabled={isSubmitting}
+              >
                 <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
                   <SelectValue />
                 </SelectTrigger>
@@ -250,16 +302,27 @@ const LeaderboardTab = () => {
                 onChange={(e) => setMatchData({...matchData, notes: e.target.value})}
                 className="bg-slate-600 border-slate-500 text-white"
                 placeholder="Match notes..."
+                disabled={isSubmitting}
               />
             </div>
 
             <div className="md:col-span-2 flex gap-4">
-              <Button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700">
+              <Button 
+                type="submit" 
+                disabled={isSubmitting} 
+                className="bg-green-600 hover:bg-green-700"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 {isSubmitting ? 'Recording...' : 'Record Match'}
               </Button>
               
-              <Button type="button" onClick={handleUpdateRankings} variant="outline" className="border-purple-500 text-purple-400">
+              <Button 
+                type="button" 
+                onClick={handleUpdateRankings} 
+                variant="outline" 
+                className="border-purple-500 text-purple-400"
+                disabled={isSubmitting}
+              >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Update Rankings
               </Button>
@@ -273,69 +336,86 @@ const LeaderboardTab = () => {
         <CardHeader>
           <CardTitle className="text-xl text-white flex items-center">
             <Trophy className="w-5 h-5 mr-2" />
-            Current Leaderboard
+            Current Leaderboard ({leaderboard.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {leaderboard.map((team) => (
-              <div key={team.id} className="flex items-center justify-between p-3 bg-slate-600/50 rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <Badge variant="secondary" className="bg-purple-600 text-white">
-                    #{team.rank_position}
-                  </Badge>
-                  <div>
-                    <p className="text-white font-medium">
-                      {team.registrations?.team_name || team.registrations?.full_name}
-                    </p>
-                    <p className="text-gray-400 text-sm">{team.team_number} • {team.game.toUpperCase()}</p>
+          {leaderboard.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              No leaderboard entries yet. Add match results to populate the leaderboard.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {leaderboard.map((team) => (
+                <div key={team.id} className="flex items-center justify-between p-3 bg-slate-600/50 rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <Badge variant="secondary" className="bg-purple-600 text-white">
+                      #{team.rank_position}
+                    </Badge>
+                    <div>
+                      <p className="text-white font-medium">
+                        {team.registrations?.team_name || team.registrations?.full_name || team.team_number}
+                      </p>
+                      <p className="text-gray-400 text-sm">{team.team_number} • {team.game.toUpperCase()}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-white font-bold">{team.points} pts</p>
+                    <p className="text-gray-400 text-sm">{team.wins}W-{team.losses}L</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-white font-bold">{team.points} pts</p>
-                  <p className="text-gray-400 text-sm">{team.wins}W-{team.losses}L</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Recent Match Results */}
       <Card className="bg-slate-700/50 border-slate-600">
         <CardHeader>
-          <CardTitle className="text-xl text-white">Recent Match Results</CardTitle>
+          <CardTitle className="text-xl text-white">Recent Match Results ({matchResults.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {matchResults.map((match) => (
-              <div key={match.id} className="flex items-center justify-between p-3 bg-slate-600/50 rounded-lg">
-                <div>
-                  <p className="text-white font-medium">{match.team_number}</p>
-                  <p className="text-gray-400 text-sm">{match.game.toUpperCase()} • {new Date(match.match_date).toLocaleDateString()}</p>
+          {matchResults.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              No match results recorded yet.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {matchResults.map((match) => (
+                <div key={match.id} className="flex items-center justify-between p-3 bg-slate-600/50 rounded-lg">
+                  <div>
+                    <p className="text-white font-medium">{match.team_number}</p>
+                    <p className="text-gray-400 text-sm">
+                      {match.game.toUpperCase()} • {new Date(match.match_date).toLocaleDateString()}
+                    </p>
+                    {match.notes && (
+                      <p className="text-gray-400 text-xs mt-1">{match.notes}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Badge 
+                      variant={match.result === 'win' ? 'default' : match.result === 'loss' ? 'destructive' : 'secondary'}
+                      className={
+                        match.result === 'win' ? 'bg-green-600' : 
+                        match.result === 'loss' ? 'bg-red-600' : 'bg-yellow-600'
+                      }
+                    >
+                      {match.result?.toUpperCase()}
+                    </Badge>
+                    <span className="text-white">+{match.points_earned} pts</span>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => deleteMatchResult(match.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Badge 
-                    variant={match.result === 'win' ? 'default' : match.result === 'loss' ? 'destructive' : 'secondary'}
-                    className={
-                      match.result === 'win' ? 'bg-green-600' : 
-                      match.result === 'loss' ? 'bg-red-600' : 'bg-yellow-600'
-                    }
-                  >
-                    {match.result?.toUpperCase()}
-                  </Badge>
-                  <span className="text-white">+{match.points_earned} pts</span>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => deleteMatchResult(match.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

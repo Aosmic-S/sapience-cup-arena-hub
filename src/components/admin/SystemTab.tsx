@@ -10,6 +10,7 @@ import { Settings, Database, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface SystemSettings {
+  id?: number;
   registration_open: boolean;
   max_participants: number;
   auto_approval: boolean;
@@ -41,66 +42,133 @@ const SystemTab = ({
   matchDayCount,
   allData
 }: SystemTabProps) => {
-  const [localSettings, setLocalSettings] = useState<SystemSettings | null>(systemSettings);
+  const [localSettings, setLocalSettings] = useState<SystemSettings>({
+    registration_open: true,
+    max_participants: 100,
+    auto_approval: true,
+    email_notifications: false
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setLocalSettings(systemSettings);
+    if (systemSettings) {
+      setLocalSettings(systemSettings);
+    }
   }, [systemSettings]);
 
   const handleSettingChange = (field: keyof SystemSettings, value: any) => {
-    if (!localSettings) return;
-    setLocalSettings(prev => prev ? { ...prev, [field]: value } : null);
+    setLocalSettings(prev => ({ ...prev, [field]: value }));
+  };
+  
+  const createInitialSettings = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('system_settings')
+        .insert([{
+          id: 1,
+          registration_open: localSettings.registration_open,
+          max_participants: localSettings.max_participants,
+          auto_approval: localSettings.auto_approval,
+          email_notifications: localSettings.email_notifications,
+          updated_at: new Date().toISOString()
+        }]);
+
+      if (error) {
+        console.error('Error creating settings:', error);
+        toast({ 
+          title: "Error Creating Settings", 
+          description: error.message, 
+          variant: "destructive" 
+        });
+      } else {
+        toast({ title: "Settings Created", description: "System settings have been initialized" });
+        onSystemSettingsChange();
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast({ 
+        title: "Error", 
+        description: "An unexpected error occurred", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const updateSystemSettings = async () => {
-    if (!localSettings) return;
+    setIsLoading(true);
+    
+    try {
+      if (!systemSettings) {
+        await createInitialSettings();
+        return;
+      }
 
-    const { error } = await supabase
-      .from('system_settings')
-      .update({
-        registration_open: localSettings.registration_open,
-        max_participants: localSettings.max_participants,
-        auto_approval: localSettings.auto_approval,
-        email_notifications: localSettings.email_notifications,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', 1);
+      const { error } = await supabase
+        .from('system_settings')
+        .update({
+          registration_open: localSettings.registration_open,
+          max_participants: localSettings.max_participants,
+          auto_approval: localSettings.auto_approval,
+          email_notifications: localSettings.email_notifications,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', systemSettings.id || 1);
 
-    if (error) {
-      toast({ title: "Error Updating Settings", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Settings Updated", description: "System settings have been saved" });
-      onSystemSettingsChange();
+      if (error) {
+        console.error('Error updating settings:', error);
+        toast({ 
+          title: "Error Updating Settings", 
+          description: error.message, 
+          variant: "destructive" 
+        });
+      } else {
+        toast({ title: "Settings Updated", description: "System settings have been saved" });
+        onSystemSettingsChange();
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast({ 
+        title: "Error", 
+        description: "An unexpected error occurred", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const createBackup = async () => {
-    const backupData = {
-      ...allData,
-      timestamp: new Date().toISOString()
-    };
-    
-    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `backup-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-    
-    const updatedBackupSettings = {...backupSettings, lastBackup: new Date().toISOString()};
-    onBackupSettingsChange(updatedBackupSettings);
-    
-    toast({ title: "Backup Created", description: "System backup has been downloaded" });
+    try {
+      const backupData = {
+        ...allData,
+        timestamp: new Date().toISOString(),
+        version: '1.0'
+      };
+      
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sapience-esports-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      const updatedBackupSettings = {...backupSettings, lastBackup: new Date().toISOString()};
+      onBackupSettingsChange(updatedBackupSettings);
+      
+      toast({ title: "Backup Created", description: "System backup has been downloaded successfully" });
+    } catch (error) {
+      console.error('Backup error:', error);
+      toast({ 
+        title: "Backup Failed", 
+        description: "Failed to create backup", 
+        variant: "destructive" 
+      });
+    }
   };
-
-  if (!localSettings) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-gray-400">Loading system settings...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -117,6 +185,7 @@ const SystemTab = ({
             <Switch
               checked={localSettings.registration_open}
               onCheckedChange={(checked) => handleSettingChange('registration_open', checked)}
+              disabled={isLoading}
             />
           </div>
           
@@ -125,6 +194,7 @@ const SystemTab = ({
             <Switch
               checked={localSettings.auto_approval}
               onCheckedChange={(checked) => handleSettingChange('auto_approval', checked)}
+              disabled={isLoading}
             />
           </div>
           
@@ -133,6 +203,7 @@ const SystemTab = ({
             <Switch
               checked={localSettings.email_notifications}
               onCheckedChange={(checked) => handleSettingChange('email_notifications', checked)}
+              disabled={isLoading}
             />
           </div>
           
@@ -143,11 +214,18 @@ const SystemTab = ({
               value={localSettings.max_participants}
               onChange={(e) => handleSettingChange('max_participants', parseInt(e.target.value) || 100)}
               className="bg-slate-600 border-slate-500 text-white mt-1"
+              min="1"
+              max="1000"
+              disabled={isLoading}
             />
           </div>
           
-          <Button onClick={updateSystemSettings} className="w-full bg-blue-600 hover:bg-blue-700">
-            Update Settings
+          <Button 
+            onClick={updateSystemSettings} 
+            className="w-full bg-blue-600 hover:bg-blue-700"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Saving...' : (!systemSettings ? 'Create Settings' : 'Update Settings')}
           </Button>
         </CardContent>
       </Card>
@@ -180,7 +258,7 @@ const SystemTab = ({
           </Button>
           
           <div className="pt-4 border-t border-slate-600">
-            <h4 className="text-white font-medium mb-2">Statistics</h4>
+            <h4 className="text-white font-medium mb-2">System Statistics</h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div className="bg-slate-600/50 p-2 rounded">
                 <div className="text-gray-400">Total Registrations</div>

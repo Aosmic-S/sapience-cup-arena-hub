@@ -40,6 +40,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
     icon: 'gamepad',
     is_active: true
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const resetForm = () => {
     setFormData({
@@ -57,12 +58,23 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!formData.name.trim() || !formData.display_name.trim()) {
+      toast({ 
+        title: "Validation Error", 
+        description: "Name and Display Name are required", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
     try {
       if (editingGame) {
         const { error } = await supabase
           .from('games')
           .update({
-            name: formData.name,
+            name: formData.name.toLowerCase().replace(/\s+/g, '-'),
             display_name: formData.display_name,
             color: formData.color,
             description: formData.description || null,
@@ -74,7 +86,11 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
 
         if (error) {
           console.error('Error updating game:', error);
-          toast({ title: "Error Updating Game", description: error.message, variant: "destructive" });
+          toast({ 
+            title: "Error Updating Game", 
+            description: error.message || "Failed to update game", 
+            variant: "destructive" 
+          });
         } else {
           toast({ title: "Game Updated", description: "Game has been updated successfully" });
           onGamesChange();
@@ -84,7 +100,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
         const { error } = await supabase
           .from('games')
           .insert([{
-            name: formData.name,
+            name: formData.name.toLowerCase().replace(/\s+/g, '-'),
             display_name: formData.display_name,
             color: formData.color,
             description: formData.description || null,
@@ -94,7 +110,11 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
 
         if (error) {
           console.error('Error adding game:', error);
-          toast({ title: "Error Adding Game", description: error.message, variant: "destructive" });
+          toast({ 
+            title: "Error Adding Game", 
+            description: error.message || "Failed to add game", 
+            variant: "destructive" 
+          });
         } else {
           toast({ title: "Game Added", description: "New game has been added successfully" });
           onGamesChange();
@@ -103,7 +123,13 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
       }
     } catch (error) {
       console.error('Unexpected error:', error);
-      toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
+      toast({ 
+        title: "Error", 
+        description: "An unexpected error occurred", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -130,14 +156,22 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
 
         if (error) {
           console.error('Error deleting game:', error);
-          toast({ title: "Error Deleting Game", description: error.message, variant: "destructive" });
+          toast({ 
+            title: "Error Deleting Game", 
+            description: error.message || "Failed to delete game", 
+            variant: "destructive" 
+          });
         } else {
           toast({ title: "Game Deleted", description: "Game has been deleted successfully" });
           onGamesChange();
         }
       } catch (error) {
         console.error('Unexpected error:', error);
-        toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
+        toast({ 
+          title: "Error", 
+          description: "An unexpected error occurred", 
+          variant: "destructive" 
+        });
       }
     }
   };
@@ -154,7 +188,11 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
 
       if (error) {
         console.error('Error updating game status:', error);
-        toast({ title: "Error Updating Game Status", description: error.message, variant: "destructive" });
+        toast({ 
+          title: "Error Updating Game Status", 
+          description: error.message || "Failed to update status", 
+          variant: "destructive" 
+        });
       } else {
         toast({ 
           title: "Game Status Updated", 
@@ -164,7 +202,11 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
       }
     } catch (error) {
       console.error('Unexpected error:', error);
-      toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
+      toast({ 
+        title: "Error", 
+        description: "An unexpected error occurred", 
+        variant: "destructive" 
+      });
     }
   };
 
@@ -175,6 +217,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
         <Button 
           onClick={() => setShowAddForm(!showAddForm)}
           className="bg-blue-600 hover:bg-blue-700"
+          disabled={isSubmitting}
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Game
@@ -192,7 +235,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name" className="text-gray-300">Game Name (slug)</Label>
+                  <Label htmlFor="name" className="text-gray-300">Game Name (slug) *</Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -200,10 +243,11 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
                     className="bg-slate-600 border-slate-500 text-white"
                     placeholder="e.g., free-fire"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="display_name" className="text-gray-300">Display Name</Label>
+                  <Label htmlFor="display_name" className="text-gray-300">Display Name *</Label>
                   <Input
                     id="display_name"
                     value={formData.display_name}
@@ -211,6 +255,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
                     className="bg-slate-600 border-slate-500 text-white"
                     placeholder="e.g., Free Fire"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -220,6 +265,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
                 <Select 
                   value={formData.color} 
                   onValueChange={(value) => setFormData(prev => ({ ...prev, color: value }))}
+                  disabled={isSubmitting}
                 >
                   <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
                     <SelectValue />
@@ -243,6 +289,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   className="bg-slate-600 border-slate-500 text-white"
                   placeholder="Brief description of the game"
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -251,15 +298,25 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
                   id="is_active"
                   checked={formData.is_active}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+                  disabled={isSubmitting}
                 />
                 <Label htmlFor="is_active" className="text-gray-300">Active</Label>
               </div>
 
               <div className="flex space-x-2">
-                <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                  {editingGame ? 'Update Game' : 'Add Game'}
+                <Button 
+                  type="submit" 
+                  className="bg-green-600 hover:bg-green-700"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Saving...' : (editingGame ? 'Update Game' : 'Add Game')}
                 </Button>
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={resetForm}
+                  disabled={isSubmitting}
+                >
                   Cancel
                 </Button>
               </div>
@@ -278,56 +335,58 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
               No games found. Add your first game using the button above.
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-gray-300">Game</TableHead>
-                  <TableHead className="text-gray-300">Display Name</TableHead>
-                  <TableHead className="text-gray-300">Description</TableHead>
-                  <TableHead className="text-gray-300">Status</TableHead>
-                  <TableHead className="text-gray-300">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {games.map((game) => (
-                  <TableRow key={game.id}>
-                    <TableCell>
-                      <div className={`${game.color} text-white px-3 py-1 rounded text-sm inline-block`}>
-                        {game.name}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-gray-300">{game.display_name}</TableCell>
-                    <TableCell className="text-gray-300">{game.description || 'No description'}</TableCell>
-                    <TableCell>
-                      <Switch
-                        checked={game.is_active}
-                        onCheckedChange={() => toggleGameStatus(game.id, game.is_active)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(game)}
-                          className="border-slate-500 text-slate-300 hover:bg-slate-600"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDelete(game.id, game.display_name)}
-                          className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-gray-300">Game</TableHead>
+                    <TableHead className="text-gray-300">Display Name</TableHead>
+                    <TableHead className="text-gray-300">Description</TableHead>
+                    <TableHead className="text-gray-300">Status</TableHead>
+                    <TableHead className="text-gray-300">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {games.map((game) => (
+                    <TableRow key={game.id}>
+                      <TableCell>
+                        <div className={`${game.color} text-white px-3 py-1 rounded text-sm inline-block`}>
+                          {game.name}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-300">{game.display_name}</TableCell>
+                      <TableCell className="text-gray-300">{game.description || 'No description'}</TableCell>
+                      <TableCell>
+                        <Switch
+                          checked={game.is_active}
+                          onCheckedChange={() => toggleGameStatus(game.id, game.is_active)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEdit(game)}
+                            className="border-slate-500 text-slate-300 hover:bg-slate-600"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDelete(game.id, game.display_name)}
+                            className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
