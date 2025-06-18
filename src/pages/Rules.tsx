@@ -26,6 +26,23 @@ const Rules = () => {
     }
   });
 
+  const { data: games = [] } = useQuery({
+    queryKey: ['games'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('games')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: true });
+      
+      if (error) {
+        console.error('Error loading games:', error);
+        return [];
+      }
+      return data || [];
+    }
+  });
+
   const defaultRules = {
     general: 'General tournament rules will be displayed here.',
     freefire: 'Free Fire specific rules will be displayed here.',
@@ -36,6 +53,17 @@ const Rules = () => {
   };
 
   const currentRules = rulesContent || defaultRules;
+
+  const gameTabMapping: { [key: string]: string } = {
+    'free-fire': 'freefire',
+    'codm': 'codm',
+    'fc-mobile': 'fcmobile'
+  };
+
+  const getGameRules = (gameName: string) => {
+    const ruleKey = gameTabMapping[gameName] || gameName;
+    return currentRules[ruleKey as keyof typeof currentRules] || `${gameName} specific rules will be displayed here.`;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
@@ -58,9 +86,11 @@ const Rules = () => {
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-slate-700 gap-1">
                   <TabsTrigger value="general" className="text-xs px-1 md:px-2">General</TabsTrigger>
-                  <TabsTrigger value="freefire" className="text-xs px-1 md:px-2">Fire</TabsTrigger>
-                  <TabsTrigger value="codm" className="text-xs px-1 md:px-2">CODM</TabsTrigger>
-                  <TabsTrigger value="fcmobile" className="text-xs px-1 md:px-2">FC</TabsTrigger>
+                  {games.map((game) => (
+                    <TabsTrigger key={game.name} value={game.name} className="text-xs px-1 md:px-2">
+                      {game.display_name}
+                    </TabsTrigger>
+                  ))}
                   <TabsTrigger value="conduct" className="text-xs px-1 md:px-2">Conduct</TabsTrigger>
                   <TabsTrigger value="tournament" className="text-xs px-1 md:px-2">Format</TabsTrigger>
                 </TabsList>
@@ -71,23 +101,13 @@ const Rules = () => {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="freefire" className="mt-4">
-                  <div className="text-gray-300 whitespace-pre-wrap">
-                    {currentRules.freefire}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="codm" className="mt-4">
-                  <div className="text-gray-300 whitespace-pre-wrap">
-                    {currentRules.codm}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="fcmobile" className="mt-4">
-                  <div className="text-gray-300 whitespace-pre-wrap">
-                    {currentRules.fcmobile}
-                  </div>
-                </TabsContent>
+                {games.map((game) => (
+                  <TabsContent key={game.name} value={game.name} className="mt-4">
+                    <div className="text-gray-300 whitespace-pre-wrap">
+                      {getGameRules(game.name)}
+                    </div>
+                  </TabsContent>
+                ))}
 
                 <TabsContent value="conduct" className="mt-4">
                   <div className="text-gray-300 whitespace-pre-wrap">

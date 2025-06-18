@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { FileText, Save } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 interface RulesContent {
   general: string;
@@ -28,6 +29,23 @@ const RulesTab = () => {
     tournament: ''
   });
   const [isLoading, setIsLoading] = useState(true);
+
+  const { data: games = [] } = useQuery({
+    queryKey: ['games'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('games')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: true });
+      
+      if (error) {
+        console.error('Error loading games:', error);
+        return [];
+      }
+      return data || [];
+    }
+  });
 
   useEffect(() => {
     loadRulesContent();
@@ -93,6 +111,12 @@ const RulesTab = () => {
     setRulesContent(prev => ({ ...prev, [section]: value }));
   };
 
+  const gameTabMapping: { [key: string]: keyof RulesContent } = {
+    'free-fire': 'freefire',
+    'codm': 'codm',
+    'fc-mobile': 'fcmobile'
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -113,9 +137,11 @@ const RulesTab = () => {
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-slate-600 gap-1">
             <TabsTrigger value="general" className="text-xs px-2">General</TabsTrigger>
-            <TabsTrigger value="freefire" className="text-xs px-2">Fire</TabsTrigger>
-            <TabsTrigger value="codm" className="text-xs px-2">CODM</TabsTrigger>
-            <TabsTrigger value="fcmobile" className="text-xs px-2">FC</TabsTrigger>
+            {games.map((game) => (
+              <TabsTrigger key={game.name} value={game.name} className="text-xs px-2">
+                {game.display_name}
+              </TabsTrigger>
+            ))}
             <TabsTrigger value="conduct" className="text-xs px-2">Conduct</TabsTrigger>
             <TabsTrigger value="tournament" className="text-xs px-2">Format</TabsTrigger>
           </TabsList>
@@ -132,41 +158,22 @@ const RulesTab = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="freefire" className="mt-4">
-            <div className="space-y-4">
-              <Label className="text-gray-300">Free Fire Rules</Label>
-              <Textarea
-                value={rulesContent.freefire}
-                onChange={(e) => handleContentChange('freefire', e.target.value)}
-                placeholder="Enter Free Fire specific rules..."
-                className="bg-slate-600 border-slate-500 text-white min-h-[300px]"
-              />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="codm" className="mt-4">
-            <div className="space-y-4">
-              <Label className="text-gray-300">Call of Duty Mobile Rules</Label>
-              <Textarea
-                value={rulesContent.codm}
-                onChange={(e) => handleContentChange('codm', e.target.value)}
-                placeholder="Enter CODM specific rules..."
-                className="bg-slate-600 border-slate-500 text-white min-h-[300px]"
-              />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="fcmobile" className="mt-4">
-            <div className="space-y-4">
-              <Label className="text-gray-300">FC Mobile Rules</Label>
-              <Textarea
-                value={rulesContent.fcmobile}
-                onChange={(e) => handleContentChange('fcmobile', e.target.value)}
-                placeholder="Enter FC Mobile specific rules..."
-                className="bg-slate-600 border-slate-500 text-white min-h-[300px]"
-              />
-            </div>
-          </TabsContent>
+          {games.map((game) => {
+            const ruleKey = gameTabMapping[game.name] || 'general';
+            return (
+              <TabsContent key={game.name} value={game.name} className="mt-4">
+                <div className="space-y-4">
+                  <Label className="text-gray-300">{game.display_name} Rules</Label>
+                  <Textarea
+                    value={rulesContent[ruleKey] || ''}
+                    onChange={(e) => handleContentChange(ruleKey, e.target.value)}
+                    placeholder={`Enter ${game.display_name} specific rules...`}
+                    className="bg-slate-600 border-slate-500 text-white min-h-[300px]"
+                  />
+                </div>
+              </TabsContent>
+            );
+          })}
 
           <TabsContent value="conduct" className="mt-4">
             <div className="space-y-4">
