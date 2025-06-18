@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Trash2, Plus, Edit } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 
 interface Game {
   id: string;
@@ -57,46 +57,53 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (editingGame) {
-      const { error } = await supabase
-        .from('games')
-        .update({
-          name: formData.name,
-          display_name: formData.display_name,
-          color: formData.color,
-          description: formData.description,
-          icon: formData.icon,
-          is_active: formData.is_active,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', editingGame.id);
+    try {
+      if (editingGame) {
+        const { error } = await supabase
+          .from('games')
+          .update({
+            name: formData.name,
+            display_name: formData.display_name,
+            color: formData.color,
+            description: formData.description || null,
+            icon: formData.icon,
+            is_active: formData.is_active,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', editingGame.id);
 
-      if (error) {
-        toast({ title: "Error Updating Game", description: error.message, variant: "destructive" });
+        if (error) {
+          console.error('Error updating game:', error);
+          toast({ title: "Error Updating Game", description: error.message, variant: "destructive" });
+        } else {
+          toast({ title: "Game Updated", description: "Game has been updated successfully" });
+          onGamesChange();
+          resetForm();
+        }
       } else {
-        toast({ title: "Game Updated", description: "Game has been updated successfully" });
-        onGamesChange();
-        resetForm();
-      }
-    } else {
-      const { error } = await supabase
-        .from('games')
-        .insert([{
-          name: formData.name,
-          display_name: formData.display_name,
-          color: formData.color,
-          description: formData.description,
-          icon: formData.icon,
-          is_active: formData.is_active
-        }]);
+        const { error } = await supabase
+          .from('games')
+          .insert([{
+            name: formData.name,
+            display_name: formData.display_name,
+            color: formData.color,
+            description: formData.description || null,
+            icon: formData.icon,
+            is_active: formData.is_active
+          }]);
 
-      if (error) {
-        toast({ title: "Error Adding Game", description: error.message, variant: "destructive" });
-      } else {
-        toast({ title: "Game Added", description: "New game has been added successfully" });
-        onGamesChange();
-        resetForm();
+        if (error) {
+          console.error('Error adding game:', error);
+          toast({ title: "Error Adding Game", description: error.message, variant: "destructive" });
+        } else {
+          toast({ title: "Game Added", description: "New game has been added successfully" });
+          onGamesChange();
+          resetForm();
+        }
       }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
     }
   };
 
@@ -113,33 +120,51 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
     setShowAddForm(true);
   };
 
-  const handleDelete = async (gameId: string) => {
-    if (confirm('Are you sure you want to delete this game?')) {
-      const { error } = await supabase
-        .from('games')
-        .delete()
-        .eq('id', gameId);
+  const handleDelete = async (gameId: string, gameName: string) => {
+    if (window.confirm(`Are you sure you want to delete the game "${gameName}"? This action cannot be undone.`)) {
+      try {
+        const { error } = await supabase
+          .from('games')
+          .delete()
+          .eq('id', gameId);
 
-      if (error) {
-        toast({ title: "Error Deleting Game", description: error.message, variant: "destructive" });
-      } else {
-        toast({ title: "Game Deleted", description: "Game has been deleted successfully" });
-        onGamesChange();
+        if (error) {
+          console.error('Error deleting game:', error);
+          toast({ title: "Error Deleting Game", description: error.message, variant: "destructive" });
+        } else {
+          toast({ title: "Game Deleted", description: "Game has been deleted successfully" });
+          onGamesChange();
+        }
+      } catch (error) {
+        console.error('Unexpected error:', error);
+        toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
       }
     }
   };
 
   const toggleGameStatus = async (gameId: string, currentStatus: boolean) => {
-    const { error } = await supabase
-      .from('games')
-      .update({ is_active: !currentStatus, updated_at: new Date().toISOString() })
-      .eq('id', gameId);
+    try {
+      const { error } = await supabase
+        .from('games')
+        .update({ 
+          is_active: !currentStatus, 
+          updated_at: new Date().toISOString() 
+        })
+        .eq('id', gameId);
 
-    if (error) {
-      toast({ title: "Error Updating Game Status", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Game Status Updated", description: `Game has been ${!currentStatus ? 'activated' : 'deactivated'}` });
-      onGamesChange();
+      if (error) {
+        console.error('Error updating game status:', error);
+        toast({ title: "Error Updating Game Status", description: error.message, variant: "destructive" });
+      } else {
+        toast({ 
+          title: "Game Status Updated", 
+          description: `Game has been ${!currentStatus ? 'activated' : 'deactivated'}` 
+        });
+        onGamesChange();
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
     }
   };
 
@@ -165,7 +190,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="name" className="text-gray-300">Game Name (slug)</Label>
                   <Input
@@ -245,59 +270,65 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
 
       <Card className="bg-slate-700/50 border-slate-600">
         <CardHeader>
-          <CardTitle className="text-white">Existing Games</CardTitle>
+          <CardTitle className="text-white">Existing Games ({games.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-gray-300">Game</TableHead>
-                <TableHead className="text-gray-300">Display Name</TableHead>
-                <TableHead className="text-gray-300">Description</TableHead>
-                <TableHead className="text-gray-300">Status</TableHead>
-                <TableHead className="text-gray-300">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {games.map((game) => (
-                <TableRow key={game.id}>
-                  <TableCell>
-                    <div className={`${game.color} text-white px-3 py-1 rounded text-sm inline-block`}>
-                      {game.name}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-gray-300">{game.display_name}</TableCell>
-                  <TableCell className="text-gray-300">{game.description || 'No description'}</TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={game.is_active}
-                      onCheckedChange={() => toggleGameStatus(game.id, game.is_active)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(game)}
-                        className="border-slate-500 text-slate-300"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDelete(game.id)}
-                        className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+          {games.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              No games found. Add your first game using the button above.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-gray-300">Game</TableHead>
+                  <TableHead className="text-gray-300">Display Name</TableHead>
+                  <TableHead className="text-gray-300">Description</TableHead>
+                  <TableHead className="text-gray-300">Status</TableHead>
+                  <TableHead className="text-gray-300">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {games.map((game) => (
+                  <TableRow key={game.id}>
+                    <TableCell>
+                      <div className={`${game.color} text-white px-3 py-1 rounded text-sm inline-block`}>
+                        {game.name}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-gray-300">{game.display_name}</TableCell>
+                    <TableCell className="text-gray-300">{game.description || 'No description'}</TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={game.is_active}
+                        onCheckedChange={() => toggleGameStatus(game.id, game.is_active)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEdit(game)}
+                          className="border-slate-500 text-slate-300 hover:bg-slate-600"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDelete(game.id, game.display_name)}
+                          className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
