@@ -228,6 +228,7 @@ export type Database = {
           phone_number: string
           team_name: string | null
           team_number: string | null
+          team_uid: string | null
           uid: string | null
         }
         Insert: {
@@ -243,6 +244,7 @@ export type Database = {
           phone_number: string
           team_name?: string | null
           team_number?: string | null
+          team_uid?: string | null
           uid?: string | null
         }
         Update: {
@@ -258,6 +260,7 @@ export type Database = {
           phone_number?: string
           team_name?: string | null
           team_number?: string | null
+          team_uid?: string | null
           uid?: string | null
         }
         Relationships: []
