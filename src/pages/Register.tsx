@@ -2,14 +2,17 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/hooks/use-toast';
-import { UserPlus, Users, User } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import BasicInfoSection from '@/components/registration/BasicInfoSection';
+import GameSelectionSection from '@/components/registration/GameSelectionSection';
+import EntryTypeSection from '@/components/registration/EntryTypeSection';
+import ContactInfoSection from '@/components/registration/ContactInfoSection';
+import GameInfoSection from '@/components/registration/GameInfoSection';
+import TeamMembersSection from '@/components/registration/TeamMembersSection';
+import AdminSection from '@/components/registration/AdminSection';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -18,12 +21,15 @@ const Register = () => {
     game: '',
     entryType: 'solo',
     teamName: '',
+    teamUid: '',
     phoneNumber: '',
     inGameId: '',
     uid: '',
     password: '',
-    members: ['', '', '', ''] // Up to 4 additional members
+    members: ['', '', '', ''],
+    customTeamId: ''
   });
+  const [isAdminMode, setIsAdminMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: games = [] } = useQuery({
@@ -54,15 +60,38 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      // Get team number from database function
-      const { data: teamNumberData, error: teamNumberError } = await supabase
-        .rpc('generate_team_number');
+      let teamNumber;
+      
+      // Use custom team ID if admin mode is enabled and custom ID is provided
+      if (isAdminMode && formData.customTeamId.trim()) {
+        // Check if custom team ID already exists
+        const { data: existingTeam } = await supabase
+          .from('registrations')
+          .select('team_number')
+          .eq('team_number', formData.customTeamId.trim())
+          .single();
 
-      if (teamNumberError) {
-        throw teamNumberError;
+        if (existingTeam) {
+          toast({
+            title: "Registration Failed",
+            description: "Custom team ID already exists. Please choose a different one.",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+        
+        teamNumber = formData.customTeamId.trim();
+      } else {
+        // Generate team number from database function
+        const { data: teamNumberData, error: teamNumberError } = await supabase
+          .rpc('generate_team_number');
+
+        if (teamNumberError) {
+          throw teamNumberError;
+        }
+        teamNumber = teamNumberData;
       }
-
-      const teamNumber = teamNumberData;
 
       // Prepare registration data
       const registrationData = {
@@ -71,11 +100,12 @@ const Register = () => {
         game: formData.game,
         entry_type: formData.entryType,
         team_name: formData.entryType === 'team' ? formData.teamName : null,
+        team_uid: formData.entryType === 'team' ? formData.teamUid : null,
         phone_number: formData.phoneNumber,
         in_game_id: formData.inGameId || null,
         uid: formData.uid || null,
         team_number: teamNumber,
-        password_hash: formData.password, // In production, this should be properly hashed
+        password_hash: formData.password,
         members: formData.entryType === 'team' ? formData.members.filter(m => m.trim()) : null
       };
 
@@ -95,7 +125,6 @@ const Register = () => {
           description: `Your team number is ${teamNumber}. Please save this for login.`,
         });
         
-        // Show team credentials in a more prominent way
         alert(`🎉 Registration Successful!\n\nYour Login Credentials:\nTeam Number: ${teamNumber}\nPassword: ${formData.password}\n\nPlease save these credentials to access your team dashboard.`);
         
         // Reset form
@@ -105,12 +134,15 @@ const Register = () => {
           game: '',
           entryType: 'solo',
           teamName: '',
+          teamUid: '',
           phoneNumber: '',
           inGameId: '',
           uid: '',
           password: '',
-          members: ['', '', '', '']
+          members: ['', '', '', ''],
+          customTeamId: ''
         });
+        setIsAdminMode(false);
       }
     } catch (error) {
       toast({
@@ -136,155 +168,53 @@ const Register = () => {
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Basic Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-gray-300">Full Name *</Label>
-                  <Input
-                    id="fullName"
-                    value={formData.fullName}
-                    onChange={(e) => handleInputChange('fullName', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    required
-                  />
-                </div>
+              <BasicInfoSection 
+                formData={{ fullName: formData.fullName, classSection: formData.classSection }}
+                onInputChange={handleInputChange}
+              />
 
-                <div className="space-y-2">
-                  <Label htmlFor="classSection" className="text-gray-300">Class/Section *</Label>
-                  <Input
-                    id="classSection"
-                    value={formData.classSection}
-                    onChange={(e) => handleInputChange('classSection', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    placeholder="e.g., 12-A"
-                    required
-                  />
-                </div>
-              </div>
+              <GameSelectionSection 
+                games={games}
+                selectedGame={formData.game}
+                onGameChange={(value) => handleInputChange('game', value)}
+              />
 
-              {/* Game Selection */}
-              <div className="space-y-2">
-                <Label className="text-gray-300">Game *</Label>
-                <Select value={formData.game} onValueChange={(value) => handleInputChange('game', value)}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                    <SelectValue placeholder="Select a game" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
-                    {games.map((game) => (
-                      <SelectItem key={game.name} value={game.name}>
-                        {game.display_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <EntryTypeSection 
+                entryType={formData.entryType}
+                teamName={formData.teamName}
+                teamUid={formData.teamUid}
+                onEntryTypeChange={(value) => handleInputChange('entryType', value)}
+                onTeamNameChange={(value) => handleInputChange('teamName', value)}
+                onTeamUidChange={(value) => handleInputChange('teamUid', value)}
+              />
 
-              {/* Entry Type */}
-              <div className="space-y-3">
-                <Label className="text-gray-300">Entry Type *</Label>
-                <RadioGroup
-                  value={formData.entryType}
-                  onValueChange={(value) => handleInputChange('entryType', value)}
-                  className="flex space-x-8"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="solo" id="solo" className="border-purple-400" />
-                    <Label htmlFor="solo" className="text-white flex items-center cursor-pointer">
-                      <User className="w-4 h-4 mr-2" />
-                      Solo
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="team" id="team" className="border-purple-400" />
-                    <Label htmlFor="team" className="text-white flex items-center cursor-pointer">
-                      <Users className="w-4 h-4 mr-2" />
-                      Team
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
+              <ContactInfoSection 
+                phoneNumber={formData.phoneNumber}
+                password={formData.password}
+                onPhoneChange={(value) => handleInputChange('phoneNumber', value)}
+                onPasswordChange={(value) => handleInputChange('password', value)}
+              />
 
-              {/* Team Name (only if team entry) */}
+              <GameInfoSection 
+                inGameId={formData.inGameId}
+                uid={formData.uid}
+                onInGameIdChange={(value) => handleInputChange('inGameId', value)}
+                onUidChange={(value) => handleInputChange('uid', value)}
+              />
+
               {formData.entryType === 'team' && (
-                <div className="space-y-2">
-                  <Label htmlFor="teamName" className="text-gray-300">Team Name *</Label>
-                  <Input
-                    id="teamName"
-                    value={formData.teamName}
-                    onChange={(e) => handleInputChange('teamName', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    required={formData.entryType === 'team'}
-                  />
-                </div>
+                <TeamMembersSection 
+                  members={formData.members}
+                  onMemberChange={handleMemberChange}
+                />
               )}
 
-              {/* Contact Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phoneNumber" className="text-gray-300">Phone Number *</Label>
-                  <Input
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-300">Set Password *</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    placeholder="Create a password for team login"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Game Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="inGameId" className="text-gray-300">In-Game ID</Label>
-                  <Input
-                    id="inGameId"
-                    value={formData.inGameId}
-                    onChange={(e) => handleInputChange('inGameId', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="uid" className="text-gray-300">UID</Label>
-                  <Input
-                    id="uid"
-                    value={formData.uid}
-                    onChange={(e) => handleInputChange('uid', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                  />
-                </div>
-              </div>
-
-              {/* Team Members (only if team entry) */}
-              {formData.entryType === 'team' && (
-                <div className="space-y-4">
-                  <Label className="text-gray-300">Team Members (Optional - up to 4 additional members)</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {formData.members.map((member, index) => (
-                      <Input
-                        key={index}
-                        value={member}
-                        onChange={(e) => handleMemberChange(index, e.target.value)}
-                        placeholder={`Member ${index + 2} name`}
-                        className="bg-slate-700 border-slate-600 text-white"
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
+              <AdminSection 
+                customTeamId={formData.customTeamId}
+                isAdminMode={isAdminMode}
+                onCustomTeamIdChange={(value) => handleInputChange('customTeamId', value)}
+                onAdminModeChange={setIsAdminMode}
+              />
 
               <Button 
                 type="submit" 
