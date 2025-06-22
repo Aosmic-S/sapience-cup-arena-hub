@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,8 +14,18 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [password, setPassword] = useState('');
   const adminPassword = "SHELBY1701";
 
+  useEffect(() => {
+    // Check if admin is already logged in from localStorage
+    const isAdminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+    if (isAdminLoggedIn) {
+      onLogin();
+    }
+  }, [onLogin]);
+
   const handleLogin = () => {
     if (password === adminPassword) {
+      // Store admin login state in localStorage
+      localStorage.setItem('adminLoggedIn', 'true');
       onLogin();
       toast({
         title: "Login Successful",

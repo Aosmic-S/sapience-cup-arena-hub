@@ -4,9 +4,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { 
   Users, Settings, Megaphone, 
-  Calendar as CalendarIcon, Mail, Database, Gamepad2, FileText, Trophy
+  Calendar as CalendarIcon, Mail, Database, Gamepad2, FileText, Trophy, LogOut
 } from 'lucide-react';
 import AdminLogin from '@/components/admin/AdminLogin';
 import RegistrationsTab from '@/components/admin/RegistrationsTab';
@@ -22,6 +23,23 @@ import { Skeleton } from '@/components/ui/skeleton';
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Check if admin is already logged in from localStorage
+    const isAdminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+    if (isAdminLoggedIn) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminLoggedIn');
+    setIsAuthenticated(false);
+    toast({
+      title: "Logged Out",
+      description: "You have been logged out of the admin panel",
+    });
+  };
 
   const { data: registrations = [], isLoading: isLoadingRegistrations } = useQuery({
     queryKey: ['registrations'],
@@ -109,10 +127,20 @@ const Admin = () => {
       <div className="container mx-auto px-4">
         <Card className="bg-slate-800/50 border-slate-700">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
-              <Settings className="w-8 h-8 mr-3" />
-              Admin Panel
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
+                <Settings className="w-8 h-8 mr-3" />
+                Admin Panel
+              </CardTitle>
+              <Button 
+                onClick={handleLogout}
+                variant="outline"
+                className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </CardHeader>
           
           <CardContent>
