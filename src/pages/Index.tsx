@@ -142,7 +142,7 @@ const MobileHome = () => {
 
       <footer className="text-center text-gray-400 pt-8 border-t border-slate-700 text-xs">
         <p>Sapience School, Vikasnagar · thesapienceschool@gmail.com</p>
-        <p>Organizer: Hynx Studios</p>
+        <p>Organizer: <a href="https://aosmicstudio.vercel.app" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">Aosmic Studio</a></p>
       </footer>
     </div>
   );
@@ -266,7 +266,7 @@ const TabletHome = () => {
 
         <footer className="text-center text-gray-400 pt-8 border-t border-slate-700 text-sm">
           <div>The Sapience School • thesapienceschool@gmail.com</div>
-          <div>Organized by Hynx Studios</div>
+          <div>Organized by <a href="https://aosmicstudio.vercel.app" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">Aosmic Studio</a></div>
         </footer>
       </div>
     </div>
@@ -412,7 +412,7 @@ const DesktopHome = () => {
 
         <footer className="text-center text-gray-400 pt-8 border-t border-slate-700 text-base">
           <div>The Sapience School, Vikasnagar · thesapienceschool@gmail.com</div>
-          <div>Organizer: Hynx Studios</div>
+          <div>Organizer: <a href="https://aosmicstudio.vercel.app" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">Aosmic Studio</a></div>
         </footer>
       </div>
     </div>
