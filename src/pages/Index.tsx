@@ -50,7 +50,7 @@ const Index = () => {
             <span className="text-sm text-muted-foreground">The Sapience School, Vikasnagar</span>
           </div>
           <p className="mt-8 max-w-xl text-muted-foreground md:text-lg">
-            The official open mobile gaming championship organized by <strong className="text-foreground">Sapience eSports</strong>. Open to all students in Class 9 and above (open format, not house-bound).
+            The official open mobile gaming championship organized by <strong className="text-foreground">Sapience eSports</strong>. Open to all students in Class 9 and above.
           </p>
 
           <div className="mt-10 flex flex-wrap gap-3">
