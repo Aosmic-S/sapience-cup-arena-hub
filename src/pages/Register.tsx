@@ -16,7 +16,9 @@ import AdminSection from '@/components/registration/AdminSection';
 
 const Register = () => {
   const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
     fullName: '',
+    admissionNo: '', // <-- Add this
     classSection: '',
     game: '',
     entryType: 'solo',
@@ -29,6 +31,7 @@ const Register = () => {
     members: ['', '', '', ''],
     customTeamId: ''
   });
+
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
