@@ -37,7 +37,7 @@ const Leaderboard = () => {
   });
 
   const { data: games } = useQuery({
-    queryKey: ['games'],
+    queryKey: ['leaderboardGames'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('games')

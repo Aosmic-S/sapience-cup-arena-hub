@@ -24,7 +24,7 @@ const LeaderboardTab = () => {
   const queryClient = useQueryClient();
 
   const { data: teams = [] } = useQuery({
-    queryKey: ['registrations'],
+    queryKey: ['registrationTeams'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('registrations')

@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791966090758,
+      "tag": "0000_create_tournament_schema",
+      "breakpoints": true
+    }
+  ]
+}
