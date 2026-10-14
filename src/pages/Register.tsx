@@ -16,7 +16,6 @@ import AdminSection from '@/components/registration/AdminSection';
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    const [formData, setFormData] = useState({
     fullName: '',
     admissionNo: '', // <-- Add this
     classSection: '',
