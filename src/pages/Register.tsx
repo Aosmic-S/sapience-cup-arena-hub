@@ -33,7 +33,7 @@ const Register = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: games = [] } = useQuery({
-    queryKey: ['games'],
+    queryKey: ['registrationGames'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('games')
