@@ -30,9 +30,9 @@ const AdminSection = ({ customTeamId, isAdminMode, onCustomTeamIdChange, onAdmin
   };
 
   return (
-    <Card className="bg-slate-700/30 border-slate-600">
+    <Card className="bg-secondary border-border">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-white flex items-center">
+        <CardTitle className="text-lg font-semibold text-foreground flex items-center">
           <Shield className="w-5 h-5 mr-2" />
           Admin Section (Optional)
         </CardTitle>
@@ -41,20 +41,20 @@ const AdminSection = ({ customTeamId, isAdminMode, onCustomTeamIdChange, onAdmin
         {!isAdminMode ? (
           <div className="space-y-3">
             <div className="space-y-2">
-              <Label htmlFor="adminCode" className="text-gray-300">Enter Admin Code</Label>
+              <Label htmlFor="adminCode" className="text-muted-foreground">Enter Admin Code</Label>
               <div className="flex gap-2">
                 <Input
                   id="adminCode"
                   type="password"
                   value={adminCode}
                   onChange={(e) => setAdminCode(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-secondary border-border text-foreground"
                   placeholder="Admin access code"
                 />
                 <Button 
                   type="button"
                   onClick={handleAdminCodeSubmit}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-primary hover:bg-primary/90"
                 >
                   <Check className="w-4 h-4" />
                 </Button>
@@ -64,7 +64,7 @@ const AdminSection = ({ customTeamId, isAdminMode, onCustomTeamIdChange, onAdmin
         ) : (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-green-400 flex items-center">
+              <span className="text-success flex items-center">
                 <Check className="w-4 h-4 mr-2" />
                 Admin Access Granted
               </span>
@@ -77,7 +77,7 @@ const AdminSection = ({ customTeamId, isAdminMode, onCustomTeamIdChange, onAdmin
                   setAdminCode('');
                   onCustomTeamIdChange('');
                 }}
-                className="text-red-400 border-red-400 hover:bg-red-400/10"
+                className="text-destructive border-destructive hover:bg-destructive/10"
               >
                 <X className="w-4 h-4 mr-1" />
                 Exit Admin
@@ -85,15 +85,15 @@ const AdminSection = ({ customTeamId, isAdminMode, onCustomTeamIdChange, onAdmin
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="customTeamId" className="text-gray-300">Custom Team ID (Optional)</Label>
+              <Label htmlFor="customTeamId" className="text-muted-foreground">Custom Team ID (Optional)</Label>
               <Input
                 id="customTeamId"
                 value={customTeamId}
                 onChange={(e) => onCustomTeamIdChange(e.target.value)}
-                className="bg-slate-700 border-slate-600 text-white"
+                className="bg-secondary border-border text-foreground"
                 placeholder="e.g., TEAM_SPECIAL_001"
               />
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 Leave empty to auto-generate team ID
               </p>
             </div>

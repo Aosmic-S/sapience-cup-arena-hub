@@ -172,16 +172,16 @@ const SystemTab = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white flex items-center">
+          <CardTitle className="text-xl text-foreground flex items-center">
             <Settings className="w-5 h-5 mr-2" />
             System Settings
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label className="text-gray-300">Registration Open</Label>
+            <Label className="text-muted-foreground">Registration Open</Label>
             <Switch
               checked={localSettings.registration_open}
               onCheckedChange={(checked) => handleSettingChange('registration_open', checked)}
@@ -190,7 +190,7 @@ const SystemTab = ({
           </div>
           
           <div className="flex items-center justify-between">
-            <Label className="text-gray-300">Auto Approval</Label>
+            <Label className="text-muted-foreground">Auto Approval</Label>
             <Switch
               checked={localSettings.auto_approval}
               onCheckedChange={(checked) => handleSettingChange('auto_approval', checked)}
@@ -199,7 +199,7 @@ const SystemTab = ({
           </div>
           
           <div className="flex items-center justify-between">
-            <Label className="text-gray-300">Email Notifications</Label>
+            <Label className="text-muted-foreground">Email Notifications</Label>
             <Switch
               checked={localSettings.email_notifications}
               onCheckedChange={(checked) => handleSettingChange('email_notifications', checked)}
@@ -208,12 +208,12 @@ const SystemTab = ({
           </div>
           
           <div>
-            <Label className="text-gray-300">Max Participants</Label>
+            <Label className="text-muted-foreground">Max Participants</Label>
             <Input
               type="number"
               value={localSettings.max_participants}
               onChange={(e) => handleSettingChange('max_participants', parseInt(e.target.value) || 100)}
-              className="bg-slate-600 border-slate-500 text-white mt-1"
+              className="bg-secondary border-border text-foreground mt-1"
               min="1"
               max="1000"
               disabled={isLoading}
@@ -222,7 +222,7 @@ const SystemTab = ({
           
           <Button 
             onClick={updateSystemSettings} 
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-primary hover:bg-primary/90"
             disabled={isLoading}
           >
             {isLoading ? 'Saving...' : (!systemSettings ? 'Create Settings' : 'Update Settings')}
@@ -230,51 +230,51 @@ const SystemTab = ({
         </CardContent>
       </Card>
 
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white flex items-center">
+          <CardTitle className="text-xl text-foreground flex items-center">
             <Database className="w-5 h-5 mr-2" />
             Data Management
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-gray-300">Backup Settings</Label>
+            <Label className="text-muted-foreground">Backup Settings</Label>
             <div className="flex items-center justify-between">
-              <span className="text-gray-400">Auto Backup</span>
+              <span className="text-muted-foreground">Auto Backup</span>
               <Switch
                 checked={backupSettings.autoBackup}
                 onCheckedChange={(checked) => onBackupSettingsChange({...backupSettings, autoBackup: checked})}
               />
             </div>
-            <div className="text-gray-400 text-sm">
+            <div className="text-muted-foreground text-sm">
               Last backup: {new Date(backupSettings.lastBackup).toLocaleString()}
             </div>
           </div>
           
-          <Button onClick={createBackup} className="w-full bg-green-600 hover:bg-green-700">
+          <Button onClick={createBackup} className="w-full bg-success hover:bg-success">
             <Download className="w-4 h-4 mr-2" />
             Create Backup
           </Button>
           
-          <div className="pt-4 border-t border-slate-600">
-            <h4 className="text-white font-medium mb-2">System Statistics</h4>
+          <div className="pt-4 border-t border-border">
+            <h4 className="text-foreground font-medium mb-2">System Statistics</h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="bg-slate-600/50 p-2 rounded">
-                <div className="text-gray-400">Total Registrations</div>
-                <div className="text-white font-bold">{registrationCount}</div>
+              <div className="bg-secondary p-2 rounded">
+                <div className="text-muted-foreground">Total Registrations</div>
+                <div className="text-foreground font-bold">{registrationCount}</div>
               </div>
-              <div className="bg-slate-600/50 p-2 rounded">
-                <div className="text-gray-400">Scheduled Matches</div>
-                <div className="text-white font-bold">{matchDayCount}</div>
+              <div className="bg-secondary p-2 rounded">
+                <div className="text-muted-foreground">Scheduled Matches</div>
+                <div className="text-foreground font-bold">{matchDayCount}</div>
               </div>
-              <div className="bg-slate-600/50 p-2 rounded">
-                <div className="text-gray-400">Solo Entries</div>
-                <div className="text-white font-bold">{registrationCount > 0 ? Math.floor(registrationCount * 0.6) : 0}</div>
+              <div className="bg-secondary p-2 rounded">
+                <div className="text-muted-foreground">Solo Entries</div>
+                <div className="text-foreground font-bold">{registrationCount > 0 ? Math.floor(registrationCount * 0.6) : 0}</div>
               </div>
-              <div className="bg-slate-600/50 p-2 rounded">
-                <div className="text-gray-400">Team Entries</div>
-                <div className="text-white font-bold">{registrationCount > 0 ? Math.ceil(registrationCount * 0.4) : 0}</div>
+              <div className="bg-secondary p-2 rounded">
+                <div className="text-muted-foreground">Team Entries</div>
+                <div className="text-foreground font-bold">{registrationCount > 0 ? Math.ceil(registrationCount * 0.4) : 0}</div>
               </div>
             </div>
           </div>

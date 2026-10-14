@@ -73,71 +73,71 @@ const CommunicationsTab = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white flex items-center">
+          <CardTitle className="text-xl text-foreground flex items-center">
             <Mail className="w-5 h-5 mr-2" />
             Bulk Email
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label className="text-gray-300">Subject</Label>
+            <Label className="text-muted-foreground">Subject</Label>
             <Input
               value={emailTemplate.subject}
               onChange={(e) => onEmailTemplateChange({...emailTemplate, subject: e.target.value})}
-              className="bg-slate-600 border-slate-500 text-white"
+              className="bg-secondary border-border text-foreground"
             />
           </div>
           <div>
-            <Label className="text-gray-300">Message</Label>
+            <Label className="text-muted-foreground">Message</Label>
             <textarea
               value={emailTemplate.message}
               onChange={(e) => onEmailTemplateChange({...emailTemplate, message: e.target.value})}
-              className="w-full h-32 bg-slate-600 border-slate-500 text-white rounded-md p-3"
+              className="w-full h-32 bg-secondary border-border text-foreground rounded-md p-3"
             />
           </div>
-          <Button onClick={sendBulkEmail} className="w-full bg-green-600 hover:bg-green-700">
+          <Button onClick={sendBulkEmail} className="w-full bg-success hover:bg-success">
             <Mail className="w-4 h-4 mr-2" />
             Send to All Participants ({registrationCount})
           </Button>
         </CardContent>
       </Card>
 
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white flex items-center">
+          <CardTitle className="text-xl text-foreground flex items-center">
             <Bell className="w-5 h-5 mr-2" />
             Announcements
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label className="text-gray-300">Title</Label>
+            <Label className="text-muted-foreground">Title</Label>
             <Input
               value={newAnnouncement.title}
               onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
-              className="bg-slate-600 border-slate-500 text-white"
+              className="bg-secondary border-border text-foreground"
             />
           </div>
           <div>
-            <Label className="text-gray-300">Content</Label>
+            <Label className="text-muted-foreground">Content</Label>
             <textarea
               value={newAnnouncement.content}
               onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})}
-              className="w-full h-24 bg-slate-600 border-slate-500 text-white rounded-md p-3"
+              className="w-full h-24 bg-secondary border-border text-foreground rounded-md p-3"
             />
           </div>
           <div>
-            <Label className="text-gray-300">Priority</Label>
+            <Label className="text-muted-foreground">Priority</Label>
             <Select 
               value={newAnnouncement.priority} 
               onValueChange={(value) => setNewAnnouncement({...newAnnouncement, priority: value})}
             >
-              <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
+              <SelectTrigger className="bg-secondary border-border text-foreground">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-700 border-slate-600">
+              <SelectContent className="bg-secondary border-border">
                 <SelectItem value="low">Low</SelectItem>
                 <SelectItem value="normal">Normal</SelectItem>
                 <SelectItem value="high">High</SelectItem>
@@ -145,16 +145,16 @@ const CommunicationsTab = ({
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={addAnnouncement} className="w-full bg-blue-600 hover:bg-blue-700">
+          <Button onClick={addAnnouncement} className="w-full bg-primary hover:bg-primary/90">
             <Bell className="w-4 h-4 mr-2" />
             Add Announcement
           </Button>
           
           <div className="mt-4 space-y-2">
             {announcements.slice(0, 3).map((announcement) => (
-              <div key={announcement.id} className="bg-slate-600/50 p-2 rounded flex justify-between items-center">
+              <div key={announcement.id} className="bg-secondary p-2 rounded flex justify-between items-center">
                 <div>
-                  <p className="text-white text-sm font-medium">{announcement.title}</p>
+                  <p className="text-foreground text-sm font-medium">{announcement.title}</p>
                   <Badge variant={announcement.priority === 'urgent' ? 'destructive' : 'secondary'} className="text-xs">
                     {announcement.priority}
                   </Badge>

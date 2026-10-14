@@ -41,24 +41,24 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-      <Card className="w-full max-w-md bg-slate-800/50 border-slate-700">
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <Card className="w-full max-w-md bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-white text-center">Admin Login</CardTitle>
+          <CardTitle className="text-2xl font-bold text-foreground text-center">Admin Login</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="password" className="text-gray-300">Password</Label>
+            <Label htmlFor="password" className="text-muted-foreground">Password</Label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-slate-700 border-slate-600 text-white"
+              className="bg-secondary border-border text-foreground"
               onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
             />
           </div>
-          <Button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700">
+          <Button onClick={handleLogin} className="w-full bg-primary hover:bg-primary/90">
             Login
           </Button>
         </CardContent>

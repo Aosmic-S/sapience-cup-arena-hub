@@ -156,11 +156,11 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-2xl">
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
+            <CardTitle className="text-3xl font-bold text-foreground text-center flex items-center justify-center">
               <UserPlus className="w-8 h-8 mr-3" />
               Tournament Registration
             </CardTitle>
@@ -219,7 +219,7 @@ const Register = () => {
               <Button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-lg py-3"
+                className="w-full bg-primary hover:bg-primary/90 text-lg py-3"
               >
                 {isSubmitting ? 'Registering...' : 'Register for Tournament'}
               </Button>

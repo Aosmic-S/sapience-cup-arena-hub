@@ -19,14 +19,14 @@ export const Navigation = () => {
   ];
 
   return (
-    <nav className="bg-slate-900/95 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
+    <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
-              <Trophy className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <Trophy className="w-5 h-5 text-foreground" />
             </div>
-            <span className="text-xl font-bold text-white">Sapience Esports</span>
+            <span className="text-xl font-bold text-foreground">Sapience Esports</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -38,8 +38,8 @@ export const Navigation = () => {
                 <Link key={item.path} to={item.path}>
                   <Button
                     variant={isActive ? "secondary" : "ghost"}
-                    className={`text-white hover:text-purple-300 flex items-center space-x-2 ${
-                      isActive ? 'bg-purple-600/20 text-purple-300' : ''
+                    className={`text-foreground hover:text-primary flex items-center space-x-2 ${
+                      isActive ? 'bg-primary/20 text-primary' : ''
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -55,7 +55,7 @@ export const Navigation = () => {
             <Button
               variant="ghost"
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white hover:text-purple-300"
+              className="text-foreground hover:text-primary"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </Button>
@@ -64,7 +64,7 @@ export const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-slate-700">
+          <div className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -77,8 +77,8 @@ export const Navigation = () => {
                   >
                     <Button
                       variant={isActive ? "secondary" : "ghost"}
-                      className={`w-full justify-start text-white hover:text-purple-300 flex items-center space-x-2 ${
-                        isActive ? 'bg-purple-600/20 text-purple-300' : ''
+                      className={`w-full justify-start text-foreground hover:text-primary flex items-center space-x-2 ${
+                        isActive ? 'bg-primary/20 text-primary' : ''
                       }`}
                     >
                       <Icon className="w-4 h-4" />

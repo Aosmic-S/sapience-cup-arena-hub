@@ -52,13 +52,13 @@ const Leaderboard = () => {
   const getRankIcon = (position: number) => {
     switch (position) {
       case 1:
-        return <Trophy className="w-5 h-5 text-yellow-500" />;
+        return <Trophy className="w-5 h-5 text-warning" />;
       case 2:
-        return <Medal className="w-5 h-5 text-gray-400" />;
+        return <Medal className="w-5 h-5 text-muted-foreground" />;
       case 3:
-        return <Award className="w-5 h-5 text-amber-600" />;
+        return <Award className="w-5 h-5 text-warning" />;
       default:
-        return <span className="w-5 h-5 flex items-center justify-center text-gray-400 text-sm font-bold">#{position}</span>;
+        return <span className="w-5 h-5 flex items-center justify-center text-muted-foreground text-sm font-bold">#{position}</span>;
     }
   };
 
@@ -77,7 +77,7 @@ const Leaderboard = () => {
   const renderLeaderboardTable = (data: typeof leaderboardData) => (
     <div className="space-y-3">
       {data?.map((team, index) => (
-        <Card key={team.id} className="bg-slate-700/50 border-slate-600">
+        <Card key={team.id} className="bg-secondary border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -85,28 +85,28 @@ const Leaderboard = () => {
                   {getRankIcon(team.rank_position)}
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-foreground">
                     {team.registrations?.team_name || team.registrations?.full_name || team.team_number}
                   </h3>
                   <div className="flex items-center space-x-2">
-                    <Badge variant="outline" className="border-purple-400 text-purple-400 text-xs">
+                    <Badge variant="outline" className="border-primary text-primary text-xs">
                       {team.team_number}
                     </Badge>
-                    <Badge variant="secondary" className="bg-blue-600 text-white text-xs">
+                    <Badge variant="secondary" className="bg-primary text-primary-foreground text-xs">
                       {team.registrations?.entry_type}
                     </Badge>
-                    <span className="text-gray-400 text-sm">{team.game.toUpperCase()}</span>
+                    <span className="text-muted-foreground text-sm">{team.game.toUpperCase()}</span>
                   </div>
                 </div>
               </div>
               
               <div className="text-right">
-                <div className="text-2xl font-bold text-white">{team.points}</div>
-                <div className="text-gray-400 text-sm">points</div>
+                <div className="text-2xl font-bold text-foreground">{team.points}</div>
+                <div className="text-muted-foreground text-sm">points</div>
                 <div className="flex items-center justify-end space-x-4 mt-2 text-sm">
-                  <span className="text-green-400">{team.wins}W</span>
-                  <span className="text-red-400">{team.losses}L</span>
-                  <span className="text-gray-400">{team.matches_played}M</span>
+                  <span className="text-success">{team.wins}W</span>
+                  <span className="text-destructive">{team.losses}L</span>
+                  <span className="text-muted-foreground">{team.matches_played}M</span>
                 </div>
               </div>
             </div>
@@ -116,20 +116,20 @@ const Leaderboard = () => {
       
       {(!data || data.length === 0) && (
         <div className="text-center py-12">
-          <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-400 text-lg">No teams in leaderboard yet</p>
-          <p className="text-gray-500 text-sm">Rankings will appear after matches are recorded</p>
+          <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg">No teams in leaderboard yet</p>
+          <p className="text-muted-foreground text-sm">Rankings will appear after matches are recorded</p>
         </div>
       )}
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
+            <CardTitle className="text-3xl font-bold text-foreground text-center flex items-center justify-center">
               <Trophy className="w-8 h-8 mr-3" />
               Tournament Leaderboard
             </CardTitle>
@@ -138,16 +138,16 @@ const Leaderboard = () => {
           <CardContent>
             <Tabs defaultValue="overall" className="w-full">
               <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
-                <TabsList className="grid w-full md:w-auto grid-cols-2 bg-slate-700 gap-1">
+                <TabsList className="grid w-full md:w-auto grid-cols-2 bg-secondary gap-1">
                   <TabsTrigger value="overall">Overall Rankings</TabsTrigger>
                   <TabsTrigger value="games">Game-wise Rankings</TabsTrigger>
                 </TabsList>
 
                 <Select value={selectedGame} onValueChange={setSelectedGame}>
-                  <SelectTrigger className="w-full md:w-48 bg-slate-700 border-slate-600 text-white">
+                  <SelectTrigger className="w-full md:w-48 bg-secondary border-border text-foreground">
                     <SelectValue placeholder="Filter by Game" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
+                  <SelectContent className="bg-secondary border-border">
                     <SelectItem value="all">All Games</SelectItem>
                     {games?.map((game) => (
                       <SelectItem key={game.name} value={game.name}>
@@ -181,8 +181,8 @@ const Leaderboard = () => {
                   <div className="space-y-8">
                     {Object.entries(getGameWiseData()).map(([game, teams]) => (
                       <div key={game}>
-                        <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                          <span className="bg-purple-600 px-3 py-1 rounded-lg mr-3">
+                        <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center">
+                          <span className="bg-primary px-3 py-1 rounded-lg mr-3">
                             {game.toUpperCase()}
                           </span>
                           Leaderboard

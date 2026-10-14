@@ -204,9 +204,9 @@ const LeaderboardTab = () => {
   return (
     <div className="space-y-6">
       {/* Add Match Result */}
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white flex items-center">
+          <CardTitle className="text-xl text-foreground flex items-center">
             <Plus className="w-5 h-5 mr-2" />
             Record Match Result
           </CardTitle>
@@ -214,16 +214,16 @@ const LeaderboardTab = () => {
         <CardContent>
           <form onSubmit={handleSubmitMatch} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-gray-300">Team *</Label>
+              <Label className="text-muted-foreground">Team *</Label>
               <Select 
                 value={matchData.teamNumber} 
                 onValueChange={(value) => setMatchData({...matchData, teamNumber: value})}
                 disabled={isSubmitting}
               >
-                <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
+                <SelectTrigger className="bg-secondary border-border text-foreground">
                   <SelectValue placeholder="Select Team" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-700 border-slate-600">
+                <SelectContent className="bg-secondary border-border">
                   {teams.map((team) => (
                     <SelectItem key={team.team_number} value={team.team_number || ''}>
                       {team.team_number} - {team.team_name || team.full_name}
@@ -234,16 +234,16 @@ const LeaderboardTab = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Game *</Label>
+              <Label className="text-muted-foreground">Game *</Label>
               <Select 
                 value={matchData.game} 
                 onValueChange={(value) => setMatchData({...matchData, game: value})}
                 disabled={isSubmitting}
               >
-                <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
+                <SelectTrigger className="bg-secondary border-border text-foreground">
                   <SelectValue placeholder="Select Game" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-700 border-slate-600">
+                <SelectContent className="bg-secondary border-border">
                   <SelectItem value="free-fire">Free Fire</SelectItem>
                   <SelectItem value="codm">CODM</SelectItem>
                   <SelectItem value="fc-mobile">FC Mobile</SelectItem>
@@ -252,24 +252,24 @@ const LeaderboardTab = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Match Date *</Label>
+              <Label className="text-muted-foreground">Match Date *</Label>
               <Input
                 type="date"
                 value={matchData.matchDate}
                 onChange={(e) => setMatchData({...matchData, matchDate: e.target.value})}
-                className="bg-slate-600 border-slate-500 text-white"
+                className="bg-secondary border-border text-foreground"
                 required
                 disabled={isSubmitting}
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Points Earned *</Label>
+              <Label className="text-muted-foreground">Points Earned *</Label>
               <Input
                 type="number"
                 value={matchData.pointsEarned}
                 onChange={(e) => setMatchData({...matchData, pointsEarned: e.target.value})}
-                className="bg-slate-600 border-slate-500 text-white"
+                className="bg-secondary border-border text-foreground"
                 placeholder="e.g., 10"
                 required
                 min="0"
@@ -278,16 +278,16 @@ const LeaderboardTab = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Result *</Label>
+              <Label className="text-muted-foreground">Result *</Label>
               <Select 
                 value={matchData.result} 
                 onValueChange={(value: 'win' | 'loss' | 'draw') => setMatchData({...matchData, result: value})}
                 disabled={isSubmitting}
               >
-                <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
+                <SelectTrigger className="bg-secondary border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-700 border-slate-600">
+                <SelectContent className="bg-secondary border-border">
                   <SelectItem value="win">Win</SelectItem>
                   <SelectItem value="loss">Loss</SelectItem>
                   <SelectItem value="draw">Draw</SelectItem>
@@ -296,11 +296,11 @@ const LeaderboardTab = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Notes (Optional)</Label>
+              <Label className="text-muted-foreground">Notes (Optional)</Label>
               <Input
                 value={matchData.notes}
                 onChange={(e) => setMatchData({...matchData, notes: e.target.value})}
-                className="bg-slate-600 border-slate-500 text-white"
+                className="bg-secondary border-border text-foreground"
                 placeholder="Match notes..."
                 disabled={isSubmitting}
               />
@@ -310,7 +310,7 @@ const LeaderboardTab = () => {
               <Button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-success hover:bg-success"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 {isSubmitting ? 'Recording...' : 'Record Match'}
@@ -320,7 +320,7 @@ const LeaderboardTab = () => {
                 type="button" 
                 onClick={handleUpdateRankings} 
                 variant="outline" 
-                className="border-purple-500 text-purple-400"
+                className="border-primary text-primary"
                 disabled={isSubmitting}
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
@@ -332,36 +332,36 @@ const LeaderboardTab = () => {
       </Card>
 
       {/* Current Leaderboard */}
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white flex items-center">
+          <CardTitle className="text-xl text-foreground flex items-center">
             <Trophy className="w-5 h-5 mr-2" />
             Current Leaderboard ({leaderboard.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {leaderboard.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               No leaderboard entries yet. Add match results to populate the leaderboard.
             </div>
           ) : (
             <div className="space-y-3">
               {leaderboard.map((team) => (
-                <div key={team.id} className="flex items-center justify-between p-3 bg-slate-600/50 rounded-lg">
+                <div key={team.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                   <div className="flex items-center space-x-4">
-                    <Badge variant="secondary" className="bg-purple-600 text-white">
+                    <Badge variant="secondary" className="bg-primary text-primary-foreground">
                       #{team.rank_position}
                     </Badge>
                     <div>
-                      <p className="text-white font-medium">
+                      <p className="text-foreground font-medium">
                         {team.registrations?.team_name || team.registrations?.full_name || team.team_number}
                       </p>
-                      <p className="text-gray-400 text-sm">{team.team_number} • {team.game.toUpperCase()}</p>
+                      <p className="text-muted-foreground text-sm">{team.team_number} • {team.game.toUpperCase()}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-white font-bold">{team.points} pts</p>
-                    <p className="text-gray-400 text-sm">{team.wins}W-{team.losses}L</p>
+                    <p className="text-foreground font-bold">{team.points} pts</p>
+                    <p className="text-muted-foreground text-sm">{team.wins}W-{team.losses}L</p>
                   </div>
                 </div>
               ))}
@@ -371,39 +371,39 @@ const LeaderboardTab = () => {
       </Card>
 
       {/* Recent Match Results */}
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white">Recent Match Results ({matchResults.length})</CardTitle>
+          <CardTitle className="text-xl text-foreground">Recent Match Results ({matchResults.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {matchResults.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               No match results recorded yet.
             </div>
           ) : (
             <div className="space-y-3">
               {matchResults.map((match) => (
-                <div key={match.id} className="flex items-center justify-between p-3 bg-slate-600/50 rounded-lg">
+                <div key={match.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                   <div>
-                    <p className="text-white font-medium">{match.team_number}</p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-foreground font-medium">{match.team_number}</p>
+                    <p className="text-muted-foreground text-sm">
                       {match.game.toUpperCase()} • {new Date(match.match_date).toLocaleDateString()}
                     </p>
                     {match.notes && (
-                      <p className="text-gray-400 text-xs mt-1">{match.notes}</p>
+                      <p className="text-muted-foreground text-xs mt-1">{match.notes}</p>
                     )}
                   </div>
                   <div className="flex items-center space-x-3">
                     <Badge 
                       variant={match.result === 'win' ? 'default' : match.result === 'loss' ? 'destructive' : 'secondary'}
                       className={
-                        match.result === 'win' ? 'bg-green-600' : 
-                        match.result === 'loss' ? 'bg-red-600' : 'bg-yellow-600'
+                        match.result === 'win' ? 'bg-success' : 
+                        match.result === 'loss' ? 'bg-destructive' : 'bg-warning'
                       }
                     >
                       {match.result?.toUpperCase()}
                     </Badge>
-                    <span className="text-white">+{match.points_earned} pts</span>
+                    <span className="text-foreground">+{match.points_earned} pts</span>
                     <Button
                       variant="destructive"
                       size="sm"

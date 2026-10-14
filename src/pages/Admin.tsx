@@ -123,19 +123,19 @@ const Admin = () => {
   const allData = { registrations, bannerSettings, matchDays, systemSettings, announcements, games };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card border-border">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
+              <CardTitle className="text-3xl font-bold text-foreground text-center flex items-center justify-center">
                 <Settings className="w-8 h-8 mr-3" />
                 Admin Panel
               </CardTitle>
               <Button 
                 onClick={handleLogout}
                 variant="outline"
-                className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
+                className="border-destructive text-destructive hover:bg-destructive hover:text-foreground"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
@@ -151,7 +151,7 @@ const Admin = () => {
               </div>
             ) : (
               <Tabs defaultValue="registrations" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 bg-slate-700 gap-1">
+                <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 bg-secondary gap-1">
                   <TabsTrigger value="registrations" className="flex items-center text-xs px-1 md:px-2">
                     <Users className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                     <span className="hidden sm:inline">Registrations</span>

@@ -61,19 +61,19 @@ const CalendarTab = ({ matchDays, onMatchDaysChange }: CalendarTabProps) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white">Schedule Match Days</CardTitle>
+          <CardTitle className="text-xl text-foreground">Schedule Match Days</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label className="text-gray-300">Select Date</Label>
+            <Label className="text-muted-foreground">Select Date</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal bg-slate-600 border-slate-500 text-white",
+                    "w-full justify-start text-left font-normal bg-secondary border-border text-foreground",
                     !selectedDate && "text-muted-foreground"
                   )}
                 >
@@ -94,12 +94,12 @@ const CalendarTab = ({ matchDays, onMatchDaysChange }: CalendarTabProps) => {
           </div>
 
           <div>
-            <Label className="text-gray-300">Game</Label>
+            <Label className="text-muted-foreground">Game</Label>
             <Select value={matchDetails.game} onValueChange={(value) => setMatchDetails({...matchDetails, game: value})}>
-              <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
+              <SelectTrigger className="bg-secondary border-border text-foreground">
                 <SelectValue placeholder="Select Game" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-700 border-slate-600">
+              <SelectContent className="bg-secondary border-border">
                 <SelectItem value="free-fire">Free Fire</SelectItem>
                 <SelectItem value="codm">CODM</SelectItem>
                 <SelectItem value="fc-mobile">FC Mobile</SelectItem>
@@ -108,47 +108,47 @@ const CalendarTab = ({ matchDays, onMatchDaysChange }: CalendarTabProps) => {
           </div>
 
           <div>
-            <Label className="text-gray-300">Time</Label>
+            <Label className="text-muted-foreground">Time</Label>
             <Input
               type="time"
               value={matchDetails.time}
               onChange={(e) => setMatchDetails({...matchDetails, time: e.target.value})}
-              className="bg-slate-600 border-slate-500 text-white"
+              className="bg-secondary border-border text-foreground"
             />
           </div>
 
           <div>
-            <Label className="text-gray-300">Description</Label>
+            <Label className="text-muted-foreground">Description</Label>
             <Input
               value={matchDetails.description}
               onChange={(e) => setMatchDetails({...matchDetails, description: e.target.value})}
-              className="bg-slate-600 border-slate-500 text-white"
+              className="bg-secondary border-border text-foreground"
               placeholder="Match description (optional)"
             />
           </div>
 
-          <Button onClick={addMatchDay} className="w-full bg-blue-600 hover:bg-blue-700">
+          <Button onClick={addMatchDay} className="w-full bg-primary hover:bg-primary/90">
             <Clock className="w-4 h-4 mr-2" />
             Schedule Match
           </Button>
         </CardContent>
       </Card>
 
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white">Scheduled Matches</CardTitle>
+          <CardTitle className="text-xl text-foreground">Scheduled Matches</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {matchDays.length === 0 ? (
-              <p className="text-gray-400 text-center py-4">No matches scheduled</p>
+              <p className="text-muted-foreground text-center py-4">No matches scheduled</p>
             ) : (
               matchDays.map((match) => (
-                <div key={match.id} className="bg-slate-600/50 p-3 rounded-lg flex justify-between items-center">
+                <div key={match.id} className="bg-secondary p-3 rounded-lg flex justify-between items-center">
                   <div>
-                    <p className="text-white font-medium">{(match.game || '').replace('-', ' ').toUpperCase()}</p>
-                    <p className="text-gray-300 text-sm">{format(new Date(match.date), "PPP")} at {match.time}</p>
-                    {match.description && <p className="text-gray-400 text-sm">{match.description}</p>}
+                    <p className="text-foreground font-medium">{(match.game || '').replace('-', ' ').toUpperCase()}</p>
+                    <p className="text-muted-foreground text-sm">{format(new Date(match.date), "PPP")} at {match.time}</p>
+                    {match.description && <p className="text-muted-foreground text-sm">{match.description}</p>}
                   </div>
                   <Button
                     variant="destructive"
