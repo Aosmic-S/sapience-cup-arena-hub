@@ -126,11 +126,10 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-secondary border-border">
-                <SelectItem value="bg-warning/10">🔥 Red to Orange</SelectItem>
-                <SelectItem value="bg-primary">🌊 Blue to Purple</SelectItem>
-                <SelectItem value="bg-gradient-to-r from-primary to-primary">🌿 Green to Teal</SelectItem>
-                <SelectItem value="bg-gradient-to-r from-primary to-primary">⚡ Yellow to Red</SelectItem>
-                <SelectItem value="bg-primary">💜 Pink to Purple</SelectItem>
+                <SelectItem value="bg-primary text-primary-foreground">Volt (accent)</SelectItem>
+                <SelectItem value="bg-warning text-primary-foreground">Amber (notice)</SelectItem>
+                <SelectItem value="bg-destructive text-foreground">Red (urgent)</SelectItem>
+                <SelectItem value="bg-card text-foreground border-b border-border">Neutral</SelectItem>
               </SelectContent>
             </Select>
           </div>

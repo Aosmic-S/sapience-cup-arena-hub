@@ -77,6 +77,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
             name: formData.name.toLowerCase().replace(/\s+/g, '-'),
             display_name: formData.display_name,
             color: formData.color,
+            bracket_size: formData.bracket_size,
             description: formData.description || null,
             icon: formData.icon,
             is_active: formData.is_active,
@@ -103,6 +104,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
             name: formData.name.toLowerCase().replace(/\s+/g, '-'),
             display_name: formData.display_name,
             color: formData.color,
+            bracket_size: formData.bracket_size,
             description: formData.description || null,
             icon: formData.icon,
             is_active: formData.is_active
@@ -261,22 +263,18 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
               </div>
 
               <div>
-                <Label className="text-muted-foreground">Color Theme</Label>
+                <Label className="text-muted-foreground">Bracket Type</Label>
                 <Select 
-                  value={formData.color} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, color: value }))}
+                  value={String(formData.bracket_size)} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, bracket_size: Number(value) }))}
                   disabled={isSubmitting}
                 >
                   <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-secondary border-border">
-                    <SelectItem value="bg-warning/10">Red to Orange</SelectItem>
-                    <SelectItem value="bg-primary">Blue to Purple</SelectItem>
-                    <SelectItem value="bg-gradient-to-r from-primary to-primary">Green to Teal</SelectItem>
-                    <SelectItem value="bg-gradient-to-r from-primary to-primary">Yellow to Red</SelectItem>
-                    <SelectItem value="bg-primary">Purple to Pink</SelectItem>
-                    <SelectItem value="bg-primary">Indigo to Blue</SelectItem>
+                    <SelectItem value="32">32-team single elimination</SelectItem>
+                    <SelectItem value="48">48-team single elimination (16 byes)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
