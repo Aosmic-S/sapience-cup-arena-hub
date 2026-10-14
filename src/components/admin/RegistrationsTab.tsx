@@ -1,369 +1,487 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { Trash2, Download, Ban, CheckCircle2, XCircle, AlertTriangle, Search } from 'lucide-react';
+import { Trophy, Plus, Trash2, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-export interface Registration {
-  id: string;
-  full_name: string;
-  admission_no?: string;
-  class_section: string;
-  game: string;
-  entry_type: string;
-  team_name?: string;
-  team_number?: string;
-  phone_number: string;
-  in_game_id?: string;
-  uid?: string;
-  created_at: string;
-  members?: string[];
-  status?: 'active' | 'eliminated' | 'disqualified' | string;
-  dq_reason?: string;
-}
+// Standard BGMI Krafton placement points
+const BGMI_PLACEMENT_POINTS: Record<number, number> = {
+  1: 10,
+  2: 6,
+  3: 5,
+  4: 4,
+  5: 3,
+  6: 2,
+  7: 1,
+  8: 1,
+};
 
-interface RegistrationsTabProps {
-  registrations: Registration[];
-  onRegistrationsChange: () => void;
-}
+const LeaderboardTab = () => {
+  const [matchData, setMatchData] = useState({
+    teamNumber: '',
+    game: 'bgmi',
+    matchDate: new Date().toISOString().split('T')[0],
+    pointsEarned: '',
+    result: 'win' as 'win' | 'loss' | 'draw',
+    notes: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
-const RegistrationsTab = ({ registrations, onRegistrationsChange }: RegistrationsTabProps) => {
-  const [filteredRegistrations, setFilteredRegistrations] = useState<Registration[]>([]);
-  const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState({ game: 'all', status: 'all', type: 'all' });
-  
-  // DQ dialog state
-  const [dqTarget, setDqTarget] = useState<Registration | null>(null);
-  const [dqReason, setDqReason] = useState('Emulator / Unauthorized software');
+  const { data: teams = [] } = useQuery({
+    queryKey: ['registrationTeams'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('registrations')
+        .select('team_number, team_name, full_name, game')
+        .order('team_number');
 
-  useEffect(() => {
-    let filtered = [...registrations];
+      if (error) {
+        console.error('Error fetching teams:', error);
+        return [];
+      }
+      return data || [];
+    },
+  });
 
-    if (filters.game !== 'all') {
-      filtered = filtered.filter(reg => reg.game === filters.game);
-    }
-    if (filters.status !== 'all') {
-      filtered = filtered.filter(reg => (reg.status || 'active') === filters.status);
-    }
-    if (filters.type !== 'all') {
-      filtered = filtered.filter(reg => reg.entry_type === filters.type);
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      filtered = filtered.filter(reg => 
-        reg.full_name?.toLowerCase().includes(q) ||
-        reg.team_name?.toLowerCase().includes(q) ||
-        reg.team_number?.toLowerCase().includes(q) ||
-        reg.admission_no?.toLowerCase().includes(q) ||
-        reg.phone_number?.includes(q)
-      );
-    }
+  const { data: leaderboard = [] } = useQuery({
+    queryKey: ['leaderboard'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('leaderboard')
+        .select(`
+          *,
+          registrations!inner(team_name, full_name)
+        `)
+        .order('game')
+        .order('rank_position');
 
-    setFilteredRegistrations(filtered);
-  }, [registrations, filters, search]);
+      if (error) {
+        console.error('Error fetching leaderboard:', error);
+        return [];
+      }
+      return data || [];
+    },
+  });
 
-  const updateTeamStatus = async (id: string, status: 'active' | 'eliminated' | 'disqualified', reason?: string) => {
-    const payload: Record<string, any> = { status };
-    if (status === 'disqualified') {
-      payload.dq_reason = reason || 'Rule violation';
-    } else {
-      payload.dq_reason = null;
-    }
+  const { data: matchResults = [] } = useQuery({
+    queryKey: ['matchResults'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('match_results')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20);
 
-    const { error } = await supabase.from('registrations').update(payload).eq('id', id);
+      if (error) {
+        console.error('Error fetching match results:', error);
+        return [];
+      }
+      return data || [];
+    },
+  });
 
-    if (error) {
+  const handleSubmitMatch = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!matchData.teamNumber || !matchData.game) {
       toast({
-        title: "Status Update Failed",
-        description: error.message,
-        variant: "destructive",
+        title: 'Missing Fields',
+        description: 'Please select both a team and a game.',
+        variant: 'destructive',
       });
-    } else {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from('match_results').insert({
+        team_number: matchData.teamNumber,
+        game: matchData.game,
+        match_date: matchData.matchDate || new Date().toISOString().split('T')[0],
+        points_earned: parseInt(matchData.pointsEarned) || 0,
+        result: matchData.result,
+        notes: matchData.notes || null,
+      });
+
+      if (error) {
+        console.error('Error recording match:', error);
+        toast({
+          title: 'Error Recording Match',
+          description: error.message || 'Failed to record match result',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Match Recorded',
+          description: 'Match result saved and leaderboard updated.',
+        });
+        setMatchData({
+          teamNumber: '',
+          game: 'bgmi',
+          matchDate: new Date().toISOString().split('T')[0],
+          pointsEarned: '',
+          result: 'win',
+          notes: '',
+        });
+        queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+        queryClient.invalidateQueries({ queryKey: ['matchResults'] });
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
       toast({
-        title: `Team marked as ${status.toUpperCase()}`,
-        description: reason ? `Reason: ${reason}` : 'Status updated successfully',
+        title: 'Error',
+        description: 'Failed to record match result.',
+        variant: 'destructive',
       });
-      setDqTarget(null);
-      onRegistrationsChange();
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const deleteRegistration = async (id: string) => {
-    if (!confirm('Are you sure you want to permanently delete this team?')) return;
-    const { error } = await supabase.from('registrations').delete().eq('id', id);
+  const handleUpdateRankings = async () => {
+    try {
+      const { error } = await supabase.rpc('update_leaderboard_rankings');
 
-    if (error) {
-      toast({ title: "Delete Failed", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Registration Deleted" });
-      onRegistrationsChange();
+      if (error) {
+        console.error('Error updating rankings:', error);
+        toast({
+          title: 'Error Updating Rankings',
+          description: error.message || 'Failed to update rankings',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Rankings Updated',
+          description: 'All leaderboard rankings have been recalculated.',
+        });
+        queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update rankings.',
+        variant: 'destructive',
+      });
     }
   };
 
-  const exportToCSV = () => {
-    const headers = ['Team #', 'Name', 'Admission No', 'Class', 'Game', 'Type', 'Team Name', 'Status', 'DQ Reason', 'Phone'];
-    const csvContent = [
-      headers.join(','),
-      ...filteredRegistrations.map(reg => [
-        reg.team_number || 'N/A',
-        `"${reg.full_name}"`,
-        reg.admission_no || 'N/A',
-        reg.class_section,
-        reg.game,
-        reg.entry_type,
-        `"${reg.team_name || 'N/A'}"`,
-        reg.status || 'active',
-        `"${reg.dq_reason || ''}"`,
-        reg.phone_number
-      ].join(','))
-    ].join('\n');
+  const deleteMatchResult = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this match result?')) {
+      return;
+    }
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tournament-registrations-${Date.now()}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  };
+    try {
+      const { error } = await supabase.from('match_results').delete().eq('id', id);
 
-  const statusCounts = {
-    total: registrations.length,
-    active: registrations.filter(r => (r.status || 'active') === 'active').length,
-    eliminated: registrations.filter(r => r.status === 'eliminated').length,
-    disqualified: registrations.filter(r => r.status === 'disqualified').length,
+      if (error) {
+        console.error('Error deleting match:', error);
+        toast({
+          title: 'Error Deleting Match',
+          description: error.message || 'Failed to delete match',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Match Deleted',
+          description: 'Match result has been removed.',
+        });
+        queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+        queryClient.invalidateQueries({ queryKey: ['matchResults'] });
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete match result.',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
     <div className="space-y-6">
-      {/* Quick Stats Pill Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-card border border-border p-4 rounded-lg">
-          <div className="text-xs font-mono uppercase text-muted-foreground">Total Enrolled</div>
-          <div className="text-2xl font-bold font-display mt-1">{statusCounts.total}</div>
-        </div>
-        <div className="bg-card border border-primary/40 p-4 rounded-lg">
-          <div className="text-xs font-mono uppercase text-primary">Active Teams</div>
-          <div className="text-2xl font-bold font-display text-primary mt-1">{statusCounts.active}</div>
-        </div>
-        <div className="bg-card border border-amber-500/30 p-4 rounded-lg">
-          <div className="text-xs font-mono uppercase text-amber-400">Out of Tournament</div>
-          <div className="text-2xl font-bold font-display text-amber-400 mt-1">{statusCounts.eliminated}</div>
-        </div>
-        <div className="bg-card border border-destructive/40 p-4 rounded-lg">
-          <div className="text-xs font-mono uppercase text-destructive">Disqualified (DQ)</div>
-          <div className="text-2xl font-bold font-display text-destructive mt-1">{statusCounts.disqualified}</div>
-        </div>
-      </div>
-
-      {/* Filter & Search Bar */}
-      <div className="flex flex-wrap gap-3 items-center justify-between bg-card p-4 rounded-lg border border-border">
-        <div className="flex flex-wrap gap-2 flex-1 min-w-[280px]">
-          <div className="relative flex-1 min-w-[180px]">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search team, name, ID, phone..."
-              className="pl-9 bg-secondary border-border h-9"
-            />
-          </div>
-          <Select value={filters.game} onValueChange={v => setFilters(f => ({ ...f, game: v }))}>
-            <SelectTrigger className="w-[130px] bg-secondary border-border h-9">
-              <SelectValue placeholder="Game" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Games</SelectItem>
-              <SelectItem value="bgmi">BGMI</SelectItem>
-              <SelectItem value="fcmobile">FC Mobile</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={filters.status} onValueChange={v => setFilters(f => ({ ...f, status: v }))}>
-            <SelectTrigger className="w-[150px] bg-secondary border-border h-9">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="active">Active Only</SelectItem>
-              <SelectItem value="eliminated">Out of Tourney</SelectItem>
-              <SelectItem value="disqualified">Disqualified (DQ)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button onClick={exportToCSV} variant="outline" size="sm" className="gap-2 border-border">
-          <Download className="w-4 h-4" /> Export CSV
-        </Button>
-      </div>
-
-      {/* Teams List */}
-      <div className="space-y-3">
-        {filteredRegistrations.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground bg-card border border-border rounded-lg">
-            No registrations found matching the filters.
-          </div>
-        ) : (
-          filteredRegistrations.map((reg) => {
-            const isDQ = reg.status === 'disqualified';
-            const isEliminated = reg.status === 'eliminated';
-
-            return (
-              <Card 
-                key={reg.id} 
-                className={`transition-all border ${
-                  isDQ 
-                    ? 'border-destructive/60 bg-destructive/5' 
-                    : isEliminated 
-                    ? 'border-border/60 bg-muted/20 opacity-75' 
-                    : 'border-border bg-card'
-                }`}
-              >
-                <CardContent className="p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    {/* Team Info */}
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono text-xs px-2 py-0.5 rounded bg-secondary font-bold">
-                          {reg.team_number || 'PENDING'}
-                        </span>
-                        <h4 className={`font-display font-bold text-base ${isDQ ? 'line-through text-destructive' : 'text-foreground'}`}>
-                          {reg.team_name || reg.full_name}
-                        </h4>
-
-                        {/* Status Badges */}
-                        {isDQ && (
-                          <Badge variant="destructive" className="uppercase font-mono text-[10px] gap-1">
-                            <Ban className="w-3 h-3" /> DQ: {reg.dq_reason || 'Disqualified'}
-                          </Badge>
-                        )}
-                        {isEliminated && (
-                          <Badge variant="outline" className="text-amber-400 border-amber-500/40 uppercase font-mono text-[10px] gap-1">
-                            <XCircle className="w-3 h-3" /> Out of Tournament
-                          </Badge>
-                        )}
-                        {(!reg.status || reg.status === 'active') && (
-                          <Badge variant="outline" className="text-emerald-400 border-emerald-500/40 uppercase font-mono text-[10px] gap-1">
-                            <CheckCircle2 className="w-3 h-3" /> Active
-                          </Badge>
-                        )}
-                        <Badge variant="secondary" className="uppercase font-mono text-[10px]">
-                          {reg.game}
-                        </Badge>
-                      </div>
-
-                      <div className="text-xs text-muted-foreground flex flex-wrap gap-x-4 gap-y-1">
-                        <span>Captain: <strong>{reg.full_name}</strong></span>
-                        {reg.admission_no && <span>Adm No: <strong className="font-mono">{reg.admission_no}</strong></span>}
-                        <span>Class: <strong>{reg.class_section}</strong></span>
-                        <span>Phone: <strong className="font-mono">{reg.phone_number}</strong></span>
-                        {reg.in_game_id && <span>IGN: <strong className="font-mono">{reg.in_game_id}</strong></span>}
-                      </div>
-
-                      {reg.members && reg.members.length > 0 && (
-                        <div className="text-xs text-muted-foreground/80 mt-1">
-                          Roster: {reg.members.join(' • ')}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Quick Management Buttons */}
-                    <div className="flex items-center gap-2">
-                      {isDQ || isEliminated ? (
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="h-8 text-xs border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10"
-                          onClick={() => updateTeamStatus(reg.id, 'active')}
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Re-instate Active
-                        </Button>
-                      ) : (
-                        <>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="h-8 text-xs border-amber-500/40 text-amber-400 hover:bg-amber-500/10"
-                            onClick={() => updateTeamStatus(reg.id, 'eliminated')}
-                          >
-                            <XCircle className="w-3.5 h-3.5 mr-1" /> Mark Out
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="destructive" 
-                            className="h-8 text-xs gap-1"
-                            onClick={() => setDqTarget(reg)}
-                          >
-                            <Ban className="w-3.5 h-3.5" /> Disqualify
-                          </Button>
-                        </>
-                      )}
-
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                        onClick={() => deleteRegistration(reg.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })
-        )}
-      </div>
-
-      {/* Disqualification Reason Modal */}
-      <Dialog open={!!dqTarget} onOpenChange={(open) => !open && setDqTarget(null)}>
-        <DialogContent className="sm:max-w-[440px] bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-destructive font-display text-lg">
-              <AlertTriangle className="w-5 h-5" /> Disqualify Team
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <p className="text-sm text-muted-foreground">
-              You are disqualifying <strong className="text-foreground">{dqTarget?.team_name || dqTarget?.full_name}</strong> ({dqTarget?.team_number}). They will be removed from tournament brackets and barred from matches.
-            </p>
-
+      {/* Add Match Result */}
+      <Card className="bg-secondary border-border">
+        <CardHeader>
+          <CardTitle className="text-xl text-foreground flex items-center">
+            <Plus className="w-5 h-5 mr-2" />
+            Record Match Result & Scoring
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmitMatch} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-xs">Violation Reason</Label>
-              <Select value={dqReason} onValueChange={setDqReason}>
-                <SelectTrigger className="bg-secondary border-border">
-                  <SelectValue />
+              <Label className="text-muted-foreground">Team *</Label>
+              <Select
+                value={matchData.teamNumber}
+                onValueChange={(value) => setMatchData({ ...matchData, teamNumber: value })}
+                disabled={isSubmitting}
+              >
+                <SelectTrigger className="bg-secondary border-border text-foreground">
+                  <SelectValue placeholder="Select Team" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Emulator / Unauthorized hardware">PC Emulator / Macro detected</SelectItem>
-                  <SelectItem value="Unsportsmanlike conduct">Toxicity / Unsportsmanlike conduct</SelectItem>
-                  <SelectItem value="No-show / Missed check-in">No-show / Exceeded grace period</SelectItem>
-                  <SelectItem value="Ineligible player / Roll number mismatch">Ineligible player / Disciplinary record</SelectItem>
-                  <SelectItem value="Cheating / Ringing">Impersonation / Roster violation</SelectItem>
+                <SelectContent className="bg-secondary border-border">
+                  {teams.map((team) => (
+                    <SelectItem key={team.team_number} value={team.team_number || ''}>
+                      {team.team_number} - {team.team_name || team.full_name} ({team.game})
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button variant="ghost" onClick={() => setDqTarget(null)}>Cancel</Button>
-            <Button 
-              variant="destructive" 
-              onClick={() => dqTarget && updateTeamStatus(dqTarget.id, 'disqualified', dqReason)}
-            >
-              Confirm Disqualification
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+            <div className="space-y-2">
+              <Label className="text-muted-foreground">Game *</Label>
+              <Select
+                value={matchData.game}
+                onValueChange={(value) => setMatchData({ ...matchData, game: value })}
+                disabled={isSubmitting}
+              >
+                <SelectTrigger className="bg-secondary border-border text-foreground">
+                  <SelectValue placeholder="Select Game" />
+                </SelectTrigger>
+                <SelectContent className="bg-secondary border-border">
+                  <SelectItem value="bgmi">BGMI (Battlegrounds Mobile India)</SelectItem>
+                  <SelectItem value="fc-mobile">EA SPORTS FC™ Mobile</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-muted-foreground">Match Date *</Label>
+              <Input
+                type="date"
+                value={matchData.matchDate}
+                onChange={(e) => setMatchData({ ...matchData, matchDate: e.target.value })}
+                className="bg-secondary border-border text-foreground"
+                required
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-muted-foreground">Result *</Label>
+              <Select
+                value={matchData.result}
+                onValueChange={(value: 'win' | 'loss' | 'draw') => setMatchData({ ...matchData, result: value })}
+                disabled={isSubmitting}
+              >
+                <SelectTrigger className="bg-secondary border-border text-foreground">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-secondary border-border">
+                  <SelectItem value="win">Win / #1 Place</SelectItem>
+                  <SelectItem value="loss">Loss / Eliminated</SelectItem>
+                  <SelectItem value="draw">Draw</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Points Earned Input with Quick Presets */}
+            <div className="space-y-3 md:col-span-2 rounded border border-border p-3.5 bg-background/50">
+              <div className="flex items-center justify-between">
+                <Label className="text-foreground font-semibold">Total Points Earned *</Label>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => setMatchData((prev) => ({ ...prev, pointsEarned: '0', notes: '' }))}
+                >
+                  Reset Points
+                </Button>
+              </div>
+
+              <Input
+                type="number"
+                value={matchData.pointsEarned}
+                onChange={(e) => setMatchData({ ...matchData, pointsEarned: e.target.value })}
+                className="bg-secondary border-border text-foreground font-mono text-base font-bold"
+                placeholder="0"
+                required
+                min="0"
+                disabled={isSubmitting}
+              />
+
+              {/* Placement Quick Add */}
+              <div>
+                <span className="text-[11px] font-mono uppercase text-muted-foreground block mb-1.5">
+                  Quick Placement Points (Krafton standard):
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {Object.entries(BGMI_PLACEMENT_POINTS).map(([place, pts]) => (
+                    <Button
+                      key={place}
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs font-mono border-border hover:border-primary/50"
+                      onClick={() =>
+                        setMatchData((prev) => ({
+                          ...prev,
+                          pointsEarned: String((parseInt(prev.pointsEarned) || 0) + pts),
+                          notes: (prev.notes ? prev.notes + ' ' : '') + `#${place}(+${pts}p)`,
+                        }))
+                      }
+                    >
+                      #{place} (+{pts}p)
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Elimination Kills Quick Add */}
+              <div>
+                <span className="text-[11px] font-mono uppercase text-muted-foreground block mb-1.5">
+                  Quick Kill Points (+1 pt per elimination):
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[1, 2, 5, 10].map((k) => (
+                    <Button
+                      key={k}
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      className="h-7 font-mono text-xs"
+                      onClick={() =>
+                        setMatchData((prev) => ({
+                          ...prev,
+                          pointsEarned: String((parseInt(prev.pointsEarned) || 0) + k),
+                          notes: (prev.notes ? prev.notes + ' ' : '') + `+${k} kills`,
+                        }))
+                      }
+                    >
+                      +{k} Kills
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <Label className="text-muted-foreground">Match Notes / Breakdown (Optional)</Label>
+              <Input
+                value={matchData.notes}
+                onChange={(e) => setMatchData({ ...matchData, notes: e.target.value })}
+                className="bg-secondary border-border text-foreground text-sm font-mono"
+                placeholder="e.g. #1(+10p) +5 kills"
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className="md:col-span-2 flex gap-3 pt-2">
+              <Button type="submit" disabled={isSubmitting} className="bg-primary hover:bg-primary/90 text-black font-semibold">
+                <Plus className="w-4 h-4 mr-2" />
+                {isSubmitting ? 'Recording...' : 'Record Match Result'}
+              </Button>
+
+              <Button
+                type="button"
+                onClick={handleUpdateRankings}
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary/10"
+                disabled={isSubmitting}
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Recalculate Rankings
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Current Leaderboard */}
+      <Card className="bg-secondary border-border">
+        <CardHeader>
+          <CardTitle className="text-xl text-foreground flex items-center">
+            <Trophy className="w-5 h-5 mr-2" />
+            Current Leaderboard ({leaderboard.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {leaderboard.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No leaderboard entries yet. Add match results to populate the leaderboard.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {leaderboard.map((team) => (
+                <div key={team.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <Badge variant="secondary" className="bg-primary text-black font-bold">
+                      #{team.rank_position}
+                    </Badge>
+                    <div>
+                      <p className="text-foreground font-medium">
+                        {team.registrations?.team_name || team.registrations?.full_name || team.team_number}
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {team.team_number} • {team.game.toUpperCase()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-foreground font-bold">{team.points} pts</p>
+                    <p className="text-muted-foreground text-sm">
+                      {team.wins}W - {team.losses}L
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Recent Match Results */}
+      <Card className="bg-secondary border-border">
+        <CardHeader>
+          <CardTitle className="text-xl text-foreground">Recent Match Results ({matchResults.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {matchResults.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">No match results recorded yet.</div>
+          ) : (
+            <div className="space-y-3">
+              {matchResults.map((match) => (
+                <div key={match.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                  <div>
+                    <p className="text-foreground font-medium">{match.team_number}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {match.game.toUpperCase()} • {new Date(match.match_date).toLocaleDateString()}
+                    </p>
+                    {match.notes && <p className="text-muted-foreground text-xs mt-1 font-mono">{match.notes}</p>}
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Badge
+                      variant={match.result === 'win' ? 'default' : match.result === 'loss' ? 'destructive' : 'secondary'}
+                      className={
+                        match.result === 'win' ? 'bg-primary text-black' : match.result === 'loss' ? 'bg-destructive' : 'bg-warning'
+                      }
+                    >
+                      {match.result?.toUpperCase()}
+                    </Badge>
+                    <span className="text-foreground font-mono font-bold">+{match.points_earned} pts</span>
+                    <Button variant="destructive" size="sm" onClick={() => deleteMatchResult(match.id)}>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default RegistrationsTab;
+export default LeaderboardTab;
