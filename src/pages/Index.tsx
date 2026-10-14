@@ -36,22 +36,23 @@ const Index = () => {
       <section className="relative border-b border-border overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-40 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
         <div className="container relative mx-auto px-4 py-20 md:py-32">
-          <div className="inline-flex items-center gap-2 rounded-full border border-warning/40 px-3 py-1 mb-8">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-warning/40 px-3 py-1 mb-8">
             <span className="h-1.5 w-1.5 rounded-full bg-warning animate-pulse" />
-            <span className="font-mono-tag text-xs uppercase tracking-widest text-warning">Tournament under approval</span>
+            <span className="font-mono-tag text-xs uppercase tracking-widest text-warning">Tournament under school approval</span>
           </div>
           <h1 className="text-5xl md:text-8xl font-bold uppercase leading-[0.9] tracking-tight">
             Sapience<br />
             <span className="text-primary">eSports</span> Cup
           </h1>
           <div className="mt-6 flex items-baseline gap-4">
-            <span className="font-mono-tag text-2xl md:text-3xl text-muted-foreground">2025</span>
+            <span className="font-mono-tag text-2xl md:text-3xl text-primary font-bold">2026</span>
             <span className="h-px flex-1 max-w-[120px] bg-border" />
             <span className="text-sm text-muted-foreground">The Sapience School, Vikasnagar</span>
           </div>
           <p className="mt-8 max-w-xl text-muted-foreground md:text-lg">
-            The inter-class mobile gaming championship. Open to Class 9 and above. Full schedule will be announced once the school approves the tournament.
+            The official open mobile gaming championship organized by <strong className="text-foreground">Sapience eSports</strong>. Open to all students in Class 9 and above (open format, not house-bound).
           </p>
+
           <div className="mt-10 flex flex-wrap gap-3">
             <Button disabled size="lg" className="uppercase tracking-wider font-display">Registration soon</Button>
             <Link to="/brackets">
