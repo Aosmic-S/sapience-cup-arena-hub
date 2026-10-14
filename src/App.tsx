@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import Leaderboard from "./pages/Leaderboard";
 import TeamLogin from "./pages/TeamLogin";
 import TeamDashboard from "./pages/TeamDashboard";
+import Brackets from "./pages/Brackets";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/team-login" element={<TeamLogin />} />
           <Route path="/team-dashboard" element={<TeamDashboard />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/brackets" element={<Brackets />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
