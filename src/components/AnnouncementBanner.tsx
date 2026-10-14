@@ -42,7 +42,7 @@ export const AnnouncementBanner = () => {
   if (!isVisible || !bannerData || !bannerData.is_active) return null;
 
   return (
-    <div className={`${bannerData.color} text-white relative`}>
+    <div className={`${bannerData.color} relative`}>
       {/* Mobile Design - Compact vertical layout */}
       <div className="block md:hidden py-2 px-3">
         <div className="flex items-start justify-between">
@@ -53,7 +53,7 @@ export const AnnouncementBanner = () => {
           </div>
           <button
             onClick={() => setIsVisible(false)}
-            className="text-white/80 hover:text-white transition-colors flex-shrink-0 mt-0.5"
+            className="text-foreground/80 hover:text-foreground transition-colors flex-shrink-0 mt-0.5"
           >
             <X className="w-4 h-4" />
           </button>
@@ -70,7 +70,7 @@ export const AnnouncementBanner = () => {
           </div>
           <button
             onClick={() => setIsVisible(false)}
-            className="text-white/90 hover:text-white transition-colors ml-4"
+            className="text-foreground/90 hover:text-foreground transition-colors ml-4"
           >
             <X className="w-5 h-5" />
           </button>
@@ -87,7 +87,7 @@ export const AnnouncementBanner = () => {
           </div>
           <button
             onClick={() => setIsVisible(false)}
-            className="text-white hover:text-gray-200 transition-colors ml-6"
+            className="text-foreground hover:text-foreground transition-colors ml-6"
           >
             <X className="w-6 h-6" />
           </button>

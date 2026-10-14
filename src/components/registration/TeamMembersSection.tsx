@@ -10,7 +10,7 @@ interface TeamMembersSectionProps {
 const TeamMembersSection = ({ members, onMemberChange }: TeamMembersSectionProps) => {
   return (
     <div className="space-y-4">
-      <Label className="text-gray-300">Team Members (Optional - up to 4 additional members)</Label>
+      <Label className="text-muted-foreground">Team Members (Optional - up to 4 additional members)</Label>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {members.map((member, index) => (
           <Input
@@ -18,7 +18,7 @@ const TeamMembersSection = ({ members, onMemberChange }: TeamMembersSectionProps
             value={member}
             onChange={(e) => onMemberChange(index, e.target.value)}
             placeholder={`Member ${index + 2} name`}
-            className="bg-slate-700 border-slate-600 text-white"
+            className="bg-secondary border-border text-foreground"
           />
         ))}
       </div>

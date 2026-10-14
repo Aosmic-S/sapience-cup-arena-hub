@@ -99,10 +99,10 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
       <div className="flex flex-wrap gap-4 items-center justify-between">
         <div className="flex gap-4">
           <Select value={filters.game} onValueChange={(value) => setFilters({...filters, game: value})}>
-            <SelectTrigger className="bg-slate-700 border-slate-600 text-white w-40">
+            <SelectTrigger className="bg-secondary border-border text-foreground w-40">
               <SelectValue placeholder="Filter by Game" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-700 border-slate-600">
+            <SelectContent className="bg-secondary border-border">
               <SelectItem value="all">All Games</SelectItem>
               <SelectItem value="free-fire">Free Fire</SelectItem>
               <SelectItem value="codm">CODM</SelectItem>
@@ -111,10 +111,10 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
           </Select>
 
           <Select value={filters.type} onValueChange={(value) => setFilters({...filters, type: value})}>
-            <SelectTrigger className="bg-slate-700 border-slate-600 text-white w-40">
+            <SelectTrigger className="bg-secondary border-border text-foreground w-40">
               <SelectValue placeholder="Filter by Type" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-700 border-slate-600">
+            <SelectContent className="bg-secondary border-border">
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="solo">Solo</SelectItem>
               <SelectItem value="team">Team</SelectItem>
@@ -122,7 +122,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
           </Select>
         </div>
 
-        <Button onClick={exportToCSV} className="bg-green-600 hover:bg-green-700">
+        <Button onClick={exportToCSV} className="bg-success hover:bg-success">
           <Download className="w-4 h-4 mr-2" />
           Export CSV
         </Button>
@@ -131,25 +131,25 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
       {/* Registrations List */}
       <div className="grid gap-4">
         {filteredRegistrations.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-muted-foreground">
             No registrations found
           </div>
         ) : (
           filteredRegistrations.map((registration) => (
-            <Card key={registration.id} className="bg-slate-700/50 border-slate-600">
+            <Card key={registration.id} className="bg-secondary border-border">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start">
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-semibold text-white">{registration.full_name}</h3>
-                      <Badge variant="secondary" className="bg-blue-600 text-white">
+                      <h3 className="text-lg font-semibold text-foreground">{registration.full_name}</h3>
+                      <Badge variant="secondary" className="bg-primary text-primary-foreground">
                         {registration.class_section}
                       </Badge>
-                      <Badge variant="outline" className="border-purple-400 text-purple-400">
+                      <Badge variant="outline" className="border-primary text-primary">
                         {registration.game.replace('-', ' ').toUpperCase()}
                       </Badge>
                     </div>
-                    <div className="text-gray-300 space-y-1">
+                    <div className="text-muted-foreground space-y-1">
                       <p><strong>Type:</strong> {registration.entry_type}</p>
                       {registration.team_name && <p><strong>Team:</strong> {registration.team_name}</p>}
                       <p><strong>Phone:</strong> {registration.phone_number}</p>

@@ -57,11 +57,11 @@ const Calendar = () => {
   const getGameColor = (game: string) => {
     switch (game) {
       case 'free-fire':
-        return 'bg-gradient-to-r from-red-600 to-orange-600';
+        return 'bg-warning/10';
       case 'codm':
-        return 'bg-gradient-to-r from-blue-600 to-purple-600';
+        return 'bg-primary';
       case 'fc-mobile':
-        return 'bg-gradient-to-r from-green-600 to-teal-600';
+        return 'bg-gradient-to-r from-primary to-primary';
       default:
         return 'bg-gradient-to-r from-gray-600 to-slate-600';
     }
@@ -83,11 +83,11 @@ const Calendar = () => {
   const sortedMatches = matchDays.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
+            <CardTitle className="text-3xl font-bold text-foreground text-center flex items-center justify-center">
               <CalendarIcon className="w-8 h-8 mr-3" />
               Tournament Schedule
             </CardTitle>
@@ -100,37 +100,37 @@ const Calendar = () => {
               </div>
             ) : sortedMatches.length === 0 ? (
               <div className="text-center py-12">
-                <CalendarIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-400 text-xl">No matches scheduled yet</p>
-                <p className="text-gray-500 mt-2">Check back later for upcoming tournament dates</p>
+                <CalendarIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground text-xl">No matches scheduled yet</p>
+                <p className="text-muted-foreground mt-2">Check back later for upcoming tournament dates</p>
               </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {sortedMatches.map((match) => (
-                  <Card key={match.id} className="bg-slate-700/50 border-slate-600 hover:bg-slate-700/70 transition-colors">
+                  <Card key={match.id} className="bg-secondary border-border hover:bg-secondary transition-colors">
                     <CardContent className="p-6">
                       <div className={`${getGameColor(match.game)} rounded-lg p-4 mb-4`}>
                         <div className="flex items-center justify-between">
                           {getGameIcon(match.game)}
-                          <h3 className="text-white font-bold text-lg">
+                          <h3 className="text-foreground font-bold text-lg">
                             {formatGameName(match.game)}
                           </h3>
                         </div>
                       </div>
                       
                       <div className="space-y-2">
-                        <div className="flex items-center text-gray-300">
+                        <div className="flex items-center text-muted-foreground">
                           <CalendarIcon className="w-4 h-4 mr-2" />
                           <span>{format(new Date(match.date), "EEEE, MMMM d, yyyy")}</span>
                         </div>
                         
-                        <div className="flex items-center text-gray-300">
+                        <div className="flex items-center text-muted-foreground">
                           <Clock className="w-4 h-4 mr-2" />
                           <span>{match.time}</span>
                         </div>
                         
                         {match.description && (
-                          <div className="mt-3 p-2 bg-slate-600/50 rounded text-gray-300 text-sm">
+                          <div className="mt-3 p-2 bg-secondary rounded text-muted-foreground text-sm">
                             {match.description}
                           </div>
                         )}
