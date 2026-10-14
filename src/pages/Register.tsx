@@ -97,8 +97,9 @@ const Register = () => {
       }
 
       // Prepare registration data
-      const registrationData = {
+            const registrationData = {
         full_name: formData.fullName,
+        admission_no: formData.admissionNo.trim(), // <-- Add this
         class_section: formData.classSection,
         game: formData.game,
         entry_type: formData.entryType,
@@ -111,6 +112,7 @@ const Register = () => {
         password_hash: formData.password,
         members: formData.entryType === 'team' ? formData.members.filter(m => m.trim()) : null
       };
+
 
       const { error } = await supabase
         .from('registrations')
