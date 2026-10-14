@@ -38,6 +38,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
     color: 'bg-primary',
     description: '',
     icon: 'gamepad',
+    bracket_size: 32,
     is_active: true
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,6 +50,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
       color: 'bg-primary',
       description: '',
       icon: 'gamepad',
+      bracket_size: 32,
       is_active: true
     });
     setShowAddForm(false);
@@ -143,6 +145,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
       color: game.color,
       description: game.description || '',
       icon: game.icon,
+      bracket_size: (game as any).bracket_size ?? 32,
       is_active: game.is_active
     });
     setShowAddForm(true);
@@ -348,7 +351,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
                   {games.map((game) => (
                     <TableRow key={game.id}>
                       <TableCell>
-                        <div className={`${game.color} text-foreground px-3 py-1 rounded text-sm inline-block`}>
+                        <div className="border border-primary/40 text-primary font-mono-tag px-3 py-1 rounded text-sm inline-block">
                           {game.name}
                         </div>
                       </TableCell>

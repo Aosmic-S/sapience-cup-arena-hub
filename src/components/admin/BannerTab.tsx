@@ -150,7 +150,7 @@ const BannerTab = ({ bannerSettings, onBannerSettingsChange }: BannerTabProps) =
             <CardTitle className="text-xl text-foreground">Live Banner Preview</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`${formData.color} text-foreground py-4 px-6 rounded-lg`}>
+            <div className={`${formData.color} py-4 px-6 rounded-lg`}>
               <p className={`font-bold text-lg text-center ${formData.is_blinking ? 'animate-pulse' : ''}`}>
                 {formData.text || 'Your banner text will appear here...'}
               </p>

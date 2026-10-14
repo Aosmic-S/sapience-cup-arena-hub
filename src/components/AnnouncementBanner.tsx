@@ -42,7 +42,7 @@ export const AnnouncementBanner = () => {
   if (!isVisible || !bannerData || !bannerData.is_active) return null;
 
   return (
-    <div className={`${bannerData.color} text-foreground relative`}>
+    <div className={`${bannerData.color} relative`}>
       {/* Mobile Design - Compact vertical layout */}
       <div className="block md:hidden py-2 px-3">
         <div className="flex items-start justify-between">
