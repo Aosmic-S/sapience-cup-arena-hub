@@ -7,28 +7,33 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.18"
+  }
   public: {
     Tables: {
       announcements: {
         Row: {
           content: string
-          created_at: string | null
+          created_at: string
           id: string
-          priority: string | null
+          priority: string
           title: string
         }
         Insert: {
           content: string
-          created_at?: string | null
+          created_at?: string
           id?: string
-          priority?: string | null
+          priority?: string
           title: string
         }
         Update: {
           content?: string
-          created_at?: string | null
+          created_at?: string
           id?: string
-          priority?: string | null
+          priority?: string
           title?: string
         }
         Relationships: []
@@ -40,7 +45,7 @@ export type Database = {
           is_active: boolean | null
           is_blinking: boolean | null
           text: string | null
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
           color?: string | null
@@ -48,7 +53,7 @@ export type Database = {
           is_active?: boolean | null
           is_blinking?: boolean | null
           text?: string | null
-          updated_at?: string | null
+          updated_at?: string
         }
         Update: {
           color?: string | null
@@ -56,82 +61,153 @@ export type Database = {
           is_active?: boolean | null
           is_blinking?: boolean | null
           text?: string | null
-          updated_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bracket_matches: {
+        Row: {
+          bracket_id: string
+          id: string
+          position: number
+          round: number
+          score_a: number | null
+          score_b: number | null
+          team_a: string | null
+          team_b: string | null
+          winner: string | null
+        }
+        Insert: {
+          bracket_id: string
+          id?: string
+          position: number
+          round: number
+          score_a?: number | null
+          score_b?: number | null
+          team_a?: string | null
+          team_b?: string | null
+          winner?: string | null
+        }
+        Update: {
+          bracket_id?: string
+          id?: string
+          position?: number
+          round?: number
+          score_a?: number | null
+          score_b?: number | null
+          team_a?: string | null
+          team_b?: string | null
+          winner?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bracket_matches_bracket_id_fkey"
+            columns: ["bracket_id"]
+            isOneToOne: false
+            referencedRelation: "brackets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brackets: {
+        Row: {
+          created_at: string
+          game: string
+          id: string
+          name: string
+          size: number
+        }
+        Insert: {
+          created_at?: string
+          game: string
+          id?: string
+          name: string
+          size?: number
+        }
+        Update: {
+          created_at?: string
+          game?: string
+          id?: string
+          name?: string
+          size?: number
         }
         Relationships: []
       }
       games: {
         Row: {
-          color: string
-          created_at: string | null
+          bracket_size: number
+          color: string | null
+          created_at: string
           description: string | null
           display_name: string
           icon: string | null
           id: string
-          is_active: boolean | null
+          is_active: boolean
           name: string
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
-          color: string
-          created_at?: string | null
+          bracket_size?: number
+          color?: string | null
+          created_at?: string
           description?: string | null
           display_name: string
           icon?: string | null
           id?: string
-          is_active?: boolean | null
+          is_active?: boolean
           name: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Update: {
-          color?: string
-          created_at?: string | null
+          bracket_size?: number
+          color?: string | null
+          created_at?: string
           description?: string | null
           display_name?: string
           icon?: string | null
           id?: string
-          is_active?: boolean | null
+          is_active?: boolean
           name?: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
       leaderboard: {
         Row: {
-          created_at: string | null
+          draws: number
           game: string
           id: string
-          last_updated: string | null
-          losses: number | null
-          matches_played: number | null
-          points: number | null
-          rank_position: number | null
-          team_number: string | null
-          wins: number | null
+          last_updated: string
+          losses: number
+          matches_played: number
+          points: number
+          rank_position: number
+          team_number: string
+          wins: number
         }
         Insert: {
-          created_at?: string | null
+          draws?: number
           game: string
           id?: string
-          last_updated?: string | null
-          losses?: number | null
-          matches_played?: number | null
-          points?: number | null
-          rank_position?: number | null
-          team_number?: string | null
-          wins?: number | null
+          last_updated?: string
+          losses?: number
+          matches_played?: number
+          points?: number
+          rank_position?: number
+          team_number: string
+          wins?: number
         }
         Update: {
-          created_at?: string | null
+          draws?: number
           game?: string
           id?: string
-          last_updated?: string | null
-          losses?: number | null
-          matches_played?: number | null
-          points?: number | null
-          rank_position?: number | null
-          team_number?: string | null
-          wins?: number | null
+          last_updated?: string
+          losses?: number
+          matches_played?: number
+          points?: number
+          rank_position?: number
+          team_number?: string
+          wins?: number
         }
         Relationships: [
           {
@@ -145,7 +221,7 @@ export type Database = {
       }
       match_days: {
         Row: {
-          created_at: string | null
+          created_at: string
           date: string
           description: string | null
           game: string
@@ -153,7 +229,7 @@ export type Database = {
           time: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           date: string
           description?: string | null
           game: string
@@ -161,7 +237,7 @@ export type Database = {
           time: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           date?: string
           description?: string | null
           game?: string
@@ -172,94 +248,83 @@ export type Database = {
       }
       match_results: {
         Row: {
-          created_at: string | null
+          created_at: string
           game: string
           id: string
           match_date: string
           notes: string | null
-          points_earned: number | null
-          result: string | null
-          team_number: string | null
-          updated_at: string | null
+          points_earned: number
+          result: string
+          team_number: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           game: string
           id?: string
           match_date: string
           notes?: string | null
-          points_earned?: number | null
-          result?: string | null
-          team_number?: string | null
-          updated_at?: string | null
+          points_earned?: number
+          result?: string
+          team_number: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           game?: string
           id?: string
           match_date?: string
           notes?: string | null
-          points_earned?: number | null
-          result?: string | null
-          team_number?: string | null
-          updated_at?: string | null
+          points_earned?: number
+          result?: string
+          team_number?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "match_results_team_number_fkey"
-            columns: ["team_number"]
-            isOneToOne: false
-            referencedRelation: "registrations"
-            referencedColumns: ["team_number"]
-          },
-        ]
+        Relationships: []
       }
       registrations: {
         Row: {
-          class_section: string
-          created_at: string | null
+          class_section: string | null
+          created_at: string
           entry_type: string
           full_name: string
-          game: string
+          game: string | null
           id: string
           in_game_id: string | null
           members: string[] | null
-          password_hash: string | null
-          phone_number: string
+          password_hash: string
+          phone_number: string | null
           team_name: string | null
-          team_number: string | null
+          team_number: string
           team_uid: string | null
           uid: string | null
         }
         Insert: {
-          class_section: string
-          created_at?: string | null
-          entry_type: string
+          class_section?: string | null
+          created_at?: string
+          entry_type?: string
           full_name: string
-          game: string
+          game?: string | null
           id?: string
           in_game_id?: string | null
           members?: string[] | null
-          password_hash?: string | null
-          phone_number: string
+          password_hash: string
+          phone_number?: string | null
           team_name?: string | null
-          team_number?: string | null
+          team_number: string
           team_uid?: string | null
           uid?: string | null
         }
         Update: {
-          class_section?: string
-          created_at?: string | null
+          class_section?: string | null
+          created_at?: string
           entry_type?: string
           full_name?: string
-          game?: string
+          game?: string | null
           id?: string
           in_game_id?: string | null
           members?: string[] | null
-          password_hash?: string | null
-          phone_number?: string
+          password_hash?: string
+          phone_number?: string | null
           team_name?: string | null
-          team_number?: string | null
+          team_number?: string
           team_uid?: string | null
           uid?: string | null
         }
@@ -269,62 +334,62 @@ export type Database = {
         Row: {
           codm: string | null
           conduct: string | null
-          created_at: string | null
+          created_at: string
           fcmobile: string | null
           freefire: string | null
           general: string | null
           id: number
           tournament: string | null
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
           codm?: string | null
           conduct?: string | null
-          created_at?: string | null
+          created_at?: string
           fcmobile?: string | null
           freefire?: string | null
           general?: string | null
           id?: number
           tournament?: string | null
-          updated_at?: string | null
+          updated_at?: string
         }
         Update: {
           codm?: string | null
           conduct?: string | null
-          created_at?: string | null
+          created_at?: string
           fcmobile?: string | null
           freefire?: string | null
           general?: string | null
           id?: number
           tournament?: string | null
-          updated_at?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
       system_settings: {
         Row: {
-          auto_approval: boolean | null
-          email_notifications: boolean | null
+          auto_approval: boolean
+          email_notifications: boolean
           id: number
-          max_participants: number | null
-          registration_open: boolean | null
-          updated_at: string | null
+          max_participants: number
+          registration_open: boolean
+          updated_at: string
         }
         Insert: {
-          auto_approval?: boolean | null
-          email_notifications?: boolean | null
+          auto_approval?: boolean
+          email_notifications?: boolean
           id?: number
-          max_participants?: number | null
-          registration_open?: boolean | null
-          updated_at?: string | null
+          max_participants?: number
+          registration_open?: boolean
+          updated_at?: string
         }
         Update: {
-          auto_approval?: boolean | null
-          email_notifications?: boolean | null
+          auto_approval?: boolean
+          email_notifications?: boolean
           id?: number
-          max_participants?: number | null
-          registration_open?: boolean | null
-          updated_at?: string | null
+          max_participants?: number
+          registration_open?: boolean
+          updated_at?: string
         }
         Relationships: []
       }
@@ -333,14 +398,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_team_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      update_leaderboard_rankings: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      generate_team_number: { Args: never; Returns: string }
+      update_leaderboard_rankings: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
@@ -351,21 +410,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -383,14 +446,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -406,14 +471,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -429,14 +496,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -444,14 +513,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

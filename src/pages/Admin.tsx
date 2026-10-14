@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { 
   Users, Settings, Megaphone, 
-  Calendar as CalendarIcon, Mail, Database, Gamepad2, FileText, Trophy, LogOut
+  Calendar as CalendarIcon, Mail, Database, Gamepad2, FileText, Trophy, LogOut, GitBranch
 } from 'lucide-react';
 import AdminLogin from '@/components/admin/AdminLogin';
 import RegistrationsTab from '@/components/admin/RegistrationsTab';
@@ -18,10 +18,13 @@ import SystemTab from '@/components/admin/SystemTab';
 import GamesTab from '@/components/admin/GamesTab';
 import RulesTab from '@/components/admin/RulesTab';
 import LeaderboardTab from '@/components/admin/LeaderboardTab';
+import BracketsTab from '@/components/admin/BracketsTab';
+import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [active, setActive] = useState('registrations');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -122,127 +125,48 @@ const Admin = () => {
   
   const allData = { registrations, bannerSettings, matchDays, systemSettings, announcements, games };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
-      <div className="container mx-auto px-4">
-        <Card className="bg-slate-800/50 border-slate-700">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
-                <Settings className="w-8 h-8 mr-3" />
-                Admin Panel
-              </CardTitle>
-              <Button 
-                onClick={handleLogout}
-                variant="outline"
-                className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </CardHeader>
-          
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-4 p-6">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-64 w-full" />
-              </div>
-            ) : (
-              <Tabs defaultValue="registrations" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 bg-slate-700 gap-1">
-                  <TabsTrigger value="registrations" className="flex items-center text-xs px-1 md:px-2">
-                    <Users className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    <span className="hidden sm:inline">Registrations</span>
-                    <span className="sm:hidden">Reg</span>
-                    <span className="ml-1">({registrations.length})</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="leaderboard" className="flex items-center text-xs px-1 md:px-2">
-                    <Trophy className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    <span className="hidden sm:inline">Leaderboard</span>
-                    <span className="sm:hidden">Board</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="calendar" className="flex items-center text-xs px-1 md:px-2">
-                    <CalendarIcon className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    <span className="hidden sm:inline">Calendar</span>
-                    <span className="sm:hidden">Cal</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="games" className="flex items-center text-xs px-1 md:px-2">
-                    <Gamepad2 className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    <span className="hidden sm:inline">Games</span>
-                    <span className="sm:hidden">Games</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="rules" className="flex items-center text-xs px-1 md:px-2">
-                    <FileText className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    <span className="hidden sm:inline">Rules</span>
-                    <span className="sm:hidden">Rules</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="banner" className="flex items-center text-xs px-1 md:px-2">
-                    <Megaphone className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    <span className="hidden sm:inline">Banner</span>
-                    <span className="sm:hidden">Banner</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="communications" className="flex items-center text-xs px-1 md:px-2">
-                    <Mail className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    <span className="hidden sm:inline">Comms</span>
-                    <span className="sm:hidden">Comms</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="system" className="flex items-center text-xs px-1 md:px-2">
-                    <Database className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    <span className="hidden sm:inline">System</span>
-                    <span className="sm:hidden">Sys</span>
-                  </TabsTrigger>
-                </TabsList>
+  const sections = [
+    { id: 'registrations', label: 'Registrations', icon: Users, count: registrations.length },
+    { id: 'brackets', label: 'Brackets', icon: GitBranch },
+    { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
+    { id: 'games', label: 'Games', icon: Gamepad2, count: games.length },
+    { id: 'calendar', label: 'Schedule', icon: CalendarIcon },
+    { id: 'rules', label: 'Rules', icon: FileText },
+    { id: 'banner', label: 'Banner', icon: Megaphone },
+    { id: 'communications', label: 'Comms', icon: Mail },
+    { id: 'system', label: 'System', icon: Database },
+  ];
+  const current = sections.find((s) => s.id === active) ?? sections[0];
 
-                <TabsContent value="registrations" className="mt-6">
-                  <RegistrationsTab 
+  const renderSection = () => {
+    switch (active) {
+      case 'brackets': return <BracketsTab games={games} registrations={registrations} />;
+      case 'registrations': return (<RegistrationsTab 
                     registrations={registrations} 
                     onRegistrationsChange={() => queryClient.invalidateQueries({ queryKey: ['registrations'] })} 
-                  />
-                </TabsContent>
-
-                <TabsContent value="leaderboard" className="mt-6">
-                  <LeaderboardTab />
-                </TabsContent>
-
-                <TabsContent value="calendar" className="mt-6">
-                  <CalendarTab 
+                  />);
+      case 'leaderboard': return (<LeaderboardTab />);
+      case 'calendar': return (<CalendarTab 
                     matchDays={matchDays || []} 
                     onMatchDaysChange={() => queryClient.invalidateQueries({ queryKey: ['matchDays'] })}
-                  />
-                </TabsContent>
-
-                <TabsContent value="games" className="mt-6">
-                  <GamesTab 
+                  />);
+      case 'games': return (<GamesTab 
                     games={games || []} 
                     onGamesChange={() => queryClient.invalidateQueries({ queryKey: ['games'] })}
-                  />
-                </TabsContent>
-
-                <TabsContent value="rules" className="mt-6">
-                  <RulesTab />
-                </TabsContent>
-
-                <TabsContent value="banner" className="mt-6">
-                  <BannerTab 
+                  />);
+      case 'rules': return (<RulesTab />);
+      case 'banner': return (<BannerTab 
                     bannerSettings={bannerSettings || null} 
                     onBannerSettingsChange={() => queryClient.invalidateQueries({ queryKey: ['bannerSettings'] })}
-                  />
-                </TabsContent>
-
-                <TabsContent value="communications" className="mt-6">
-                  <CommunicationsTab 
+                  />);
+      case 'communications': return (<CommunicationsTab 
                     emailTemplate={emailTemplate}
                     onEmailTemplateChange={setEmailTemplate}
                     announcements={announcements || []}
                     onAnnouncementsChange={() => queryClient.invalidateQueries({ queryKey: ['announcements'] })}
                     registrationCount={registrations.length}
-                  />
-                </TabsContent>
-
-                <TabsContent value="system" className="mt-6">
-                  <SystemTab 
+                  />);
+      case 'system': return (<SystemTab 
                     systemSettings={systemSettings}
                     onSystemSettingsChange={() => queryClient.invalidateQueries({ queryKey: ['systemSettings'] })}
                     backupSettings={backupSettings}
@@ -250,13 +174,56 @@ const Admin = () => {
                     registrationCount={registrations.length}
                     matchDayCount={matchDays.length}
                     allData={allData}
-                  />
-                </TabsContent>
-              </Tabs>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                  />);
+      default: return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      <aside className="md:w-60 md:min-h-screen border-b md:border-b-0 md:border-r border-border bg-card/40 md:sticky md:top-0 md:h-screen flex flex-col">
+        <div className="px-5 h-14 flex items-center gap-2 border-b border-border">
+          <span className="h-2.5 w-2.5 bg-primary rotate-45" />
+          <span className="font-display font-bold uppercase tracking-wider text-sm">Sapience<span className="text-primary">/</span>Console</span>
+        </div>
+        <nav className="flex md:flex-col gap-1 p-2 overflow-x-auto md:overflow-visible flex-1">
+          {sections.map((s) => {
+            const Icon = s.icon;
+            const on = s.id === active;
+            return (
+              <button
+                key={s.id}
+                onClick={() => setActive(s.id)}
+                className={`shrink-0 flex items-center gap-3 px-3 py-2 rounded text-sm transition-colors ${on ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="whitespace-nowrap">{s.label}</span>
+                {s.count !== undefined && <span className="ml-auto font-mono-tag text-[11px] opacity-70">{s.count}</span>}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="hidden md:flex flex-col gap-1 p-2 border-t border-border">
+          <Link to="/" className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground">← View site</Link>
+          <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 rounded">
+            <LogOut className="w-4 h-4" /> Log out
+          </button>
+        </div>
+      </aside>
+      <main className="flex-1 min-w-0">
+        <header className="h-14 border-b border-border px-6 flex items-center justify-between">
+          <h1 className="font-display uppercase tracking-wider font-bold">{current.label}</h1>
+          <button onClick={handleLogout} className="md:hidden text-destructive" aria-label="Log out"><LogOut className="w-4 h-4" /></button>
+        </header>
+        <div className="p-4 md:p-8">
+          {isLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+          ) : renderSection()}
+        </div>
+      </main>
     </div>
   );
 };

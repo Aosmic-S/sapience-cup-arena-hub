@@ -35,9 +35,10 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
   const [formData, setFormData] = useState({
     name: '',
     display_name: '',
-    color: 'bg-gradient-to-r from-blue-600 to-purple-600',
+    color: 'bg-primary',
     description: '',
     icon: 'gamepad',
+    bracket_size: 32,
     is_active: true
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,9 +47,10 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
     setFormData({
       name: '',
       display_name: '',
-      color: 'bg-gradient-to-r from-blue-600 to-purple-600',
+      color: 'bg-primary',
       description: '',
       icon: 'gamepad',
+      bracket_size: 32,
       is_active: true
     });
     setShowAddForm(false);
@@ -77,6 +79,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
             name: formData.name.toLowerCase().replace(/\s+/g, '-'),
             display_name: formData.display_name,
             color: formData.color,
+            bracket_size: formData.bracket_size,
             description: formData.description || null,
             icon: formData.icon,
             is_active: formData.is_active,
@@ -103,6 +106,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
             name: formData.name.toLowerCase().replace(/\s+/g, '-'),
             display_name: formData.display_name,
             color: formData.color,
+            bracket_size: formData.bracket_size,
             description: formData.description || null,
             icon: formData.icon,
             is_active: formData.is_active
@@ -141,6 +145,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
       color: game.color,
       description: game.description || '',
       icon: game.icon,
+      bracket_size: (game as any).bracket_size ?? 32,
       is_active: game.is_active
     });
     setShowAddForm(true);
@@ -213,10 +218,10 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-white">Game Management</h3>
+        <h3 className="text-xl font-semibold text-foreground">Game Management</h3>
         <Button 
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-primary hover:bg-primary/90"
           disabled={isSubmitting}
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -225,9 +230,9 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
       </div>
 
       {showAddForm && (
-        <Card className="bg-slate-700/50 border-slate-600">
+        <Card className="bg-secondary border-border">
           <CardHeader>
-            <CardTitle className="text-white">
+            <CardTitle className="text-foreground">
               {editingGame ? 'Edit Game' : 'Add New Game'}
             </CardTitle>
           </CardHeader>
@@ -235,24 +240,24 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name" className="text-gray-300">Game Name (slug) *</Label>
+                  <Label htmlFor="name" className="text-muted-foreground">Game Name (slug) *</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    className="bg-slate-600 border-slate-500 text-white"
+                    className="bg-secondary border-border text-foreground"
                     placeholder="e.g., free-fire"
                     required
                     disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="display_name" className="text-gray-300">Display Name *</Label>
+                  <Label htmlFor="display_name" className="text-muted-foreground">Display Name *</Label>
                   <Input
                     id="display_name"
                     value={formData.display_name}
                     onChange={(e) => setFormData(prev => ({ ...prev, display_name: e.target.value }))}
-                    className="bg-slate-600 border-slate-500 text-white"
+                    className="bg-secondary border-border text-foreground"
                     placeholder="e.g., Free Fire"
                     required
                     disabled={isSubmitting}
@@ -261,33 +266,29 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
               </div>
 
               <div>
-                <Label className="text-gray-300">Color Theme</Label>
+                <Label className="text-muted-foreground">Bracket Type</Label>
                 <Select 
-                  value={formData.color} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, color: value }))}
+                  value={String(formData.bracket_size)} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, bracket_size: Number(value) }))}
                   disabled={isSubmitting}
                 >
-                  <SelectTrigger className="bg-slate-600 border-slate-500 text-white">
+                  <SelectTrigger className="bg-secondary border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
-                    <SelectItem value="bg-gradient-to-r from-red-600 to-orange-600">Red to Orange</SelectItem>
-                    <SelectItem value="bg-gradient-to-r from-blue-600 to-purple-600">Blue to Purple</SelectItem>
-                    <SelectItem value="bg-gradient-to-r from-green-600 to-teal-600">Green to Teal</SelectItem>
-                    <SelectItem value="bg-gradient-to-r from-yellow-600 to-red-600">Yellow to Red</SelectItem>
-                    <SelectItem value="bg-gradient-to-r from-purple-600 to-pink-600">Purple to Pink</SelectItem>
-                    <SelectItem value="bg-gradient-to-r from-indigo-600 to-blue-600">Indigo to Blue</SelectItem>
+                  <SelectContent className="bg-secondary border-border">
+                    <SelectItem value="32">32-team single elimination</SelectItem>
+                    <SelectItem value="48">48-team single elimination (16 byes)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label htmlFor="description" className="text-gray-300">Description</Label>
+                <Label htmlFor="description" className="text-muted-foreground">Description</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  className="bg-slate-600 border-slate-500 text-white"
+                  className="bg-secondary border-border text-foreground"
                   placeholder="Brief description of the game"
                   disabled={isSubmitting}
                 />
@@ -300,13 +301,13 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
                   disabled={isSubmitting}
                 />
-                <Label htmlFor="is_active" className="text-gray-300">Active</Label>
+                <Label htmlFor="is_active" className="text-muted-foreground">Active</Label>
               </div>
 
               <div className="flex space-x-2">
                 <Button 
                   type="submit" 
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-success hover:bg-success"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Saving...' : (editingGame ? 'Update Game' : 'Add Game')}
@@ -325,13 +326,13 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
         </Card>
       )}
 
-      <Card className="bg-slate-700/50 border-slate-600">
+      <Card className="bg-secondary border-border">
         <CardHeader>
-          <CardTitle className="text-white">Existing Games ({games.length})</CardTitle>
+          <CardTitle className="text-foreground">Existing Games ({games.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {games.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               No games found. Add your first game using the button above.
             </div>
           ) : (
@@ -339,23 +340,23 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-gray-300">Game</TableHead>
-                    <TableHead className="text-gray-300">Display Name</TableHead>
-                    <TableHead className="text-gray-300">Description</TableHead>
-                    <TableHead className="text-gray-300">Status</TableHead>
-                    <TableHead className="text-gray-300">Actions</TableHead>
+                    <TableHead className="text-muted-foreground">Game</TableHead>
+                    <TableHead className="text-muted-foreground">Display Name</TableHead>
+                    <TableHead className="text-muted-foreground">Description</TableHead>
+                    <TableHead className="text-muted-foreground">Status</TableHead>
+                    <TableHead className="text-muted-foreground">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {games.map((game) => (
                     <TableRow key={game.id}>
                       <TableCell>
-                        <div className={`${game.color} text-white px-3 py-1 rounded text-sm inline-block`}>
+                        <div className="border border-primary/40 text-primary font-mono-tag px-3 py-1 rounded text-sm inline-block">
                           {game.name}
                         </div>
                       </TableCell>
-                      <TableCell className="text-gray-300">{game.display_name}</TableCell>
-                      <TableCell className="text-gray-300">{game.description || 'No description'}</TableCell>
+                      <TableCell className="text-muted-foreground">{game.display_name}</TableCell>
+                      <TableCell className="text-muted-foreground">{game.description || 'No description'}</TableCell>
                       <TableCell>
                         <Switch
                           checked={game.is_active}
@@ -368,7 +369,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
                             size="sm"
                             variant="outline"
                             onClick={() => handleEdit(game)}
-                            className="border-slate-500 text-slate-300 hover:bg-slate-600"
+                            className="border-border text-muted-foreground hover:bg-secondary"
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -376,7 +377,7 @@ const GamesTab = ({ games, onGamesChange }: GamesTabProps) => {
                             size="sm"
                             variant="outline"
                             onClick={() => handleDelete(game.id, game.display_name)}
-                            className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                            className="border-destructive text-destructive hover:bg-destructive hover:text-foreground"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>

@@ -84,14 +84,14 @@ const TeamDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-white">{teamSession.teamName}</h1>
-            <p className="text-gray-400">Team {teamSession.teamNumber} • {teamSession.game.toUpperCase()}</p>
+            <h1 className="text-3xl font-bold text-foreground">{teamSession.teamName}</h1>
+            <p className="text-muted-foreground">Team {teamSession.teamNumber} • {teamSession.game.toUpperCase()}</p>
           </div>
-          <Button onClick={handleLogout} variant="outline" className="border-slate-600 text-white">
+          <Button onClick={handleLogout} variant="outline" className="border-border text-foreground">
             <LogOut className="w-4 h-4 mr-2" />
             Logout
           </Button>
@@ -99,61 +99,61 @@ const TeamDashboard = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {/* Team Stats */}
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center">
+              <CardTitle className="text-foreground flex items-center">
                 <Trophy className="w-5 h-5 mr-2" />
                 Team Stats
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-400">Current Rank:</span>
-                <Badge variant="secondary" className="bg-purple-600">
+                <span className="text-muted-foreground">Current Rank:</span>
+                <Badge variant="secondary" className="bg-primary">
                   #{leaderboardData?.rank_position || 'N/A'}
                 </Badge>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Points:</span>
-                <span className="text-white font-semibold">{leaderboardData?.points || 0}</span>
+                <span className="text-muted-foreground">Points:</span>
+                <span className="text-foreground font-semibold">{leaderboardData?.points || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Matches:</span>
-                <span className="text-white">{leaderboardData?.matches_played || 0}</span>
+                <span className="text-muted-foreground">Matches:</span>
+                <span className="text-foreground">{leaderboardData?.matches_played || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Wins:</span>
-                <span className="text-green-400">{leaderboardData?.wins || 0}</span>
+                <span className="text-muted-foreground">Wins:</span>
+                <span className="text-success">{leaderboardData?.wins || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Losses:</span>
-                <span className="text-red-400">{leaderboardData?.losses || 0}</span>
+                <span className="text-muted-foreground">Losses:</span>
+                <span className="text-destructive">{leaderboardData?.losses || 0}</span>
               </div>
             </CardContent>
           </Card>
 
           {/* Team Info */}
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center">
+              <CardTitle className="text-foreground flex items-center">
                 <Users className="w-5 h-5 mr-2" />
                 Team Info
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-400">Entry Type:</span>
-                <Badge variant="outline" className="border-blue-500 text-blue-400">
+                <span className="text-muted-foreground">Entry Type:</span>
+                <Badge variant="outline" className="border-primary text-primary">
                   {teamSession.entryType}
                 </Badge>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Game:</span>
-                <span className="text-white">{teamSession.game.toUpperCase()}</span>
+                <span className="text-muted-foreground">Game:</span>
+                <span className="text-foreground">{teamSession.game.toUpperCase()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Last Updated:</span>
-                <span className="text-gray-300 text-sm">
+                <span className="text-muted-foreground">Last Updated:</span>
+                <span className="text-muted-foreground text-sm">
                   {leaderboardData?.last_updated 
                     ? new Date(leaderboardData.last_updated).toLocaleDateString()
                     : 'Never'
@@ -164,17 +164,17 @@ const TeamDashboard = () => {
           </Card>
 
           {/* Performance */}
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center">
+              <CardTitle className="text-foreground flex items-center">
                 <TrendingUp className="w-5 h-5 mr-2" />
                 Performance
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-400">Win Rate:</span>
-                <span className="text-white">
+                <span className="text-muted-foreground">Win Rate:</span>
+                <span className="text-foreground">
                   {leaderboardData?.matches_played 
                     ? Math.round((leaderboardData.wins / leaderboardData.matches_played) * 100)
                     : 0
@@ -182,8 +182,8 @@ const TeamDashboard = () => {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Avg Points/Match:</span>
-                <span className="text-white">
+                <span className="text-muted-foreground">Avg Points/Match:</span>
+                <span className="text-foreground">
                   {leaderboardData?.matches_played 
                     ? Math.round(leaderboardData.points / leaderboardData.matches_played)
                     : 0
@@ -195,18 +195,18 @@ const TeamDashboard = () => {
         </div>
 
         {/* Match History */}
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white">Recent Match History</CardTitle>
+            <CardTitle className="text-foreground">Recent Match History</CardTitle>
           </CardHeader>
           <CardContent>
             {matchHistory && matchHistory.length > 0 ? (
               <div className="space-y-3">
                 {matchHistory.map((match) => (
-                  <div key={match.id} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                  <div key={match.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                     <div>
-                      <p className="text-white font-medium">{match.game.toUpperCase()}</p>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-foreground font-medium">{match.game.toUpperCase()}</p>
+                      <p className="text-muted-foreground text-sm">
                         {new Date(match.match_date).toLocaleDateString()}
                       </p>
                     </div>
@@ -214,19 +214,19 @@ const TeamDashboard = () => {
                       <Badge 
                         variant={match.result === 'win' ? 'default' : match.result === 'loss' ? 'destructive' : 'secondary'}
                         className={
-                          match.result === 'win' ? 'bg-green-600' : 
-                          match.result === 'loss' ? 'bg-red-600' : 'bg-yellow-600'
+                          match.result === 'win' ? 'bg-success' : 
+                          match.result === 'loss' ? 'bg-destructive' : 'bg-warning'
                         }
                       >
                         {match.result?.toUpperCase()}
                       </Badge>
-                      <p className="text-white text-sm mt-1">+{match.points_earned} pts</p>
+                      <p className="text-foreground text-sm mt-1">+{match.points_earned} pts</p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400 text-center py-8">No match history available</p>
+              <p className="text-muted-foreground text-center py-8">No match history available</p>
             )}
           </CardContent>
         </Card>

@@ -33,7 +33,7 @@ const Register = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: games = [] } = useQuery({
-    queryKey: ['games'],
+    queryKey: ['registrationGames'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('games')
@@ -156,28 +156,51 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
-      <div className="container mx-auto px-4 max-w-2xl">
-        <Card className="bg-slate-800/50 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
-              <UserPlus className="w-8 h-8 mr-3" />
-              Tournament Registration
-            </CardTitle>
-          </CardHeader>
-          
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="min-h-screen bg-background">
+      <div className="border-b border-border">
+        <div className="container mx-auto px-4 max-w-4xl py-14">
+          <div className="font-mono-tag text-xs uppercase tracking-widest text-muted-foreground">Sapience eSports Cup 2025</div>
+          <h1 className="mt-3 text-4xl md:text-6xl font-bold uppercase">Register</h1>
+          <p className="mt-3 text-muted-foreground max-w-lg">Solo or squad. You'll get a team number and use your password to log in and track your stats.</p>
+        </div>
+      </div>
+      <div className="container mx-auto px-4 max-w-4xl pb-20">
+        <form onSubmit={handleSubmit}>
+              <section className="grid md:grid-cols-[180px_1fr] gap-4 md:gap-8 py-8 border-b border-border">
+                <div>
+                  <div className="font-mono-tag text-xs text-primary">01</div>
+                  <div className="font-display uppercase tracking-wider text-sm mt-1">Player</div>
+                </div>
+                <div className="space-y-4">
+
               <BasicInfoSection 
                 formData={{ fullName: formData.fullName, classSection: formData.classSection }}
                 onInputChange={handleInputChange}
               />
+                </div>
+              </section>
+              <section className="grid md:grid-cols-[180px_1fr] gap-4 md:gap-8 py-8 border-b border-border">
+                <div>
+                  <div className="font-mono-tag text-xs text-primary">02</div>
+                  <div className="font-display uppercase tracking-wider text-sm mt-1">Title</div>
+                </div>
+                <div className="space-y-4">
+
 
               <GameSelectionSection 
                 games={games}
                 selectedGame={formData.game}
                 onGameChange={(value) => handleInputChange('game', value)}
               />
+                </div>
+              </section>
+              <section className="grid md:grid-cols-[180px_1fr] gap-4 md:gap-8 py-8 border-b border-border">
+                <div>
+                  <div className="font-mono-tag text-xs text-primary">03</div>
+                  <div className="font-display uppercase tracking-wider text-sm mt-1">Entry</div>
+                </div>
+                <div className="space-y-4">
+
 
               <EntryTypeSection 
                 entryType={formData.entryType}
@@ -188,12 +211,21 @@ const Register = () => {
                 onTeamUidChange={(value) => handleInputChange('teamUid', value)}
               />
 
-              <ContactInfoSection 
-                phoneNumber={formData.phoneNumber}
-                password={formData.password}
-                onPhoneChange={(value) => handleInputChange('phoneNumber', value)}
-                onPasswordChange={(value) => handleInputChange('password', value)}
-              />
+              {formData.entryType === 'team' && (
+                <TeamMembersSection 
+                  members={formData.members}
+                  onMemberChange={handleMemberChange}
+                />
+              )}
+                </div>
+              </section>
+              <section className="grid md:grid-cols-[180px_1fr] gap-4 md:gap-8 py-8 border-b border-border">
+                <div>
+                  <div className="font-mono-tag text-xs text-primary">04</div>
+                  <div className="font-display uppercase tracking-wider text-sm mt-1">In-game</div>
+                </div>
+                <div className="space-y-4">
+
 
               <GameInfoSection 
                 inGameId={formData.inGameId}
@@ -201,13 +233,31 @@ const Register = () => {
                 onInGameIdChange={(value) => handleInputChange('inGameId', value)}
                 onUidChange={(value) => handleInputChange('uid', value)}
               />
+                </div>
+              </section>
+              <section className="grid md:grid-cols-[180px_1fr] gap-4 md:gap-8 py-8 border-b border-border">
+                <div>
+                  <div className="font-mono-tag text-xs text-primary">05</div>
+                  <div className="font-display uppercase tracking-wider text-sm mt-1">Account</div>
+                </div>
+                <div className="space-y-4">
 
-              {formData.entryType === 'team' && (
-                <TeamMembersSection 
-                  members={formData.members}
-                  onMemberChange={handleMemberChange}
-                />
-              )}
+
+              <ContactInfoSection 
+                phoneNumber={formData.phoneNumber}
+                password={formData.password}
+                onPhoneChange={(value) => handleInputChange('phoneNumber', value)}
+                onPasswordChange={(value) => handleInputChange('password', value)}
+              />
+                </div>
+              </section>
+              <section className="grid md:grid-cols-[180px_1fr] gap-4 md:gap-8 py-8 border-b border-border">
+                <div>
+                  <div className="font-mono-tag text-xs text-primary">06</div>
+                  <div className="font-display uppercase tracking-wider text-sm mt-1">Admin</div>
+                </div>
+                <div className="space-y-4">
+
 
               <AdminSection 
                 customTeamId={formData.customTeamId}
@@ -215,17 +265,14 @@ const Register = () => {
                 onCustomTeamIdChange={(value) => handleInputChange('customTeamId', value)}
                 onAdminModeChange={setIsAdminMode}
               />
-
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-lg py-3"
-              >
-                {isSubmitting ? 'Registering...' : 'Register for Tournament'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                </div>
+              </section>
+              <div className="pt-8 flex justify-end">
+                <Button type="submit" size="lg" disabled={isSubmitting} className="w-full md:w-auto uppercase tracking-wider font-display px-10">
+                  {isSubmitting ? 'Registering…' : 'Submit registration'}
+                </Button>
+              </div>
+        </form>
       </div>
     </div>
   );

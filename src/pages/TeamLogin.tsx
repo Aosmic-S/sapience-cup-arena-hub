@@ -72,11 +72,11 @@ const TeamLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-md">
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-white text-center flex items-center justify-center">
+            <CardTitle className="text-2xl font-bold text-foreground text-center flex items-center justify-center">
               <Users className="w-6 h-6 mr-2" />
               Team Login
             </CardTitle>
@@ -85,34 +85,34 @@ const TeamLogin = () => {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="teamNumber" className="text-gray-300">Team Number</Label>
+                <Label htmlFor="teamNumber" className="text-muted-foreground">Team Number</Label>
                 <Input
                   id="teamNumber"
                   type="text"
                   placeholder="e.g., TEAM1001"
                   value={teamNumber}
                   onChange={(e) => setTeamNumber(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-secondary border-border text-foreground"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-300">Password</Label>
+                <Label htmlFor="password" className="text-muted-foreground">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-secondary border-border text-foreground"
                   required
                 />
               </div>
 
               <Button 
                 type="submit" 
-                className="w-full bg-purple-600 hover:bg-purple-700"
+                className="w-full bg-primary hover:bg-primary/90"
                 disabled={isLoading}
               >
                 <Lock className="w-4 h-4 mr-2" />
@@ -121,7 +121,7 @@ const TeamLogin = () => {
             </form>
 
             <div className="mt-4 text-center">
-              <p className="text-gray-400 text-sm">
+              <p className="text-muted-foreground text-sm">
                 Don't have a team number? Register first to get your credentials.
               </p>
             </div>

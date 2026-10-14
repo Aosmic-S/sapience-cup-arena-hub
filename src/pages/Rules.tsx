@@ -66,11 +66,11 @@ const Rules = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-white text-center flex items-center justify-center">
+            <CardTitle className="text-3xl font-bold text-foreground text-center flex items-center justify-center">
               <FileText className="w-8 h-8 mr-3" />
               Tournament Rules & Regulations
             </CardTitle>
@@ -84,7 +84,7 @@ const Rules = () => {
               </div>
             ) : (
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-slate-700 gap-1">
+                <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-secondary gap-1">
                   <TabsTrigger value="general" className="text-xs px-1 md:px-2">General</TabsTrigger>
                   {games.map((game) => (
                     <TabsTrigger key={game.name} value={game.name} className="text-xs px-1 md:px-2">
@@ -96,27 +96,27 @@ const Rules = () => {
                 </TabsList>
 
                 <TabsContent value="general" className="mt-4">
-                  <div className="text-gray-300 whitespace-pre-wrap">
+                  <div className="text-muted-foreground whitespace-pre-wrap">
                     {currentRules.general}
                   </div>
                 </TabsContent>
 
                 {games.map((game) => (
                   <TabsContent key={game.name} value={game.name} className="mt-4">
-                    <div className="text-gray-300 whitespace-pre-wrap">
+                    <div className="text-muted-foreground whitespace-pre-wrap">
                       {getGameRules(game.name)}
                     </div>
                   </TabsContent>
                 ))}
 
                 <TabsContent value="conduct" className="mt-4">
-                  <div className="text-gray-300 whitespace-pre-wrap">
+                  <div className="text-muted-foreground whitespace-pre-wrap">
                     {currentRules.conduct}
                   </div>
                 </TabsContent>
 
                 <TabsContent value="tournament" className="mt-4">
-                  <div className="text-gray-300 whitespace-pre-wrap">
+                  <div className="text-muted-foreground whitespace-pre-wrap">
                     {currentRules.tournament}
                   </div>
                 </TabsContent>

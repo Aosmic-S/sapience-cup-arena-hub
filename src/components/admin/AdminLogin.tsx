@@ -1,68 +1,51 @@
-
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
+import { Lock } from 'lucide-react';
 
 interface AdminLoginProps {
   onLogin: () => void;
 }
 
+const ADMIN_PASSWORD = 'SAP@CUP';
+
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [password, setPassword] = useState('');
-  const adminPassword = "SHELBY1701";
 
   useEffect(() => {
-    // Check if admin is already logged in from localStorage
-    const isAdminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
-    if (isAdminLoggedIn) {
-      onLogin();
-    }
+    if (localStorage.getItem('adminLoggedIn') === 'true') onLogin();
   }, [onLogin]);
 
-  const handleLogin = () => {
-    if (password === adminPassword) {
-      // Store admin login state in localStorage
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === ADMIN_PASSWORD) {
       localStorage.setItem('adminLoggedIn', 'true');
       onLogin();
-      toast({
-        title: "Login Successful",
-        description: "Welcome to the admin panel",
-      });
+      toast({ title: 'Welcome back', description: 'Admin console unlocked' });
     } else {
-      toast({
-        title: "Login Failed",
-        description: "Invalid password",
-        variant: "destructive"
-      });
+      toast({ title: 'Wrong password', variant: 'destructive' });
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-      <Card className="w-full max-w-md bg-slate-800/50 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-white text-center">Admin Login</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="password" className="text-gray-300">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-slate-700 border-slate-600 text-white"
-              onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-            />
-          </div>
-          <Button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700">
-            Login
-          </Button>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-background grid-bg flex items-center justify-center px-4">
+      <form onSubmit={handleLogin} className="w-full max-w-sm rounded-md border border-border bg-card p-8">
+        <div className="flex items-center gap-2 mb-8">
+          <span className="h-2.5 w-2.5 bg-primary rotate-45" />
+          <span className="font-display font-bold uppercase tracking-wider">Sapience<span className="text-primary">/</span>Console</span>
+        </div>
+        <label htmlFor="password" className="font-mono-tag text-[11px] uppercase tracking-widest text-muted-foreground">
+          Access key
+        </label>
+        <div className="relative mt-2">
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input id="password" type="password" autoFocus value={password} onChange={(e) => setPassword(e.target.value)} className="pl-9 bg-background" />
+        </div>
+        <Button type="submit" className="w-full mt-6 uppercase tracking-wider font-display">Enter</Button>
+        <Link to="/" className="block mt-6 text-center text-xs text-muted-foreground hover:text-foreground">← Back to site</Link>
+      </form>
     </div>
   );
 };
