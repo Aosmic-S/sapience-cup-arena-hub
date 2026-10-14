@@ -65,8 +65,77 @@ export type Database = {
         }
         Relationships: []
       }
+      bracket_matches: {
+        Row: {
+          bracket_id: string
+          id: string
+          position: number
+          round: number
+          score_a: number | null
+          score_b: number | null
+          team_a: string | null
+          team_b: string | null
+          winner: string | null
+        }
+        Insert: {
+          bracket_id: string
+          id?: string
+          position: number
+          round: number
+          score_a?: number | null
+          score_b?: number | null
+          team_a?: string | null
+          team_b?: string | null
+          winner?: string | null
+        }
+        Update: {
+          bracket_id?: string
+          id?: string
+          position?: number
+          round?: number
+          score_a?: number | null
+          score_b?: number | null
+          team_a?: string | null
+          team_b?: string | null
+          winner?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bracket_matches_bracket_id_fkey"
+            columns: ["bracket_id"]
+            isOneToOne: false
+            referencedRelation: "brackets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brackets: {
+        Row: {
+          created_at: string
+          game: string
+          id: string
+          name: string
+          size: number
+        }
+        Insert: {
+          created_at?: string
+          game: string
+          id?: string
+          name: string
+          size?: number
+        }
+        Update: {
+          created_at?: string
+          game?: string
+          id?: string
+          name?: string
+          size?: number
+        }
+        Relationships: []
+      }
       games: {
         Row: {
+          bracket_size: number
           color: string | null
           created_at: string
           description: string | null
@@ -78,6 +147,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          bracket_size?: number
           color?: string | null
           created_at?: string
           description?: string | null
@@ -89,6 +159,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          bracket_size?: number
           color?: string | null
           created_at?: string
           description?: string | null
