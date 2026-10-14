@@ -79,63 +79,74 @@ const LeaderboardTab = () => {
   const handleSubmitMatch = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!matchData.teamNumber || !matchData.game || !matchData.matchDate || !matchData.pointsEarned) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Inside src/components/admin/LeaderboardTab.tsx
+// Add these presets for fast scoring:
 
-    setIsSubmitting(true);
+const BGMI_PLACEMENT_POINTS: Record<number, number> = {
+  1: 10, // 1st Place = 10 pts (Krafton 2026 scoring standard)
+  2: 6,  // 2nd Place = 6 pts
+  3: 5,  // 3rd Place = 5 pts
+  4: 4,  // 4th Place = 4 pts
+  5: 3,  // 5th Place = 3 pts
+  6: 2,  // 6th Place = 2 pts
+  7: 1,  // 7th Place = 1 pt
+  8: 1,  // 8th Place = 1 pt
+};
 
-    try {
-      const { error } = await supabase
-        .from('match_results')
-        .insert({
-          team_number: matchData.teamNumber,
-          game: matchData.game,
-          match_date: matchData.matchDate,
-          points_earned: parseInt(matchData.pointsEarned),
-          result: matchData.result,
-          notes: matchData.notes || null
-        });
+// Add quick-add buttons inside your Match Scoring form:
+<div className="space-y-2">
+  <Label className="text-xs">Quick Placement Points (BGMI)</Label>
+  <div className="flex flex-wrap gap-1.5">
+    {Object.entries(BGMI_PLACEMENT_POINTS).map(([place, pts]) => (
+      <Button
+        key={place}
+        type="button"
+        size="sm"
+        variant="outline"
+        className="h-8 text-xs font-mono"
+        onClick={() => setMatchData(prev => ({
+          ...prev,
+          pointsEarned: String((parseInt(prev.pointsEarned) || 0) + pts),
+          notes: (prev.notes ? prev.notes + ' ' : '') + `#${place} place (+${pts}pts)`
+        }))}
+      >
+        #{place} (+{pts}p)
+      </Button>
+    ))}
+  </div>
+</div>
 
-      if (error) {
-        console.error('Error recording match:', error);
-        toast({
-          title: "Error Recording Match",
-          description: error.message || "Failed to record match",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Match Recorded",
-          description: "Match result has been added and leaderboard updated.",
-        });
-        setMatchData({
-          teamNumber: '',
-          game: '',
-          matchDate: '',
-          pointsEarned: '',
-          result: 'win',
-          notes: ''
-        });
-        queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
-        queryClient.invalidateQueries({ queryKey: ['matchResults'] });
-      }
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to record match result.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+<div className="space-y-2 mt-2">
+  <Label className="text-xs">Quick Kill Points (+1 pt per elimination)</Label>
+  <div className="flex gap-2">
+    {[1, 2, 5, 10].map(k => (
+      <Button
+        key={k}
+        type="button"
+        size="sm"
+        variant="secondary"
+        className="h-8 font-mono text-xs"
+        onClick={() => setMatchData(prev => ({
+          ...prev,
+          pointsEarned: String((parseInt(prev.pointsEarned) || 0) + k),
+          notes: (prev.notes ? prev.notes + ' ' : '') + `+${k} kills`
+        }))}
+      >
+        +{k} Kills
+      </Button>
+    ))}
+    <Button
+      type="button"
+      size="sm"
+      variant="ghost"
+      className="h-8 text-xs text-muted-foreground"
+      onClick={() => setMatchData(prev => ({ ...prev, pointsEarned: '0', notes: '' }))}
+    >
+      Reset
+    </Button>
+  </div>
+</div>
+
 
   const handleUpdateRankings = async () => {
     try {
