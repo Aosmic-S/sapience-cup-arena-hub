@@ -134,6 +134,7 @@ const Register = () => {
         // Reset form
         setFormData({
           fullName: '',
+          admissionNo: '',
           classSection: '',
           game: '',
           entryType: 'solo',
@@ -163,7 +164,7 @@ const Register = () => {
     <div className="min-h-screen bg-background">
       <div className="border-b border-border">
         <div className="container mx-auto px-4 max-w-4xl py-14">
-          <div className="font-mono-tag text-xs uppercase tracking-widest text-muted-foreground">Sapience eSports Cup 2025</div>
+          <div className="font-mono-tag text-xs uppercase tracking-widest text-muted-foreground">Sapience eSports Cup 2026</div>
           <h1 className="mt-3 text-4xl md:text-6xl font-bold uppercase">Register</h1>
           <p className="mt-3 text-muted-foreground max-w-lg">Solo or squad. You'll get a team number and use your password to log in and track your stats.</p>
         </div>
@@ -178,7 +179,7 @@ const Register = () => {
                 <div className="space-y-4">
 
               <BasicInfoSection 
-                formData={{ fullName: formData.fullName, classSection: formData.classSection }}
+                formData={{ fullName: formData.fullName, admissionNo: formData.admissionNo, classSection: formData.classSection }}
                 onInputChange={handleInputChange}
               />
                 </div>

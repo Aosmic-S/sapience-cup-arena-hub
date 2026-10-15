@@ -69,12 +69,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
   }, [registrations, filters, search]);
 
   const updateTeamStatus = async (id: string, status: 'active' | 'eliminated' | 'disqualified', reason?: string) => {
-    const payload: Record<string, any> = { status };
-    if (status === 'disqualified') {
-      payload.dq_reason = reason || 'Rule violation';
-    } else {
-      payload.dq_reason = null;
-    }
+    const payload = { status, dq_reason: status === 'disqualified' ? reason || 'Rule violation' : null };
 
     const { error } = await supabase.from('registrations').update(payload).eq('id', id);
 

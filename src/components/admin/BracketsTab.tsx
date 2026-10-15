@@ -27,7 +27,10 @@ const BracketsTab = ({ games, registrations }: Props) => {
   const { data: matches = [] } = useQuery({
     queryKey: ['adminBracketMatches', selected],
     enabled: !!selected,
-    queryFn: async () => (await supabase.from('bracket_matches').select('*').eq('bracket_id', selected!)).data || [],
+    queryFn: async () => {
+      if (!selected) return [];
+      return (await supabase.from('bracket_matches').select('*').eq('bracket_id', selected)).data || [];
+    },
   });
   const refresh = () => qc.invalidateQueries({ queryKey: ['adminBracketMatches'] });
 
@@ -66,8 +69,8 @@ const BracketsTab = ({ games, registrations }: Props) => {
     if (!team || team === 'BYE') return;
     await supabase.from('bracket_matches').update({ winner: team }).eq('id', m.id);
     const nextPos = Math.floor(m.position / 2);
-    const field = m.position % 2 === 0 ? 'team_a' : 'team_b';
-    await supabase.from('bracket_matches').update({ [field]: team }).eq('bracket_id', m.bracket_id).eq('round', m.round + 1).eq('position', nextPos);
+    const payload = m.position % 2 === 0 ? { team_a: team } : { team_b: team };
+    await supabase.from('bracket_matches').update(payload).eq('bracket_id', m.bracket_id).eq('round', m.round + 1).eq('position', nextPos);
     if (doRefresh) refresh();
   };
 
