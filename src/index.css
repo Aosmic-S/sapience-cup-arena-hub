@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,7 +15,7 @@
     --secondary: 240 4% 12%;
     --secondary-foreground: 0 0% 96%;
     --muted: 240 4% 12%;
-    --muted-foreground: 240 4% 58%;
+    --muted-foreground: 240 4% 65%;
     --accent: 240 4% 14%;
     --accent-foreground: 0 0% 96%;
     --destructive: 0 80% 58%;
@@ -45,7 +44,9 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'DM Sans', system-ui, sans-serif;
   }
-  h1, h2, h3, h4, .font-display { font-family: 'Chakra Petch', sans-serif; letter-spacing: -0.01em; }
+  h1, h2, h3, h4, .font-display { font-family: 'Chakra Petch', 'Arial Narrow', sans-serif; letter-spacing: 0; }
+  body { letter-spacing: 0; }
+  ::selection { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
 }
 
 @layer utilities {
@@ -56,3 +57,11 @@
     background-size: 48px 48px;
   }
 }
+
+.hero-shade { background: linear-gradient(90deg, hsl(var(--background) / .97), hsl(var(--background) / .65) 40%, hsl(var(--background) / .08) 75%), linear-gradient(0deg, hsl(var(--background)), transparent 35%); }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; color: hsl(var(--primary)); letter-spacing: 0; }
+.page-heading { border-bottom: 1px solid hsl(var(--border)); padding: 48px 0 32px; }
+.page-heading h1 { font-size: 40px; font-weight: 700; text-transform: uppercase; }
+.game-image { transition: transform .6s ease; }
+.group:hover .game-image { transform: scale(1.035); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

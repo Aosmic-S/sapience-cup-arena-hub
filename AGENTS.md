@@ -9,3 +9,7 @@
 
 ## Admin panel
 - The admin panel is gated by a client-side password, not real accounts. Do not present it, or the registration admin codes, as security; if real access control is ever needed, move it to Lovable Cloud auth with a roles table.
+
+## Website
+- Use a shared navigation, footer, and semantic dark theme across public screens so branding remains consistent.
+- Register BGMI captains and teammates through atomic database functions so roster capacity and admission checks cannot race.

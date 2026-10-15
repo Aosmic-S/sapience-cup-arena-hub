@@ -281,8 +281,10 @@ export type Database = {
       }
       registrations: {
         Row: {
+          admission_no: string | null
           class_section: string | null
           created_at: string
+          dq_reason: string | null
           entry_type: string
           full_name: string
           game: string | null
@@ -291,14 +293,20 @@ export type Database = {
           members: string[] | null
           password_hash: string
           phone_number: string | null
+          player_level: number | null
+          player_rank: string | null
+          status: string | null
           team_name: string | null
           team_number: string
+          team_ovr: number | null
           team_uid: string | null
           uid: string | null
         }
         Insert: {
+          admission_no?: string | null
           class_section?: string | null
           created_at?: string
+          dq_reason?: string | null
           entry_type?: string
           full_name: string
           game?: string | null
@@ -307,14 +315,20 @@ export type Database = {
           members?: string[] | null
           password_hash: string
           phone_number?: string | null
+          player_level?: number | null
+          player_rank?: string | null
+          status?: string | null
           team_name?: string | null
           team_number: string
+          team_ovr?: number | null
           team_uid?: string | null
           uid?: string | null
         }
         Update: {
+          admission_no?: string | null
           class_section?: string | null
           created_at?: string
+          dq_reason?: string | null
           entry_type?: string
           full_name?: string
           game?: string | null
@@ -323,8 +337,12 @@ export type Database = {
           members?: string[] | null
           password_hash?: string
           phone_number?: string | null
+          player_level?: number | null
+          player_rank?: string | null
+          status?: string | null
           team_name?: string | null
           team_number?: string
+          team_ovr?: number | null
           team_uid?: string | null
           uid?: string | null
         }
@@ -332,6 +350,7 @@ export type Database = {
       }
       rules_content: {
         Row: {
+          bgmi: string | null
           codm: string | null
           conduct: string | null
           created_at: string
@@ -343,6 +362,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          bgmi?: string | null
           codm?: string | null
           conduct?: string | null
           created_at?: string
@@ -354,6 +374,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          bgmi?: string | null
           codm?: string | null
           conduct?: string | null
           created_at?: string
@@ -393,12 +414,78 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          admission_no: string
+          class_section: string
+          created_at: string
+          full_name: string
+          id: string
+          in_game_id: string
+          phone_number: string
+          player_level: number | null
+          player_rank: string | null
+          role: string
+          slot: number
+          team_number: string
+          uid: string
+        }
+        Insert: {
+          admission_no: string
+          class_section: string
+          created_at?: string
+          full_name: string
+          id?: string
+          in_game_id: string
+          phone_number: string
+          player_level?: number | null
+          player_rank?: string | null
+          role?: string
+          slot: number
+          team_number: string
+          uid: string
+        }
+        Update: {
+          admission_no?: string
+          class_section?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          in_game_id?: string
+          phone_number?: string
+          player_level?: number | null
+          player_rank?: string | null
+          role?: string
+          slot?: number
+          team_number?: string
+          uid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_number_fkey"
+            columns: ["team_number"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["team_number"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       generate_team_number: { Args: never; Returns: string }
+      register_tournament_entry: { Args: { payload: Json }; Returns: string }
+      squad_roster: {
+        Args: { code: string }
+        Returns: {
+          in_game_id: string
+          player_rank: string
+          role: string
+          slot: number
+        }[]
+      }
       update_leaderboard_rankings: { Args: never; Returns: undefined }
     }
     Enums: {

@@ -15,6 +15,13 @@
       "when": 1791966508368,
       "tag": "0001_brackets",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792026291470,
+      "tag": "0002_squad_registration_and_tournament_status",
+      "breakpoints": true
     }
   ]
 }

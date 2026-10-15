@@ -15,6 +15,7 @@ import Leaderboard from "./pages/Leaderboard";
 import TeamLogin from "./pages/TeamLogin";
 import TeamDashboard from "./pages/TeamDashboard";
 import Brackets from "./pages/Brackets";
+import { SiteFooter } from './components/SiteFooter';
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
         <Navigation />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/index" element={<Index />} />
           <Route path="/register" element={<Register />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/rules" element={<Rules />} />
@@ -37,6 +39,7 @@ const App = () => (
           <Route path="/brackets" element={<Brackets />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <SiteFooter />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
