@@ -279,6 +279,56 @@ export type Database = {
         }
         Relationships: []
       }
+      player_entries: {
+        Row: {
+          created_at: string
+          game: string
+          id: string
+          team_number: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          game: string
+          id?: string
+          team_number: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          game?: string
+          id?: string
+          team_number?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_entries_team_number_fkey"
+            columns: ["team_number"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["team_number"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
       registrations: {
         Row: {
           admission_no: string | null
@@ -470,12 +520,36 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      claim_player_entry: {
+        Args: { code: string; entry_password: string }
+        Returns: undefined
+      }
       generate_team_number: { Args: never; Returns: string }
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      register_player_entry: { Args: { payload: Json }; Returns: string }
       register_tournament_entry: { Args: { payload: Json }; Returns: string }
       squad_roster: {
         Args: { code: string }
