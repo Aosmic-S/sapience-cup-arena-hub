@@ -1,5 +1,5 @@
-# Website redesign
-- [ ] Rebuild homepage and navigation around Sapience eSports.
-- [ ] Unify public pages and admin styling.
-- [ ] Connect admission numbers, BGMI create/join rosters, FC solo registration, and tournament status to Cloud.
-- [ ] Verify public pages, registration gating, and admin controls.
+# Current work
+- [ ] Simplify the public presentation and rebuild registration.
+- [ ] Add individual player accounts, profiles, password recovery and linked tournament entries.
+- [ ] Build AI registration review with uploaded records and human-only decisions.
+- [ ] Verify public layouts and signed-in player and review flows.
