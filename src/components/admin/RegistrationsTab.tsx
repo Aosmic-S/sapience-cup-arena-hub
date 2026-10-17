@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { Trash2, Download, Ban, CheckCircle2, XCircle, AlertTriangle, Search } from 'lucide-react';
+import { Trash2, Download, Ban, CheckCircle2, XCircle, AlertTriangle, Search, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import RegistrationAuditModal from './RegistrationAuditModal';
 
 export interface Registration {
   id: string;
@@ -39,8 +40,9 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
   const [filters, setFilters] = useState({ game: 'all', status: 'all', type: 'all' });
   
   // DQ dialog state
+  const [auditOpen, setAuditOpen] = useState(false);
   const [dqTarget, setDqTarget] = useState<Registration | null>(null);
-  const [dqReason, setDqReason] = useState('Emulator / Unauthorized software');
+  const [dqReason, setDqReason] = useState('Emulator / Unauthorized hardware');
 
   useEffect(() => {
     let filtered = [...registrations];
@@ -138,28 +140,28 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
   return (
     <div className="space-y-6">
       {/* Quick Stats Pill Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-card border border-border p-4 rounded-lg">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 border-b border-border pb-6">
+        <div className="py-2">
           <div className="text-xs font-mono uppercase text-muted-foreground">Total Enrolled</div>
           <div className="text-2xl font-bold font-display mt-1">{statusCounts.total}</div>
         </div>
-        <div className="bg-card border border-primary/40 p-4 rounded-lg">
+        <div className="py-2">
           <div className="text-xs font-mono uppercase text-primary">Active Teams</div>
           <div className="text-2xl font-bold font-display text-primary mt-1">{statusCounts.active}</div>
         </div>
-        <div className="bg-card border border-amber-500/30 p-4 rounded-lg">
-          <div className="text-xs font-mono uppercase text-amber-400">Out of Tournament</div>
-          <div className="text-2xl font-bold font-display text-amber-400 mt-1">{statusCounts.eliminated}</div>
+        <div className="py-2">
+          <div className="text-xs font-mono uppercase text-warning">Out of Tournament</div>
+          <div className="text-2xl font-bold font-display text-warning mt-1">{statusCounts.eliminated}</div>
         </div>
-        <div className="bg-card border border-destructive/40 p-4 rounded-lg">
+        <div className="py-2">
           <div className="text-xs font-mono uppercase text-destructive">Disqualified (DQ)</div>
           <div className="text-2xl font-bold font-display text-destructive mt-1">{statusCounts.disqualified}</div>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-wrap gap-3 items-center justify-between bg-card p-4 rounded-lg border border-border">
-        <div className="flex flex-wrap gap-2 flex-1 min-w-[280px]">
+      <div className="flex flex-wrap gap-3 items-center justify-between py-2">
+        <div className="flex flex-wrap gap-2 flex-1 min-w-0">
           <div className="relative flex-1 min-w-[180px]">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -176,7 +178,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
             <SelectContent>
               <SelectItem value="all">All Games</SelectItem>
               <SelectItem value="bgmi">BGMI</SelectItem>
-              <SelectItem value="fcmobile">FC Mobile</SelectItem>
+              <SelectItem value="fc-mobile">FC Mobile</SelectItem>
             </SelectContent>
           </Select>
 
@@ -193,6 +195,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
           </Select>
         </div>
 
+        <Button onClick={() => setAuditOpen(true)} variant="outline" size="sm"><Sparkles className="w-4 h-4"/>AI review</Button>
         <Button onClick={exportToCSV} variant="outline" size="sm" className="gap-2 border-border">
           <Download className="w-4 h-4" /> Export CSV
         </Button>
@@ -239,12 +242,12 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
                           </Badge>
                         )}
                         {isEliminated && (
-                          <Badge variant="outline" className="text-amber-400 border-amber-500/40 uppercase font-mono text-[10px] gap-1">
+                          <Badge variant="outline" className="text-warning border-warning/40 uppercase font-mono text-[10px] gap-1">
                             <XCircle className="w-3 h-3" /> Out of Tournament
                           </Badge>
                         )}
                         {(!reg.status || reg.status === 'active') && (
-                          <Badge variant="outline" className="text-emerald-400 border-emerald-500/40 uppercase font-mono text-[10px] gap-1">
+                          <Badge variant="outline" className="text-success border-success/40 uppercase font-mono text-[10px] gap-1">
                             <CheckCircle2 className="w-3 h-3" /> Active
                           </Badge>
                         )}
@@ -274,7 +277,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-8 text-xs border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10"
+                          className="h-8 text-xs border-success/50 text-success hover:bg-success/10"
                           onClick={() => updateTeamStatus(reg.id, 'active')}
                         >
                           <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Re-instate Active
@@ -284,7 +287,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            className="h-8 text-xs border-amber-500/40 text-amber-400 hover:bg-amber-500/10"
+                            className="h-8 text-xs border-warning/40 text-warning hover:bg-warning/10"
                             onClick={() => updateTeamStatus(reg.id, 'eliminated')}
                           >
                             <XCircle className="w-3.5 h-3.5 mr-1" /> Mark Out
@@ -303,7 +306,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                        aria-label={`Delete ${reg.team_number || reg.full_name}`} className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
                         onClick={() => deleteRegistration(reg.id)}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -317,6 +320,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
         )}
       </div>
 
+      <RegistrationAuditModal open={auditOpen} onOpenChange={setAuditOpen} registrations={registrations}/>
       {/* Disqualification Reason Modal */}
       <Dialog open={!!dqTarget} onOpenChange={(open) => !open && setDqTarget(null)}>
         <DialogContent className="sm:max-w-[440px] bg-card border-border">
@@ -327,7 +331,7 @@ const RegistrationsTab = ({ registrations, onRegistrationsChange }: Registration
           </DialogHeader>
           <div className="space-y-4 py-2">
             <p className="text-sm text-muted-foreground">
-              You are disqualifying <strong className="text-foreground">{dqTarget?.team_name || dqTarget?.full_name}</strong> ({dqTarget?.team_number}). They will be removed from tournament brackets and barred from matches.
+              You are disqualifying <strong className="text-foreground">{dqTarget?.team_name || dqTarget?.full_name}</strong> ({dqTarget?.team_number}). New match results will be blocked. Review any existing bracket assignments separately.
             </p>
 
             <div className="space-y-2">

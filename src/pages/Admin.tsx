@@ -219,20 +219,20 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-foreground flex flex-col md:flex-row antialiased selection:bg-primary selection:text-black">
+    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row antialiased selection:bg-primary selection:text-primary-foreground">
       {/* Sidebar */}
-      <aside className="md:w-64 md:min-h-screen border-b md:border-b-0 md:border-r border-border/70 bg-[#0a0d14]/90 backdrop-blur-md md:sticky md:top-0 md:h-screen flex flex-col justify-between shrink-0 z-30">
+      <aside className="md:w-64 md:min-h-screen border-b md:border-b-0 md:border-r border-border/70 bg-card md:sticky md:top-0 md:h-screen flex flex-col justify-between shrink-0 z-30">
         <div>
           {/* Brand header */}
-          <div className="px-5 h-16 flex items-center justify-between border-b border-border/70 bg-black/20">
+          <div className="px-5 h-16 flex items-center justify-between border-b border-border/70 bg-secondary/40">
             <Link to="/" className="flex items-center gap-2.5">
-              <span className="h-3 w-3 bg-primary rotate-45 shadow-[0_0_10px_hsl(var(--primary))]" />
+              <span className="h-3 w-3 bg-primary rotate-45 " />
               <div>
-                <div className="font-display font-black uppercase tracking-wider text-sm">
+                <div className="font-display font-black uppercase  text-sm">
                   Sapience<span className="text-primary">/</span>Console
                 </div>
-                <div className="font-mono-tag text-[9px] uppercase tracking-widest text-muted-foreground flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="font-mono-tag text-[9px] uppercase  text-muted-foreground flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-success" />
                   Organizer Ops
                 </div>
               </div>
@@ -245,32 +245,32 @@ const Admin = () => {
               const items = sections.filter(s => s.category === cat);
               return (
                 <div key={cat} className="space-y-1">
-                  <div className="px-3 text-[10px] font-mono-tag uppercase tracking-widest text-muted-foreground/60 font-semibold mb-1">
+                  <div className="px-3 text-[10px] font-mono-tag uppercase  text-muted-foreground/60 font-semibold mb-1">
                     {cat === 'OPS' ? 'Competition Ops' : cat === 'SETUP' ? 'Tournament Setup' : 'Broadcast & System'}
                   </div>
                   {items.map((s) => {
                     const Icon = s.icon;
                     const on = s.id === active;
                     return (
-                      <button
+                      <Button
                         key={s.id}
                         onClick={() => setActive(s.id)}
                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all ${
                           on 
-                            ? 'bg-primary text-black font-semibold shadow-sm' 
+                            ? 'bg-primary text-primary-foreground font-semibold shadow-sm' 
                             : 'text-muted-foreground hover:text-foreground hover:bg-card/70'
                         }`}
                       >
-                        <Icon className={`w-4 h-4 ${on ? 'text-black' : 'text-muted-foreground'}`} />
+                        <Icon className={`w-4 h-4 ${on ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
                         <span className="truncate">{s.label}</span>
                         {s.count !== undefined && (
                           <span className={`ml-auto font-mono text-[10px] px-1.5 py-0.2 rounded ${
-                            on ? 'bg-black/20 text-black font-bold' : 'bg-muted/40 text-muted-foreground'
+                            on ? 'bg-secondary/40 text-primary-foreground font-bold' : 'bg-muted/40 text-muted-foreground'
                           }`}>
                             {s.count}
                           </span>
                         )}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -280,7 +280,7 @@ const Admin = () => {
         </div>
 
         {/* Sidebar Footer */}
-        <div className="p-3 border-t border-border/70 bg-black/30 space-y-1">
+        <div className="p-3 border-t border-border/70 bg-secondary/20 space-y-1">
           <Link
             to="/"
             target="_blank"
@@ -288,16 +288,16 @@ const Admin = () => {
           >
             <span className="flex items-center gap-2">
               <ExternalLink className="w-3.5 h-3.5" />
-              Live Tournament Site
+              View website
             </span>
             <span className="font-mono text-[10px] text-primary">↗</span>
           </Link>
-          <button 
+          <Button 
             onClick={handleLogout} 
             className="flex items-center gap-2 w-full px-3 py-2 text-xs text-destructive hover:bg-destructive/10 rounded transition-colors"
           >
-            <LogOut className="w-3.5 h-3.5" /> Terminate Session
-          </button>
+            <LogOut className="w-3.5 h-3.5" /> Sign out
+          </Button>
         </div>
       </aside>
 
@@ -306,8 +306,8 @@ const Admin = () => {
         {/* Top Command Bar */}
         <header className="h-16 border-b border-border/70 px-4 md:px-8 bg-card/20 backdrop-blur flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-3">
-            <span className="h-2 w-2 rounded-full bg-primary animate-ping" />
-            <h1 className="font-display uppercase tracking-wider font-bold text-base md:text-lg">
+            <span className="h-2 w-2 rounded-full bg-primary " />
+            <h1 className="font-display uppercase  font-bold text-base md:text-lg">
               {current.label}
             </h1>
             <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono-tag uppercase bg-primary/10 text-primary border border-primary/20">
@@ -324,35 +324,35 @@ const Admin = () => {
               className="h-8 text-xs font-mono-tag uppercase border-border/80 hover:border-primary/50"
             >
               <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isRefreshing ? 'animate-spin text-primary' : ''}`} />
-              Sync DB
+              Refresh
             </Button>
-            <button 
+            <Button 
               onClick={handleLogout} 
               className="md:hidden text-destructive p-2 hover:bg-destructive/10 rounded" 
               aria-label="Log out"
             >
               <LogOut className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         </header>
 
         {/* Live Operations Metric Bar */}
-        <div className="border-b border-border/60 bg-black/40 px-4 md:px-8 py-3">
+        <div className="border-b border-border/60 bg-background px-4 md:px-8 py-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="p-2.5 rounded border border-border/60 bg-card/30">
-              <div className="text-[10px] font-mono-tag uppercase tracking-wider text-muted-foreground">Total Teams</div>
+            <div className="py-2.5">
+              <div className="text-[10px] font-mono-tag uppercase  text-muted-foreground">Total Teams</div>
               <div className="text-xl font-bold font-mono text-foreground mt-0.5">{totalRegistrations}</div>
             </div>
-            <div className="p-2.5 rounded border border-border/60 bg-card/30">
-              <div className="text-[10px] font-mono-tag uppercase tracking-wider text-muted-foreground">Active Games</div>
+            <div className="py-2.5">
+              <div className="text-[10px] font-mono-tag uppercase  text-muted-foreground">Active Games</div>
               <div className="text-xl font-bold font-mono text-primary mt-0.5">{activeGamesCount} <span className="text-xs text-muted-foreground font-normal">/ 2 Edition</span></div>
             </div>
-            <div className="p-2.5 rounded border border-border/60 bg-card/30">
-              <div className="text-[10px] font-mono-tag uppercase tracking-wider text-muted-foreground">Disqualified / Out</div>
+            <div className="py-2.5">
+              <div className="text-[10px] font-mono-tag uppercase  text-muted-foreground">Disqualified / Out</div>
               <div className="text-xl font-bold font-mono text-destructive mt-0.5">{dqCount}</div>
             </div>
-            <div className="p-2.5 rounded border border-border/60 bg-card/30">
-              <div className="text-[10px] font-mono-tag uppercase tracking-wider text-muted-foreground">Match Days</div>
+            <div className="py-2.5">
+              <div className="text-[10px] font-mono-tag uppercase  text-muted-foreground">Match Days</div>
               <div className="text-xl font-bold font-mono text-foreground mt-0.5">{matchDays.length}</div>
             </div>
           </div>
@@ -366,7 +366,7 @@ const Admin = () => {
               <Skeleton className="h-72 w-full bg-card" />
             </div>
           ) : (
-            <div className="rounded-lg border border-border/70 bg-card/40 p-4 md:p-6 backdrop-blur shadow-2xl">
+            <div className="">
               {renderSection()}
             </div>
           )}

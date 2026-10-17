@@ -10,7 +10,7 @@
     --card-foreground: 0 0% 96%;
     --popover: 240 5% 7%;
     --popover-foreground: 0 0% 96%;
-    --primary: 78 100% 55%;
+    --primary: 78 85% 60%;
     --primary-foreground: 240 6% 4%;
     --secondary: 240 4% 12%;
     --secondary-foreground: 0 0% 96%;
@@ -24,7 +24,7 @@
     --warning: 38 95% 56%;
     --border: 240 4% 15%;
     --input: 240 4% 15%;
-    --ring: 78 100% 55%;
+    --ring: 78 85% 60%;
     --radius: 0.375rem;
     --sidebar-background: 240 6% 5%;
     --sidebar-foreground: 0 0% 90%;
@@ -64,4 +64,5 @@
 .page-heading h1 { font-size: 40px; font-weight: 700; text-transform: uppercase; }
 .game-image { transition: transform .6s ease; }
 .group:hover .game-image { transform: scale(1.035); }
+.registration-section { border-top: 1px solid hsl(var(--border)); padding-top: 28px; margin-top: 28px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
