@@ -15,7 +15,7 @@ const Index=()=>{
  <div className="flex items-center gap-2 text-[10px] uppercase font-mono-tag text-muted-foreground mb-9"><span className="w-5 h-px bg-primary"/>The Sapience School · Vikasnagar</div>
  <div className="inline-flex gap-2 items-center bg-background/60 border border-warning/30 px-3 py-2 text-[10px] text-warning uppercase font-mono-tag"><span className="h-1.5 w-1.5 rounded-full bg-warning"/>Under school approval</div>
  <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-bold uppercase leading-[1.02] mt-5">Sapience<br/><span className="text-primary">eSports.</span></h1>
- <p className="mt-5 max-w-sm text-sm text-muted-foreground leading-relaxed">A new generation of competitors.<br/>One school. Two games. Your arena.</p>
+ <p className="mt-5 max-w-sm text-sm text-muted-foreground leading-relaxed">Sapience Cup 2026<br/>BGMI squads. FC Mobile competitors.</p>
  <div className="mt-8 flex flex-wrap gap-3"><Button asChild className="rounded-none uppercase text-xs h-11 px-5 font-bold"><a href="#tournaments">Explore tournaments<ArrowUpRight/></a></Button><Button asChild variant="outline" className="rounded-none uppercase text-xs h-11 bg-background/30"><Link to="/rules">Official rulebook<ArrowRight/></Link></Button></div>
  <div className="mt-12 pt-5 border-t border-border/60 max-w-sm flex items-center justify-between"><div><span className="section-label">In the spotlight</span><div className="font-display font-bold text-base uppercase mt-1">Sapience Cup 2026</div></div><span className="font-mono-tag text-[10px] text-muted-foreground">01 / 01</span></div>
  </div>

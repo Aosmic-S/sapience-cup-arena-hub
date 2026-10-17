@@ -15,6 +15,9 @@ import Leaderboard from "./pages/Leaderboard";
 import TeamLogin from "./pages/TeamLogin";
 import TeamDashboard from "./pages/TeamDashboard";
 import Brackets from "./pages/Brackets";
+import PlayerLogin from "./pages/PlayerLogin";
+import PlayerProfile from "./pages/PlayerProfile";
+import ResetPassword from "./pages/ResetPassword";
 import { SiteFooter } from './components/SiteFooter';
 
 const queryClient = new QueryClient();
@@ -34,6 +37,9 @@ const App = () => (
           <Route path="/rules" element={<Rules />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/team-login" element={<TeamLogin />} />
+          <Route path="/player-login" element={<PlayerLogin />} />
+          <Route path="/player-profile" element={<PlayerProfile />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/team-dashboard" element={<TeamDashboard />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/brackets" element={<Brackets />} />
